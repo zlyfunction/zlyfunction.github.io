@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>High-Res 3D Christmas Tree (Final Edition)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Interactive 3D Christmas Tree</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
@@ -15,12 +15,19 @@
             background-color: #0f0505;
             font-family: 'Segoe UI', sans-serif;
             transition: background-color 0.8s ease;
+            touch-action: none;
+            /* 禁止移动端默认滚动 */
         }
 
         canvas {
             display: block;
             width: 100vw;
             height: 100vh;
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
         }
 
         #toggle-btn {
@@ -182,6 +189,13 @@
             outline: none;
         }
 
+        /* 增加 Range 滑块样式 */
+        .form-row input[type="range"] {
+            flex: 1;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
         .form-row input[type="text"] {
             width: 140px;
         }
@@ -222,7 +236,6 @@
             background: #222;
         }
 
-        /* 致谢区域样式 */
         .credits-section {
             margin-top: 20px;
             padding-top: 15px;
@@ -251,6 +264,41 @@
             border-color: transparent;
             box-shadow: 0 4px 10px rgba(230, 81, 0, 0.2);
         }
+
+        /* 交互提示气泡 */
+        #interaction-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeInOut 4s 1s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
@@ -258,10 +306,10 @@
 
     <div id="toggle-btn" onclick="toggleControls()">⚙️ Settings</div>
 
+    <div id="interaction-hint">👈 Drag to Rotate | Scroll to Zoom 🔍</div>
+
     <div id="controls">
-        <button class="btn-lucky" onclick="applyRandomStyle()">
-            <span>🎲</span> I'm Feeling Lucky
-        </button>
+        <button class="btn-lucky" onclick="applyRandomStyle()"><span>🎲</span> I'm Feeling Lucky</button>
 
         <h3>Presets</h3>
         <div class="preset-grid" id="preset-container"></div>
@@ -269,11 +317,25 @@
         <h3>Global Settings</h3>
         <div id="dynamic-form"></div>
 
+        <h3 style="margin-top:15px">Interaction</h3>
+        <div class="form-row">
+            <label>Auto Rotate</label>
+            <input type="checkbox" id="auto-rotate-check" checked onchange="toggleAutoRotate(this.checked)">
+        </div>
+        <div class="form-row">
+            <label>Rotation Speed</label>
+            <input type="range" min="0" max="100" value="30" oninput="updateSpeed(this.value)">
+        </div>
+        <div class="form-row">
+            <label>Zoom Level</label>
+            <input type="range" min="50" max="200" value="100" oninput="updateZoom(this.value)">
+        </div>
+
         <button class="btn-apply" onclick="refreshTree()">Apply Changes / Re-Generate</button>
 
         <div class="credits-section">
-            <a href="https://www.xiaohongshu.com/discovery/item/6946e425000000001e03a9a0?source=webshare&xhsshare=pc_web&xsec_token=AB0yD1vBgPgon2QausS_BHyrG33nPdygH2n53ryzftMSA=&xsec_source=pc_share"
-                target="_blank" class="btn-credit">
+            <a href="https://www.xiaohongshu.com/discovery/item/6946e425000000001e03a9a0" target="_blank"
+                class="btn-credit">
                 <span>❤️</span> R语言画圣诞树 @ summer
             </a>
         </div>
@@ -282,7 +344,7 @@
     <canvas id="canvas"></canvas>
 
     <script>
-        // ================= 1. 完整配置数据 =================
+        // ================= 1. 配置数据 =================
         const STYLES = {
             "1": { bg_col: "#0f0505", tree_cols: ["#0B3D0B", "#144514", "#006400"], trunk_col: "#3e2723", decor_cols: ["#FFD700", "#CCA43B", "#8B0000"], star_col: "#FFD700", text_col: "#FFD700", snow_col: "#ffffff", ribbon: true, ribbon_col: "#D4AF37", ribbon_width: 1.5, title: "Merry Christmas Esther" },
             "2": { bg_col: "#F0F2F5", tree_cols: ["#2F4F4F", "#5F9EA0", "#708090"], trunk_col: "#696969", decor_cols: ["#B0C4DE", "#FFFAF0", "#E0FFFF"], star_col: "#B0C4DE", text_col: "#708090", snow_col: "#87CEFA", ribbon: true, ribbon_col: "#B0C4DE", ribbon_width: 1.5, title: "Merry Christmas Esther" },
@@ -302,8 +364,19 @@
         let particles = [];
         let snowParticles = [];
         let currentCfg = JSON.parse(JSON.stringify(STYLES["11"]));
-        let frame = 0;
-        const n_frames = 90;
+        let frame = 0; // 用于雪花动画和时间流逝
+        let n_frames = 90;
+
+        // 交互相关变量
+        let treeRotation = 0; // 当前树的旋转角度
+        let isAutoRotating = true;
+        let rotationSpeed = 0.005; // 基础自动旋转速度
+        let zoomLevel = 1.0;
+
+        // 拖拽控制
+        let isDragging = false;
+        let lastMouseX = 0;
+        let dragSensitivity = 0.005;
 
         // 随机辅助
         const rand = (min, max) => Math.random() * (max - min) + min;
@@ -314,9 +387,23 @@
             canvas = document.getElementById('canvas');
             ctx = canvas.getContext('2d');
 
+            // 事件监听
             window.addEventListener('resize', resize);
-            resize();
 
+            // 鼠标事件
+            canvas.addEventListener('mousedown', startDrag);
+            window.addEventListener('mousemove', drag);
+            window.addEventListener('mouseup', stopDrag);
+
+            // 触摸事件 (移动端)
+            canvas.addEventListener('touchstart', (e) => startDrag(e.touches[0]));
+            window.addEventListener('touchmove', (e) => drag(e.touches[0]));
+            window.addEventListener('touchend', stopDrag);
+
+            // 滚轮缩放
+            canvas.addEventListener('wheel', handleZoom);
+
+            resize();
             initPresetsUI();
             loadStyle("11");
             loop();
@@ -331,12 +418,39 @@
             ctx.scale(dpr, dpr);
         }
 
-        // ================= 🎲 随机生成美学 (Day & Night) =================
+        // ================= 交互逻辑 =================
+        function startDrag(e) {
+            isDragging = true;
+            lastMouseX = e.clientX;
+        }
 
-        // HSL转Hex工具
+        function drag(e) {
+            if (!isDragging) return;
+            const deltaX = e.clientX - lastMouseX;
+            // 拖拽时直接修改 treeRotation
+            treeRotation += deltaX * dragSensitivity;
+            lastMouseX = e.clientX;
+        }
+
+        function stopDrag() {
+            isDragging = false;
+        }
+
+        function handleZoom(e) {
+            e.preventDefault();
+            // 滚轮控制 zoomLevel
+            zoomLevel += e.deltaY * -0.001;
+            zoomLevel = Math.max(0.5, Math.min(zoomLevel, 2.0)); // 限制缩放范围
+        }
+
+        // UI 控制函数
+        function toggleAutoRotate(val) { isAutoRotating = val; }
+        function updateSpeed(val) { rotationSpeed = val * 0.0002; } // 映射滑块 0-100 到 速度
+        function updateZoom(val) { zoomLevel = val / 100; }
+
+        // ================= 随机 & 数据生成 =================
         function hslToHex(h, s, l) {
-            l /= 100;
-            const a = s * Math.min(l, 1 - l) / 100;
+            l /= 100; const a = s * Math.min(l, 1 - l) / 100;
             const f = n => {
                 const k = (n + h / 30) % 12;
                 const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
@@ -345,169 +459,77 @@
             return `#${f(0)}${f(8)}${f(4)}`;
         }
 
-        // 智能随机算法
         function applyRandomStyle() {
             const baseHue = Math.floor(Math.random() * 360);
-
-            // 决定是【亮色模式】还是【暗色模式】 (50% 概率)
             const isLightMode = Math.random() > 0.5;
-
             let bgCol, treeCols, textCol, snowCol, decorCols, ribbonCol;
 
             if (isLightMode) {
-                // === ☀️ 亮色模式 (Day Mode) ===
-                // 背景: 高亮度 (90-98%)，低饱和度，生成奶白、浅蓝、米色等
                 bgCol = hslToHex(baseHue, 30, rand(90, 98));
-
-                // 树: 必须比背景深。亮度控制在 30-50% 之间，形成剪影或实体感
-                treeCols = [];
-                for (let i = 0; i < 3; i++) {
-                    treeCols.push(hslToHex(baseHue + rand(-20, 20), rand(40, 70), rand(30, 55)));
-                }
-
-                // 文字/星星: 必须是深色才能看清 (如深金、深酒红、午夜蓝)
-                // 策略: 使用互补色，或者单纯的深金色
+                treeCols = []; for (let i = 0; i < 3; i++) treeCols.push(hslToHex(baseHue + rand(-20, 20), rand(40, 70), rand(30, 55)));
                 textCol = Math.random() > 0.5 ? "#B8860B" : hslToHex((baseHue + 180) % 360, 80, 30);
-
-                // 雪花: 在白背景上，白色雪花看不见，所以用淡灰/淡蓝
-                snowCol = hslToHex(210, 20, 75); // #AABBDD
-
-                // 丝带: 稍深一点的颜色
+                snowCol = hslToHex(210, 20, 75);
                 ribbonCol = hslToHex((baseHue + 90) % 360, 60, 60);
-
             } else {
-                // === 🌙 暗色模式 (Night Mode) ===
-                // 背景: 极低亮度 (5-15%)
                 bgCol = hslToHex(baseHue, 40, rand(5, 15));
-
-                // 树: 亮度适中，饱和度可以高一点
-                treeCols = [];
-                for (let i = 0; i < 3; i++) {
-                    treeCols.push(hslToHex(baseHue + rand(-20, 20), rand(30, 70), rand(30, 60)));
-                }
-
-                // 文字/星星: 高亮发光色
+                treeCols = []; for (let i = 0; i < 3; i++) treeCols.push(hslToHex(baseHue + rand(-20, 20), rand(30, 70), rand(30, 60)));
                 textCol = Math.random() > 0.5 ? "#FFD700" : hslToHex(baseHue, 100, 90);
-
-                // 雪花: 纯白
                 snowCol = "#FFFFFF";
-
-                // 丝带: 亮色
                 ribbonCol = hslToHex((baseHue + 90) % 360, 80, 80);
             }
 
-            // 装饰物 (通用): 互补色，高饱和
-            decorCols = [];
-            const decorHue = (baseHue + 180) % 360;
-            decorCols.push(hslToHex(decorHue, 80, 70));
-            decorCols.push(hslToHex((decorHue + 30) % 360, 90, 60));
-            decorCols.push(isLightMode ? "#FFFFFF" : "#FFD700"); // 亮模式加白点缀，暗模式加金点缀
+            decorCols = [hslToHex((baseHue + 180) % 360, 80, 70), hslToHex((baseHue + 210) % 360, 90, 60), isLightMode ? "#FFFFFF" : "#FFD700"];
 
-            // 构建配置
             const randomCfg = {
-                bg_col: bgCol,
-                tree_cols: treeCols,
-                trunk_col: isLightMode ? "#5D4037" : "#332211", // 亮模式树干稍微浅一点
-                decor_cols: decorCols,
-                star_col: textCol, // 星星颜色与文字一致
-                text_col: textCol,
-                snow_col: snowCol,
-                ribbon: Math.random() > 0.2,
-                ribbon_col: ribbonCol,
-                ribbon_width: parseFloat(rand(0.6, 1.8).toFixed(1)),
-                title: "Merry Christmas" // 随机模式默认标题
+                bg_col: bgCol, tree_cols: treeCols, trunk_col: isLightMode ? "#5D4037" : "#332211",
+                decor_cols: decorCols, star_col: textCol, text_col: textCol, snow_col: snowCol,
+                ribbon: Math.random() > 0.2, ribbon_col: ribbonCol, ribbon_width: parseFloat(rand(0.6, 1.8).toFixed(1)),
+                title: "Merry Christmas"
             };
 
-            // 应用
             currentCfg = randomCfg;
             refreshTree();
             updateFormUI();
             document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-
-            // 视觉反馈：改变 body 背景以便更平滑过渡
             document.body.style.backgroundColor = bgCol;
         }
 
-        // ================= 数据生成 =================
         function generateData(cfg) {
             let data = [];
-
-            // 1. 树叶
-            const n_leaves = 8000;
-            for (let i = 0; i < n_leaves; i++) {
-                let h = Math.random();
-                let y = h - 0.5;
-                let base_r = 1 - h;
-                let layer_cycle = (h * 7) % 1;
-                let r = base_r * 0.65 * (0.4 + 0.6 * Math.pow(1 - layer_cycle, 0.7));
+            // 树叶
+            for (let i = 0; i < 8000; i++) {
+                let h = Math.random(); let y = h - 0.5; let base_r = 1 - h;
+                let r = base_r * 0.65 * (0.4 + 0.6 * Math.pow(1 - (h * 7) % 1, 0.7));
                 let theta = Math.random() * 2 * Math.PI;
-
-                data.push({
-                    x: r * Math.cos(theta), y: y, z: r * Math.sin(theta),
-                    col: randChoice(cfg.tree_cols),
-                    size: rand(0.6, 1.8),
-                    type: 'tree', alpha: 0.95
-                });
+                data.push({ x: r * Math.cos(theta), y: y, z: r * Math.sin(theta), col: randChoice(cfg.tree_cols), size: rand(0.6, 1.8), type: 'tree', alpha: 0.95 });
             }
-
-            // 2. 树干
-            const n_trunk = 1000;
-            for (let i = 0; i < n_trunk; i++) {
-                let h = rand(-0.7, -0.45);
-                let r = 0.12;
+            // 树干
+            for (let i = 0; i < 1000; i++) {
+                let h = rand(-0.7, -0.45); let r = 0.12; let theta = Math.random() * 2 * Math.PI;
+                data.push({ x: r * Math.cos(theta), y: h, z: r * Math.sin(theta), col: cfg.trunk_col, size: 1.2, type: 'trunk', alpha: 1.0 });
+            }
+            // 装饰
+            for (let i = 0; i < 600; i++) {
+                let h = rand(0, 0.95); let y = h - 0.5; let base_r = 1 - h;
+                let r = base_r * 0.68 * (0.4 + 0.6 * Math.pow(1 - (h * 7) % 1, 0.7));
                 let theta = Math.random() * 2 * Math.PI;
-                data.push({
-                    x: r * Math.cos(theta), y: h, z: r * Math.sin(theta),
-                    col: cfg.trunk_col, size: 1.2,
-                    type: 'trunk', alpha: 1.0
-                });
+                data.push({ x: r * Math.cos(theta), y: y, z: r * Math.sin(theta), col: randChoice(cfg.decor_cols), size: rand(2, 4), type: 'decor', alpha: 1.0 });
             }
-
-            // 3. 装饰
-            const n_decor = 600;
-            for (let i = 0; i < n_decor; i++) {
-                let h = rand(0, 0.95);
-                let y = h - 0.5;
-                let base_r = 1 - h;
-                let layer_cycle = (h * 7) % 1;
-                let r = base_r * 0.68 * (0.4 + 0.6 * Math.pow(1 - layer_cycle, 0.7));
-                let theta = Math.random() * 2 * Math.PI;
-                data.push({
-                    x: r * Math.cos(theta), y: y, z: r * Math.sin(theta),
-                    col: randChoice(cfg.decor_cols),
-                    size: rand(2, 4),
-                    type: 'decor', alpha: 1.0
-                });
-            }
-
-            // 4. 丝带
+            // 丝带
             if (cfg.ribbon) {
-                const n_rib = 6000;
-                for (let i = 0; i < n_rib; i++) {
-                    let h = i / n_rib * 0.95;
-                    let y = h - 0.5;
-                    let base_r = (1 - h) * 0.65 * 1.05;
+                for (let i = 0; i < 6000; i++) {
+                    let h = i / 6000 * 0.95; let y = h - 0.5; let base_r = (1 - h) * 0.65 * 1.05;
                     let theta = 10 * Math.PI * h;
-                    data.push({
-                        x: base_r * Math.cos(theta), y: y, z: base_r * Math.sin(theta),
-                        col: cfg.ribbon_col, size: cfg.ribbon_width,
-                        type: 'ribbon', alpha: 1.0
-                    });
+                    data.push({ x: base_r * Math.cos(theta), y: y, z: base_r * Math.sin(theta), col: cfg.ribbon_col, size: cfg.ribbon_width, type: 'ribbon', alpha: 1.0 });
                 }
             }
-
             return data;
         }
 
         function generateSnow(n = 250) {
             let s = [];
             for (let i = 0; i < n; i++) {
-                s.push({
-                    x: rand(-1, 1), y: rand(-0.8, 1.2), z: rand(-1, 1),
-                    col: currentCfg.snow_col, size: rand(0.5, 2),
-                    type: 'snow', alpha: rand(0.5, 0.9),
-                    speed: rand(0.015, 0.035)
-                });
+                s.push({ x: rand(-1, 1), y: rand(-0.8, 1.2), z: rand(-1, 1), col: currentCfg.snow_col, size: rand(0.5, 2), type: 'snow', alpha: rand(0.5, 0.9), speed: rand(0.015, 0.035) });
             }
             return s;
         }
@@ -520,11 +542,16 @@
             ctx.fillStyle = currentCfg.bg_col;
             ctx.fillRect(0, 0, w, h);
 
-            const scale = Math.min(w, h) / 1.8;
+            // 应用缩放系数
+            const scale = (Math.min(w, h) / 1.8) * zoomLevel;
 
-            let angle = 2 * Math.PI * (frame / n_frames);
-            let cosA = Math.cos(angle);
-            let sinA = Math.sin(angle);
+            // 更新旋转角度
+            if (isAutoRotating && !isDragging) {
+                treeRotation += rotationSpeed;
+            }
+
+            let cosA = Math.cos(treeRotation);
+            let sinA = Math.sin(treeRotation);
 
             let renderList = [];
 
@@ -541,22 +568,17 @@
                 let alpha_vis = p.alpha;
                 if (p.type !== 'snow') {
                     alpha_vis *= (z_rot + 1.2) / 2.2;
-                    if (alpha_vis < 0) alpha_vis = 0;
-                    if (alpha_vis > 1) alpha_vis = 1;
+                    if (alpha_vis < 0) alpha_vis = 0; if (alpha_vis > 1) alpha_vis = 1;
                 }
 
                 renderList.push({
-                    x: w / 2 + x_proj * scale,
-                    y: h / 2 - y_proj * scale,
-                    z: z_rot,
-                    size: size_vis * (scale / 250),
-                    col: p.col,
-                    alpha: alpha_vis,
-                    depth: depth
+                    x: w / 2 + x_proj * scale, y: h / 2 - y_proj * scale,
+                    z: z_rot, size: size_vis * (scale / 250),
+                    col: p.col, alpha: alpha_vis, depth: depth
                 });
             }
 
-            // 处理雪花
+            // 处理雪花 (雪花不随树旋转，只随重力下落)
             for (let s of snowParticles) {
                 let currentY = -0.8 + (s.y - frame * s.speed - (-0.8)) % 2;
                 if (currentY < -0.8) currentY += 2;
@@ -566,13 +588,9 @@
                 let y_proj = currentY * depth * 2;
 
                 renderList.push({
-                    x: w / 2 + x_proj * scale,
-                    y: h / 2 - y_proj * scale,
-                    z: s.z,
-                    size: s.size * depth * (scale / 200),
-                    col: s.col,
-                    alpha: s.alpha,
-                    depth: depth
+                    x: w / 2 + x_proj * scale, y: h / 2 - y_proj * scale,
+                    z: s.z, size: s.size * depth * (scale / 200),
+                    col: s.col, alpha: s.alpha, depth: depth
                 });
             }
 
@@ -587,11 +605,11 @@
             }
             ctx.globalAlpha = 1.0;
 
-            // 绘制星星
+            // 星星
             const starY = h / 2 - (0.4 * scale);
             drawStar(w / 2, starY, scale);
 
-            // 绘制文字
+            // 文字
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillStyle = currentCfg.text_col;
@@ -603,24 +621,17 @@
         }
 
         function drawStar(cx, cy, scale) {
-            const r = 0.05 * scale;
-            const r_inner = r * 0.4;
-            const cy_star = cy - r * 0.6;
-
+            const r = 0.05 * scale; const r_inner = r * 0.4; const cy_star = cy - r * 0.6;
             ctx.beginPath();
             ctx.fillStyle = currentCfg.star_col;
             ctx.strokeStyle = "rgba(255,255,255,0.8)";
             ctx.lineWidth = 1;
-
             for (let i = 0; i < 5; i++) {
-                const angle = Math.PI / 2 + i * 2 * Math.PI / 5;
-                const angle_inner = angle + Math.PI / 5;
+                const angle = Math.PI / 2 + i * 2 * Math.PI / 5; const angle_inner = angle + Math.PI / 5;
                 ctx.lineTo(cx + r * Math.cos(angle), cy_star - r * Math.sin(angle));
                 ctx.lineTo(cx + r_inner * Math.cos(angle_inner), cy_star - r_inner * Math.sin(angle_inner));
             }
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
+            ctx.closePath(); ctx.fill(); ctx.stroke();
         }
 
         // ================= UI 与 交互 =================
@@ -629,10 +640,7 @@
             refreshTree();
             updateFormUI();
             document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-            let btn = document.getElementById('btn-' + id);
-            if (btn) btn.classList.add('active');
-
-            // 更新背景过渡
+            let btn = document.getElementById('btn-' + id); if (btn) btn.classList.add('active');
             document.body.style.backgroundColor = currentCfg.bg_col;
         }
 
@@ -641,31 +649,23 @@
             snowParticles = generateSnow(250);
         }
 
-        function toggleControls() {
-            document.getElementById('controls').classList.toggle('hidden');
-        }
+        function toggleControls() { document.getElementById('controls').classList.toggle('hidden'); }
 
         function initPresetsUI() {
             const container = document.getElementById('preset-container');
-            // 按数字顺序排序 key
             Object.keys(STYLES).sort((a, b) => parseInt(a) - parseInt(b)).forEach(id => {
                 let btn = document.createElement('button');
-                btn.className = 'preset-btn';
-                btn.id = 'btn-' + id;
-                btn.innerText = id;
-                btn.onclick = () => loadStyle(id);
-                container.appendChild(btn);
+                btn.className = 'preset-btn'; btn.id = 'btn-' + id; btn.innerText = id;
+                btn.onclick = () => loadStyle(id); container.appendChild(btn);
             });
         }
 
         function updateFormUI() {
-            const container = document.getElementById('dynamic-form');
-            container.innerHTML = '';
-
+            const container = document.getElementById('dynamic-form'); container.innerHTML = '';
             const fieldConfig = [
                 { key: 'title', label: 'Title Text', type: 'text' },
                 { key: 'bg_col', label: 'Background', type: 'color' },
-                { key: 'tree_cols', label: 'Tree Colors (hex,hex)', type: 'array' },
+                { key: 'tree_cols', label: 'Tree Colors', type: 'array' },
                 { key: 'decor_cols', label: 'Decor Colors', type: 'array' },
                 { key: 'ribbon', label: 'Show Ribbon', type: 'checkbox' },
                 { key: 'ribbon_col', label: 'Ribbon Color', type: 'color' },
@@ -675,40 +675,23 @@
                 { key: 'snow_col', label: 'Snow Color', type: 'color' },
                 { key: 'trunk_col', label: 'Trunk Color', type: 'color' },
             ];
-
             fieldConfig.forEach(field => {
-                // 安全检查: 确保 key 存在于 currentCfg (防止随机模式下字段不匹配)
                 if (currentCfg[field.key] === undefined) return;
-
-                let row = document.createElement('div');
-                row.className = 'form-row';
-                let label = document.createElement('label');
-                label.innerText = field.label;
-                row.appendChild(label);
+                let row = document.createElement('div'); row.className = 'form-row';
+                let label = document.createElement('label'); label.innerText = field.label; row.appendChild(label);
                 let input;
                 if (field.type === 'array') {
-                    input = document.createElement('input');
-                    input.type = 'text';
-                    input.value = currentCfg[field.key].join(',');
+                    input = document.createElement('input'); input.type = 'text'; input.value = currentCfg[field.key].join(',');
                     input.onchange = (e) => { currentCfg[field.key] = e.target.value.split(',').map(s => s.trim()); };
                 } else if (field.type === 'checkbox') {
-                    input = document.createElement('input');
-                    input.type = 'checkbox';
-                    input.checked = currentCfg[field.key];
+                    input = document.createElement('input'); input.type = 'checkbox'; input.checked = currentCfg[field.key];
                     input.onchange = (e) => { currentCfg[field.key] = e.target.checked; refreshTree(); };
                 } else {
-                    input = document.createElement('input');
-                    input.type = field.type;
-                    input.value = currentCfg[field.key];
+                    input = document.createElement('input'); input.type = field.type; input.value = currentCfg[field.key];
                     if (field.type === 'number') input.step = 0.1;
-                    input.onchange = (e) => {
-                        let val = e.target.value;
-                        if (field.type === 'number') val = parseFloat(val);
-                        currentCfg[field.key] = val;
-                    };
+                    input.onchange = (e) => { let val = e.target.value; if (field.type === 'number') val = parseFloat(val); currentCfg[field.key] = val; };
                 }
-                row.appendChild(input);
-                container.appendChild(row);
+                row.appendChild(input); container.appendChild(row);
             });
         }
 
