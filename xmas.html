@@ -1,25 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>High-Res 3D Christmas Tree for Esther</title>
+    <title>High-Res 3D Christmas Tree (Lucky Mode)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; overflow: hidden; background-color: #0f0505; font-family: 'Segoe UI', sans-serif; }
-        /* Canvas 样式保持 100% 但由 JS 控制实际渲染像素 */
-        canvas { display: block; width: 100vw; height: 100vh; }
-        
-        /* 悬浮按钮 (显示/隐藏面板) */
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0f0505;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+
         #toggle-btn {
             position: absolute;
             top: 15px;
             left: 15px;
             z-index: 100;
             background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255,255,255,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             color: white;
             padding: 8px 12px;
             border-radius: 5px;
@@ -29,9 +38,12 @@
             user-select: none;
             transition: 0.2s;
         }
-        #toggle-btn:hover { background: rgba(255,255,255,0.4); transform: scale(1.05); }
 
-        /* 控制面板 */
+        #toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
         #controls {
             position: absolute;
             top: 60px;
@@ -41,419 +53,582 @@
             overflow-y: auto;
             background: rgba(20, 20, 25, 0.85);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             padding: 15px;
             color: #eee;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s;
             transform-origin: top left;
         }
-        
+
         #controls.hidden {
             transform: scale(0.9);
             opacity: 0;
             pointer-events: none;
         }
 
-        /* 滚动条美化 */
-        #controls::-webkit-scrollbar { width: 6px; }
-        #controls::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+        #controls::-webkit-scrollbar {
+            width: 6px;
+        }
 
-        h3 { margin: 0 0 10px 0; font-size: 15px; color: #FFD700; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
+        #controls::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
 
-        /* 预设按钮网格 */
-        .preset-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 15px; }
+        h3 {
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            color: #FFD700;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 5px;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
         .preset-btn {
-            background: rgba(255,255,255,0.1); border: none; color: white; padding: 6px;
-            border-radius: 4px; cursor: pointer; font-size: 12px; transition: 0.2s;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
         }
-        .preset-btn:hover { background: rgba(255,255,255,0.3); }
-        .preset-btn.active { background: #FFD700; color: black; font-weight: bold; box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
 
-        /* 动态表单项 */
-        .form-row { margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
-        .form-row label { flex: 1; color: #ccc; }
-        .form-row input, .form-row select { 
-            background: rgba(0,0,0,0.3); border: 1px solid #444; color: white; 
-            padding: 4px; border-radius: 4px; outline: none;
+        .preset-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
-        .form-row input[type="text"] { width: 140px; }
-        .form-row input[type="number"] { width: 60px; }
-        .form-row input[type="color"] { width: 40px; height: 25px; padding: 0; border: none; cursor: pointer; }
-        .form-row input[type="checkbox"] { width: auto; cursor: pointer; }
+
+        .preset-btn.active {
+            background: #FFD700;
+            color: black;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        /* 幸运按钮样式 */
+        .btn-lucky {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+            transition: 0.3s;
+        }
+
+        .btn-lucky:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
+        }
+
+        .form-row {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .form-row label {
+            flex: 1;
+            color: #ccc;
+        }
+
+        .form-row input,
+        .form-row select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #444;
+            color: white;
+            padding: 4px;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .form-row input[type="text"] {
+            width: 140px;
+        }
+
+        .form-row input[type="number"] {
+            width: 60px;
+        }
+
+        .form-row input[type="color"] {
+            width: 40px;
+            height: 25px;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        .form-row input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
 
         .btn-apply {
-            width: 100%; margin-top: 15px; padding: 10px;
+            width: 100%;
+            margin-top: 15px;
+            padding: 10px;
             background: linear-gradient(45deg, #FFD700, #FFA500);
-            border: none; border-radius: 6px; color: black; font-weight: bold; cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
             font-size: 14px;
         }
-        .btn-apply:hover { filter: brightness(1.1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+
+        .btn-apply:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
     </style>
 </head>
+
 <body>
 
     <div id="toggle-btn" onclick="toggleControls()">⚙️ Settings</div>
 
     <div id="controls">
+        <button class="btn-lucky" onclick="applyRandomStyle()">
+            <span>🎲</span> I'm Feeling Lucky
+        </button>
+
         <h3>Presets</h3>
         <div class="preset-grid" id="preset-container"></div>
 
         <h3>Global Settings</h3>
         <div id="dynamic-form"></div>
-        
+
         <button class="btn-apply" onclick="refreshTree()">Apply Changes / Re-Generate</button>
     </div>
 
     <canvas id="canvas"></canvas>
 
-<script>
-// ================= 1. 完整配置数据 =================
-const STYLES = {
-    "1": { bg_col: "#0f0505", tree_cols: ["#0B3D0B", "#144514", "#006400"], trunk_col: "#3e2723", decor_cols: ["#FFD700", "#CCA43B", "#8B0000"], star_col: "#FFD700", text_col: "#FFD700", snow_col: "#ffffff", ribbon: true, ribbon_col: "#D4AF37", ribbon_width: 1.5, title: "Merry Christmas Esther" },
-    "2": { bg_col: "#F0F2F5", tree_cols: ["#2F4F4F", "#5F9EA0", "#708090"], trunk_col: "#696969", decor_cols: ["#B0C4DE", "#FFFAF0", "#E0FFFF"], star_col: "#B0C4DE", text_col: "#708090", snow_col: "#87CEFA", ribbon: true, ribbon_col: "#B0C4DE", ribbon_width: 1.5, title: "Merry Christmas Esther" },
-    "3": { bg_col: "#1a1a1a", tree_cols: ["#556B2F", "#6B8E23", "#808000"], trunk_col: "#5D4037", decor_cols: ["#CD853F", "#FFCC00"], star_col: "#FFCC00", text_col: "#DEB887", snow_col: "#ffffff", ribbon: false, ribbon_col: "#000000", ribbon_width: 0, title: "Merry Christmas Esther" },
-    "4": { bg_col: "#101010", tree_cols: ["#006400", "#228B22"], trunk_col: "#4E342E", decor_cols: ["#FF0000", "#00FF00", "#0000FF", "#FFFF00"], star_col: "#FFD700", text_col: "#FF6347", snow_col: "#ffffff", ribbon: true, ribbon_col: "#C0C0C0", ribbon_width: 1.0, title: "Merry Christmas Esther" },
-    "5": { bg_col: "#000000", tree_cols: ["#111111", "#050505"], trunk_col: "#222222", decor_cols: ["#FFFFFF", "#FFFFE0"], star_col: "#FFFFFF", text_col: "#FFFFFF", snow_col: "#4D4D4D", ribbon: true, ribbon_col: "#FFFFFF", ribbon_width: 0.8, title: "Merry Christmas Esther" },
-    "6": { bg_col: "#1F0F12", tree_cols: ["#D87093", "#FF69B4", "#FFB6C1"], trunk_col: "#4A3728", decor_cols: ["#FFFFFF", "#FFD700", "#FF1493"], star_col: "#FFD700", text_col: "#FFC0CB", snow_col: "#FFF0F5", ribbon: true, ribbon_col: "#F8F8FF", ribbon_width: 0.8, title: "Merry Christmas to Esther" },
-    "7": { bg_col: "#051024", tree_cols: ["#E0F7FA", "#B2EBF2", "#80DEEA"], trunk_col: "#607D8B", decor_cols: ["#FFFFFF", "#E1F5FE", "#00BCD4"], star_col: "#E0F7FA", text_col: "#B2EBF2", snow_col: "#FFFFFF", ribbon: true, ribbon_col: "#B3E5FC", ribbon_width: 1.2, title: "Frozen Magic for Esther" },
-    "8": { bg_col: "#1a0f00", tree_cols: ["#FFD700", "#B8860B", "#DAA520"], trunk_col: "#3E2723", decor_cols: ["#FFFFF0", "#FFF8DC", "#FF4500"], star_col: "#FFFACD", text_col: "#FFD700", snow_col: "#FFF8DC", ribbon: true, ribbon_col: "#FF6347", ribbon_width: 1.5, title: "Golden Wishes for Esther" },
-    "9": { bg_col: "#080010", tree_cols: ["#4B0082", "#483D8B", "#6A5ACD"], trunk_col: "#1A1A1A", decor_cols: ["#00FF00", "#FF00FF", "#00FFFF"], star_col: "#00FFFF", text_col: "#FF00FF", snow_col: "#E6E6FA", ribbon: true, ribbon_col: "#00FF00", ribbon_width: 1.0, title: "Cyber Christmas Esther" },
-    "10": { bg_col: "#0F2015", tree_cols: ["#FFFFFF", "#F5F5F5", "#F0F8FF"], trunk_col: "#5D4037", decor_cols: ["#FF0000", "#DC143C", "#B22222"], star_col: "#FF0000", text_col: "#FF69B4", snow_col: "#FFFAFA", ribbon: true, ribbon_col: "#FF0000", ribbon_width: 1.6, title: "Sweet Christmas Esther" },
-    "11": { bg_col: "#0f0524", tree_cols: ["#b7c3e4", "#7aa4ce", "#c0b6f9"], trunk_col: "#4d3f23", decor_cols: ["#173f7b", "#5a8fc4", "#ffffff", "#FFD700"], star_col: "#FFD700", text_col: "#c0b6f9", snow_col: "#ffffff", ribbon: true, ribbon_col: "#5a8fc4", ribbon_width: 0.8, title: "Starry Dream Esther" }
-};
+    <script>
+        // ================= 1. 完整配置数据 =================
+        const STYLES = {
+            "1": { bg_col: "#0f0505", tree_cols: ["#0B3D0B", "#144514", "#006400"], trunk_col: "#3e2723", decor_cols: ["#FFD700", "#CCA43B", "#8B0000"], star_col: "#FFD700", text_col: "#FFD700", snow_col: "#ffffff", ribbon: true, ribbon_col: "#D4AF37", ribbon_width: 1.5, title: "Merry Christmas Esther" },
+            "2": { bg_col: "#F0F2F5", tree_cols: ["#2F4F4F", "#5F9EA0", "#708090"], trunk_col: "#696969", decor_cols: ["#B0C4DE", "#FFFAF0", "#E0FFFF"], star_col: "#B0C4DE", text_col: "#708090", snow_col: "#87CEFA", ribbon: true, ribbon_col: "#B0C4DE", ribbon_width: 1.5, title: "Merry Christmas Esther" },
+            "3": { bg_col: "#1a1a1a", tree_cols: ["#556B2F", "#6B8E23", "#808000"], trunk_col: "#5D4037", decor_cols: ["#CD853F", "#FFCC00"], star_col: "#FFCC00", text_col: "#DEB887", snow_col: "#ffffff", ribbon: false, ribbon_col: "#000000", ribbon_width: 0, title: "Merry Christmas Esther" },
+            "4": { bg_col: "#101010", tree_cols: ["#006400", "#228B22"], trunk_col: "#4E342E", decor_cols: ["#FF0000", "#00FF00", "#0000FF", "#FFFF00"], star_col: "#FFD700", text_col: "#FF6347", snow_col: "#ffffff", ribbon: true, ribbon_col: "#C0C0C0", ribbon_width: 1.0, title: "Merry Christmas Esther" },
+            "5": { bg_col: "#000000", tree_cols: ["#111111", "#050505"], trunk_col: "#222222", decor_cols: ["#FFFFFF", "#FFFFE0"], star_col: "#FFFFFF", text_col: "#FFFFFF", snow_col: "#4D4D4D", ribbon: true, ribbon_col: "#FFFFFF", ribbon_width: 0.8, title: "Merry Christmas Esther" },
+            "6": { bg_col: "#1F0F12", tree_cols: ["#D87093", "#FF69B4", "#FFB6C1"], trunk_col: "#4A3728", decor_cols: ["#FFFFFF", "#FFD700", "#FF1493"], star_col: "#FFD700", text_col: "#FFC0CB", snow_col: "#FFF0F5", ribbon: true, ribbon_col: "#F8F8FF", ribbon_width: 0.8, title: "Merry Christmas to Esther" },
+            "7": { bg_col: "#051024", tree_cols: ["#E0F7FA", "#B2EBF2", "#80DEEA"], trunk_col: "#607D8B", decor_cols: ["#FFFFFF", "#E1F5FE", "#00BCD4"], star_col: "#E0F7FA", text_col: "#B2EBF2", snow_col: "#FFFFFF", ribbon: true, ribbon_col: "#B3E5FC", ribbon_width: 1.2, title: "Frozen Magic for Esther" },
+            "8": { bg_col: "#1a0f00", tree_cols: ["#FFD700", "#B8860B", "#DAA520"], trunk_col: "#3E2723", decor_cols: ["#FFFFF0", "#FFF8DC", "#FF4500"], star_col: "#FFFACD", text_col: "#FFD700", snow_col: "#FFF8DC", ribbon: true, ribbon_col: "#FF6347", ribbon_width: 1.5, title: "Golden Wishes for Esther" },
+            "9": { bg_col: "#080010", tree_cols: ["#4B0082", "#483D8B", "#6A5ACD"], trunk_col: "#1A1A1A", decor_cols: ["#00FF00", "#FF00FF", "#00FFFF"], star_col: "#00FFFF", text_col: "#FF00FF", snow_col: "#E6E6FA", ribbon: true, ribbon_col: "#00FF00", ribbon_width: 1.0, title: "Cyber Christmas Esther" },
+            "10": { bg_col: "#0F2015", tree_cols: ["#FFFFFF", "#F5F5F5", "#F0F8FF"], trunk_col: "#5D4037", decor_cols: ["#FF0000", "#DC143C", "#B22222"], star_col: "#FF0000", text_col: "#FF69B4", snow_col: "#FFFAFA", ribbon: true, ribbon_col: "#FF0000", ribbon_width: 1.6, title: "Sweet Christmas Esther" },
+            "11": { bg_col: "#0f0524", tree_cols: ["#b7c3e4", "#7aa4ce", "#c0b6f9"], trunk_col: "#4d3f23", decor_cols: ["#173f7b", "#5a8fc4", "#ffffff", "#FFD700"], star_col: "#FFD700", text_col: "#c0b6f9", snow_col: "#ffffff", ribbon: true, ribbon_col: "#5a8fc4", ribbon_width: 0.8, title: "Starry Dream Esther" }
+        };
 
-// ================= 全局变量 =================
-let canvas, ctx;
-let particles = [];
-let snowParticles = [];
-let currentCfg = JSON.parse(JSON.stringify(STYLES["11"])); 
-let frame = 0;
-const n_frames = 90; 
+        // ================= 全局变量 =================
+        let canvas, ctx;
+        let particles = [];
+        let snowParticles = [];
+        let currentCfg = JSON.parse(JSON.stringify(STYLES["11"]));
+        let frame = 0;
+        const n_frames = 90;
 
-// 随机辅助
-const rand = (min, max) => Math.random() * (max - min) + min;
-const randChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+        // 随机辅助
+        const rand = (min, max) => Math.random() * (max - min) + min;
+        const randChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-// 初始化
-function init() {
-    canvas = document.getElementById('canvas');
-    ctx = canvas.getContext('2d');
-    
-    // 监听窗口大小
-    window.addEventListener('resize', resize);
-    resize(); // 这里会处理高清屏逻辑
-    
-    initPresetsUI();
-    loadStyle("11");
-    loop();
-}
+        // 初始化
+        function init() {
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
 
-// 【关键修改】高清屏适配函数
-function resize() {
-    // 获取设备像素比，普通屏为1，Retina屏为2或3
-    const dpr = window.devicePixelRatio || 1;
-    
-    // 1. 设置 Canvas 的实际渲染分辨率 (物理像素)
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
-    
-    // 2. 设置 Canvas 的 CSS 显示尺寸 (逻辑像素)
-    // 这样浏览器会将高分辨率的画布压缩显示，从而实现高清效果
-    canvas.style.width = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
-    
-    // 3. 缩放绘图上下文
-    // 这样我们在绘图时可以使用逻辑坐标 (window.innerWidth)，
-    // 而 Canvas 会自动处理到底层的物理像素映射
-    ctx.scale(dpr, dpr);
-}
+            window.addEventListener('resize', resize);
+            resize();
 
-// ================= 数据生成 =================
-function generateData(cfg) {
-    let data = [];
-    
-    // 1. 树叶
-    const n_leaves = 8000;
-    for(let i=0; i<n_leaves; i++) {
-        let h = Math.random(); 
-        let y = h - 0.5; 
-        let base_r = 1 - h;
-        let layer_cycle = (h * 7) % 1;
-        let r = base_r * 0.65 * (0.4 + 0.6 * Math.pow(1 - layer_cycle, 0.7));
-        let theta = Math.random() * 2 * Math.PI;
-        
-        data.push({
-            x: r * Math.cos(theta), y: y, z: r * Math.sin(theta),
-            col: randChoice(cfg.tree_cols),
-            size: rand(0.6, 1.8),
-            type: 'tree', alpha: 0.95
-        });
-    }
+            initPresetsUI();
+            loadStyle("11");
+            loop();
+        }
 
-    // 2. 树干
-    const n_trunk = 1000;
-    for(let i=0; i<n_trunk; i++) {
-        let h = rand(-0.7, -0.45);
-        let r = 0.12;
-        let theta = Math.random() * 2 * Math.PI;
-        data.push({
-            x: r * Math.cos(theta), y: h, z: r * Math.sin(theta),
-            col: cfg.trunk_col, size: 1.2,
-            type: 'trunk', alpha: 1.0
-        });
-    }
+        function resize() {
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+            ctx.scale(dpr, dpr);
+        }
 
-    // 3. 装饰
-    const n_decor = 600;
-    for(let i=0; i<n_decor; i++) {
-        let h = rand(0, 0.95);
-        let y = h - 0.5;
-        let base_r = 1 - h;
-        let layer_cycle = (h * 7) % 1;
-        let r = base_r * 0.68 * (0.4 + 0.6 * Math.pow(1 - layer_cycle, 0.7));
-        let theta = Math.random() * 2 * Math.PI;
-        data.push({
-            x: r * Math.cos(theta), y: y, z: r * Math.sin(theta),
-            col: randChoice(cfg.decor_cols),
-            size: rand(2, 4),
-            type: 'decor', alpha: 1.0
-        });
-    }
+        // ================= 🎲 随机生成美学 (The Magic) =================
 
-    // 4. 丝带
-    if(cfg.ribbon) {
-        const n_rib = 6000;
-        for(let i=0; i<n_rib; i++) {
-            let h = i / n_rib * 0.95; 
-            let y = h - 0.5;
-            let base_r = (1 - h) * 0.65 * 1.05;
-            let theta = 10 * Math.PI * h;
-            data.push({
-                x: base_r * Math.cos(theta), y: y, z: base_r * Math.sin(theta),
-                col: cfg.ribbon_col, size: cfg.ribbon_width,
-                type: 'ribbon', alpha: 1.0
+        // HSL转Hex工具 (确保生成的颜色能被 <input type="color"> 识别)
+        function hslToHex(h, s, l) {
+            l /= 100;
+            const a = s * Math.min(l, 1 - l) / 100;
+            const f = n => {
+                const k = (n + h / 30) % 12;
+                const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                return Math.round(255 * color).toString(16).padStart(2, '0');
+            };
+            return `#${f(0)}${f(8)}${f(4)}`;
+        }
+
+        // 生成随机但和谐的配色
+        function applyRandomStyle() {
+            // 1. 确定主色相 (0-360)
+            const baseHue = Math.floor(Math.random() * 360);
+
+            // 2. 生成背景: 使用主色相，但极低亮度 (Dark) 或 互补色的深色
+            // 保证背景很暗，这样发光效果才好
+            const bgHue = (baseHue + 180) % 360; // 互补色背景，或使用 baseHue 都可以
+            const bgCol = hslToHex(bgHue, 40, rand(5, 15)); // 亮度 5%-15%
+
+            // 3. 生成树叶: 基于主色相，生成 3 种不同亮度的同类色
+            const treeCols = [];
+            for (let i = 0; i < 3; i++) {
+                // 饱和度 30-70%, 亮度 30-60%
+                treeCols.push(hslToHex(baseHue + rand(-20, 20), rand(30, 70), rand(30, 60)));
+            }
+
+            // 4. 生成装饰: 使用互补色或三角色，高饱和度，高亮度
+            const decorCols = [];
+            const decorHue = (baseHue + 180) % 360; // 互补色
+            decorCols.push(hslToHex(decorHue, 80, 80)); // 亮
+            decorCols.push(hslToHex((decorHue + 30) % 360, 90, 70));
+            decorCols.push("#FFFFFF"); // 总是加个白色点缀
+            decorCols.push("#FFD700"); // 总是加个金色点缀
+
+            // 5. 丝带: 高亮颜色
+            const ribbonCol = hslToHex((baseHue + 90) % 360, 80, 80);
+
+            // 6. 文字和星星: 通常是金色或很亮的树主色
+            const textCol = Math.random() > 0.5 ? "#FFD700" : hslToHex(baseHue, 100, 90);
+
+            // 构建配置对象
+            const randomCfg = {
+                bg_col: bgCol,
+                tree_cols: treeCols,
+                trunk_col: "#443322", // 树干通常是深棕色，固定即可
+                decor_cols: decorCols,
+                star_col: textCol,
+                text_col: textCol,
+                snow_col: "#FFFFFF",
+                ribbon: Math.random() > 0.2, // 80% 概率有丝带
+                ribbon_col: ribbonCol,
+                ribbon_width: parseFloat(rand(0.6, 1.8).toFixed(1)),
+                title: "Merry Christmas" // 随机模式下恢复默认标题
+            };
+
+            // 应用配置
+            currentCfg = randomCfg;
+            refreshTree();
+
+            // 更新 UI 表单显示
+            updateFormUI();
+
+            // 取消所有预设按钮的高亮
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        // ================= 数据生成 =================
+        function generateData(cfg) {
+            let data = [];
+
+            // 1. 树叶
+            const n_leaves = 8000;
+            for (let i = 0; i < n_leaves; i++) {
+                let h = Math.random();
+                let y = h - 0.5;
+                let base_r = 1 - h;
+                let layer_cycle = (h * 7) % 1;
+                let r = base_r * 0.65 * (0.4 + 0.6 * Math.pow(1 - layer_cycle, 0.7));
+                let theta = Math.random() * 2 * Math.PI;
+
+                data.push({
+                    x: r * Math.cos(theta), y: y, z: r * Math.sin(theta),
+                    col: randChoice(cfg.tree_cols),
+                    size: rand(0.6, 1.8),
+                    type: 'tree', alpha: 0.95
+                });
+            }
+
+            // 2. 树干
+            const n_trunk = 1000;
+            for (let i = 0; i < n_trunk; i++) {
+                let h = rand(-0.7, -0.45);
+                let r = 0.12;
+                let theta = Math.random() * 2 * Math.PI;
+                data.push({
+                    x: r * Math.cos(theta), y: h, z: r * Math.sin(theta),
+                    col: cfg.trunk_col, size: 1.2,
+                    type: 'trunk', alpha: 1.0
+                });
+            }
+
+            // 3. 装饰
+            const n_decor = 600;
+            for (let i = 0; i < n_decor; i++) {
+                let h = rand(0, 0.95);
+                let y = h - 0.5;
+                let base_r = 1 - h;
+                let layer_cycle = (h * 7) % 1;
+                let r = base_r * 0.68 * (0.4 + 0.6 * Math.pow(1 - layer_cycle, 0.7));
+                let theta = Math.random() * 2 * Math.PI;
+                data.push({
+                    x: r * Math.cos(theta), y: y, z: r * Math.sin(theta),
+                    col: randChoice(cfg.decor_cols),
+                    size: rand(2, 4),
+                    type: 'decor', alpha: 1.0
+                });
+            }
+
+            // 4. 丝带
+            if (cfg.ribbon) {
+                const n_rib = 6000;
+                for (let i = 0; i < n_rib; i++) {
+                    let h = i / n_rib * 0.95;
+                    let y = h - 0.5;
+                    let base_r = (1 - h) * 0.65 * 1.05;
+                    let theta = 10 * Math.PI * h;
+                    data.push({
+                        x: base_r * Math.cos(theta), y: y, z: base_r * Math.sin(theta),
+                        col: cfg.ribbon_col, size: cfg.ribbon_width,
+                        type: 'ribbon', alpha: 1.0
+                    });
+                }
+            }
+
+            return data;
+        }
+
+        function generateSnow(n = 250) {
+            let s = [];
+            for (let i = 0; i < n; i++) {
+                s.push({
+                    x: rand(-1, 1), y: rand(-0.8, 1.2), z: rand(-1, 1),
+                    col: currentCfg.snow_col, size: rand(0.5, 2),
+                    type: 'snow', alpha: rand(0.5, 0.9),
+                    speed: rand(0.015, 0.035)
+                });
+            }
+            return s;
+        }
+
+        // ================= 绘图循环 =================
+        function loop() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+
+            ctx.fillStyle = currentCfg.bg_col;
+            ctx.fillRect(0, 0, w, h);
+
+            const scale = Math.min(w, h) / 1.8;
+
+            let angle = 2 * Math.PI * (frame / n_frames);
+            let cosA = Math.cos(angle);
+            let sinA = Math.sin(angle);
+
+            let renderList = [];
+
+            // 处理树
+            for (let p of particles) {
+                let x_rot = p.x * cosA - p.z * sinA;
+                let z_rot = p.z * cosA + p.x * sinA;
+
+                let depth = 1 / (2.5 - z_rot);
+                let x_proj = x_rot * depth * 2;
+                let y_proj = p.y * depth * 2;
+
+                let size_vis = p.size * depth * (w < 600 ? 0.8 : 1.5);
+                let alpha_vis = p.alpha;
+                if (p.type !== 'snow') {
+                    alpha_vis *= (z_rot + 1.2) / 2.2;
+                    if (alpha_vis < 0) alpha_vis = 0;
+                    if (alpha_vis > 1) alpha_vis = 1;
+                }
+
+                renderList.push({
+                    x: w / 2 + x_proj * scale,
+                    y: h / 2 - y_proj * scale,
+                    z: z_rot,
+                    size: size_vis * (scale / 250),
+                    col: p.col,
+                    alpha: alpha_vis,
+                    depth: depth
+                });
+            }
+
+            // 处理雪花
+            for (let s of snowParticles) {
+                let currentY = -0.8 + (s.y - frame * s.speed - (-0.8)) % 2;
+                if (currentY < -0.8) currentY += 2;
+
+                let depth = 1 / (2.5 - s.z);
+                let x_proj = s.x * depth * 2;
+                let y_proj = currentY * depth * 2;
+
+                renderList.push({
+                    x: w / 2 + x_proj * scale,
+                    y: h / 2 - y_proj * scale,
+                    z: s.z,
+                    size: s.size * depth * (scale / 200),
+                    col: s.col,
+                    alpha: s.alpha,
+                    depth: depth
+                });
+            }
+
+            renderList.sort((a, b) => a.depth - b.depth);
+
+            for (let p of renderList) {
+                ctx.beginPath();
+                ctx.fillStyle = p.col;
+                ctx.globalAlpha = p.alpha;
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1.0;
+
+            // 绘制星星
+            const starY = h / 2 - (0.4 * scale);
+            drawStar(w / 2, starY, scale);
+
+            // 绘制文字
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = currentCfg.text_col;
+            ctx.font = `italic ${Math.max(24, w / 25)}px "Great Vibes", serif`;
+            ctx.fillText(currentCfg.title, w / 2, h / 2 - 0.75 * scale);
+
+            frame += 0.4;
+            requestAnimationFrame(loop);
+        }
+
+        function drawStar(cx, cy, scale) {
+            const r = 0.05 * scale;
+            const r_inner = r * 0.4;
+            const cy_star = cy - r * 0.6;
+
+            ctx.beginPath();
+            ctx.fillStyle = currentCfg.star_col;
+            ctx.strokeStyle = "rgba(255,255,255,0.8)";
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < 5; i++) {
+                const angle = Math.PI / 2 + i * 2 * Math.PI / 5;
+                const angle_inner = angle + Math.PI / 5;
+                ctx.lineTo(cx + r * Math.cos(angle), cy_star - r * Math.sin(angle));
+                ctx.lineTo(cx + r_inner * Math.cos(angle_inner), cy_star - r_inner * Math.sin(angle_inner));
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // ================= UI 与 交互 =================
+        function loadStyle(id) {
+            currentCfg = JSON.parse(JSON.stringify(STYLES[id]));
+            refreshTree();
+            updateFormUI();
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            let btn = document.getElementById('btn-' + id);
+            if (btn) btn.classList.add('active');
+        }
+
+        function refreshTree() {
+            particles = generateData(currentCfg);
+            snowParticles = generateSnow(250);
+        }
+
+        function toggleControls() {
+            document.getElementById('controls').classList.toggle('hidden');
+        }
+
+        function initPresetsUI() {
+            const container = document.getElementById('preset-container');
+            // 按数字顺序排序 key
+            Object.keys(STYLES).sort((a, b) => parseInt(a) - parseInt(b)).forEach(id => {
+                let btn = document.createElement('button');
+                btn.className = 'preset-btn';
+                btn.id = 'btn-' + id;
+                btn.innerText = id;
+                btn.onclick = () => loadStyle(id);
+                container.appendChild(btn);
             });
         }
-    }
-    
-    return data;
-}
 
-function generateSnow(n=250) {
-    let s = [];
-    for(let i=0; i<n; i++) {
-        s.push({
-            x: rand(-1, 1), y: rand(-0.8, 1.2), z: rand(-1, 1),
-            col: currentCfg.snow_col, size: rand(0.5, 2),
-            type: 'snow', alpha: rand(0.5, 0.9),
-            speed: rand(0.015, 0.035)
-        });
-    }
-    return s;
-}
+        function updateFormUI() {
+            const container = document.getElementById('dynamic-form');
+            container.innerHTML = '';
 
-// ================= 绘图循环 =================
-function loop() {
-    // 【关键】使用 window.innerWidth (逻辑像素) 进行计算
-    // 因为 ctx.scale 已经处理了倍率，我们这里的逻辑不需要乘 dpr
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    
-    ctx.fillStyle = currentCfg.bg_col; 
-    ctx.fillRect(0, 0, w, h);
+            const fieldConfig = [
+                { key: 'title', label: 'Title Text', type: 'text' },
+                { key: 'bg_col', label: 'Background', type: 'color' },
+                { key: 'tree_cols', label: 'Tree Colors (hex,hex)', type: 'array' },
+                { key: 'decor_cols', label: 'Decor Colors', type: 'array' },
+                { key: 'ribbon', label: 'Show Ribbon', type: 'checkbox' },
+                { key: 'ribbon_col', label: 'Ribbon Color', type: 'color' },
+                { key: 'ribbon_width', label: 'Ribbon Width', type: 'number' },
+                { key: 'star_col', label: 'Star Color', type: 'color' },
+                { key: 'text_col', label: 'Text Color', type: 'color' },
+                { key: 'snow_col', label: 'Snow Color', type: 'color' },
+                { key: 'trunk_col', label: 'Trunk Color', type: 'color' },
+            ];
 
-    const scale = Math.min(w, h) / 1.8; 
-    
-    let angle = 2 * Math.PI * (frame / n_frames);
-    let cosA = Math.cos(angle);
-    let sinA = Math.sin(angle);
+            fieldConfig.forEach(field => {
+                // 安全检查: 确保 key 存在于 currentCfg (防止随机模式下字段不匹配)
+                if (currentCfg[field.key] === undefined) return;
 
-    let renderList = [];
-
-    // 处理树
-    for(let p of particles) {
-        let x_rot = p.x * cosA - p.z * sinA;
-        let z_rot = p.z * cosA + p.x * sinA;
-        
-        let depth = 1 / (2.5 - z_rot);
-        let x_proj = x_rot * depth * 2;
-        let y_proj = p.y * depth * 2;
-        
-        let size_vis = p.size * depth * (w < 600 ? 0.8 : 1.5); 
-        let alpha_vis = p.alpha;
-        if(p.type !== 'snow') {
-             alpha_vis *= (z_rot + 1.2) / 2.2;
-             if(alpha_vis < 0) alpha_vis = 0;
-             if(alpha_vis > 1) alpha_vis = 1;
+                let row = document.createElement('div');
+                row.className = 'form-row';
+                let label = document.createElement('label');
+                label.innerText = field.label;
+                row.appendChild(label);
+                let input;
+                if (field.type === 'array') {
+                    input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = currentCfg[field.key].join(',');
+                    input.onchange = (e) => { currentCfg[field.key] = e.target.value.split(',').map(s => s.trim()); };
+                } else if (field.type === 'checkbox') {
+                    input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.checked = currentCfg[field.key];
+                    input.onchange = (e) => { currentCfg[field.key] = e.target.checked; refreshTree(); };
+                } else {
+                    input = document.createElement('input');
+                    input.type = field.type;
+                    input.value = currentCfg[field.key];
+                    if (field.type === 'number') input.step = 0.1;
+                    input.onchange = (e) => {
+                        let val = e.target.value;
+                        if (field.type === 'number') val = parseFloat(val);
+                        currentCfg[field.key] = val;
+                    };
+                }
+                row.appendChild(input);
+                container.appendChild(row);
+            });
         }
 
-        renderList.push({
-            x: w/2 + x_proj * scale, 
-            y: h/2 - y_proj * scale, 
-            z: z_rot, 
-            size: size_vis * (scale / 250), 
-            col: p.col,
-            alpha: alpha_vis,
-            depth: depth
-        });
-    }
+        // 启动
+        init();
 
-    // 处理雪花
-    for(let s of snowParticles) {
-        let currentY = -0.8 + (s.y - frame * s.speed - (-0.8)) % 2;
-        if (currentY < -0.8) currentY += 2;
-        
-        let depth = 1 / (2.5 - s.z);
-        let x_proj = s.x * depth * 2;
-        let y_proj = currentY * depth * 2;
-        
-        renderList.push({
-            x: w/2 + x_proj * scale,
-            y: h/2 - y_proj * scale,
-            z: s.z,
-            size: s.size * depth * (scale / 200),
-            col: s.col,
-            alpha: s.alpha,
-            depth: depth
-        });
-    }
-
-    renderList.sort((a, b) => a.depth - b.depth);
-
-    for(let p of renderList) {
-        ctx.beginPath();
-        ctx.fillStyle = p.col;
-        ctx.globalAlpha = p.alpha;
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-    }
-    ctx.globalAlpha = 1.0;
-
-    // 绘制星星
-    const starY = h/2 - (0.4 * scale); 
-    drawStar(w/2, starY, scale);
-
-    // 绘制文字
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = currentCfg.text_col;
-    ctx.font = `italic ${Math.max(24, w/25)}px "Great Vibes", serif`; 
-    ctx.fillText(currentCfg.title, w/2, h/2 - 0.75 * scale);
-
-    frame += 0.4;
-    requestAnimationFrame(loop);
-}
-
-function drawStar(cx, cy, scale) {
-    const r = 0.05 * scale; 
-    const r_inner = r * 0.4;
-    const cy_star = cy - r * 0.6; 
-
-    ctx.beginPath();
-    ctx.fillStyle = currentCfg.star_col;
-    ctx.strokeStyle = "rgba(255,255,255,0.8)";
-    ctx.lineWidth = 1; // 在 scale 放大后，线宽也会变细，这里1是逻辑像素
-    
-    for(let i=0; i<5; i++) {
-        const angle = Math.PI/2 + i * 2 * Math.PI / 5; 
-        const angle_inner = angle + Math.PI / 5;
-        ctx.lineTo(cx + r * Math.cos(angle), cy_star - r * Math.sin(angle)); 
-        ctx.lineTo(cx + r_inner * Math.cos(angle_inner), cy_star - r_inner * Math.sin(angle_inner));
-    }
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-}
-
-// ================= UI 与 交互 =================
-function loadStyle(id) {
-    currentCfg = JSON.parse(JSON.stringify(STYLES[id]));
-    refreshTree();
-    updateFormUI();
-    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-    let btn = document.getElementById('btn-'+id);
-    if(btn) btn.classList.add('active');
-}
-
-function refreshTree() {
-    particles = generateData(currentCfg);
-    snowParticles = generateSnow(250);
-}
-
-function toggleControls() {
-    document.getElementById('controls').classList.toggle('hidden');
-}
-
-function initPresetsUI() {
-    const container = document.getElementById('preset-container');
-    // 按数字顺序排序 key
-    Object.keys(STYLES).sort((a,b)=>parseInt(a)-parseInt(b)).forEach(id => {
-        let btn = document.createElement('button');
-        btn.className = 'preset-btn';
-        btn.id = 'btn-'+id;
-        btn.innerText = id;
-        btn.onclick = () => loadStyle(id);
-        container.appendChild(btn);
-    });
-}
-
-function updateFormUI() {
-    const container = document.getElementById('dynamic-form');
-    container.innerHTML = ''; 
-
-    const fieldConfig = [
-        { key: 'title', label: 'Title Text', type: 'text' },
-        { key: 'bg_col', label: 'Background', type: 'color' },
-        { key: 'tree_cols', label: 'Tree Colors (hex,hex)', type: 'array' },
-        { key: 'decor_cols', label: 'Decor Colors', type: 'array' },
-        { key: 'ribbon', label: 'Show Ribbon', type: 'checkbox' },
-        { key: 'ribbon_col', label: 'Ribbon Color', type: 'color' },
-        { key: 'ribbon_width', label: 'Ribbon Width', type: 'number' },
-        { key: 'star_col', label: 'Star Color', type: 'color' },
-        { key: 'text_col', label: 'Text Color', type: 'color' },
-        { key: 'snow_col', label: 'Snow Color', type: 'color' },
-        { key: 'trunk_col', label: 'Trunk Color', type: 'color' },
-    ];
-
-    fieldConfig.forEach(field => {
-        if (!(field.key in currentCfg)) return;
-        let row = document.createElement('div');
-        row.className = 'form-row';
-        let label = document.createElement('label');
-        label.innerText = field.label;
-        row.appendChild(label);
-        let input;
-        if (field.type === 'array') {
-            input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentCfg[field.key].join(',');
-            input.onchange = (e) => { currentCfg[field.key] = e.target.value.split(',').map(s => s.trim()); };
-        } else if (field.type === 'checkbox') {
-            input = document.createElement('input');
-            input.type = 'checkbox';
-            input.checked = currentCfg[field.key];
-            input.onchange = (e) => { currentCfg[field.key] = e.target.checked; refreshTree(); };
-        } else {
-            input = document.createElement('input');
-            input.type = field.type;
-            input.value = currentCfg[field.key];
-            if(field.type === 'number') input.step = 0.1;
-            input.onchange = (e) => {
-                let val = e.target.value;
-                if(field.type === 'number') val = parseFloat(val);
-                currentCfg[field.key] = val;
-            };
-        }
-        row.appendChild(input);
-        container.appendChild(row);
-    });
-}
-
-// 启动
-init();
-
-</script>
+    </script>
 </body>
+
 </html>
