@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Interactive 3D Christmas Tree</title>
+    <title>Christmas Tree</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
             font-family: 'Segoe UI', sans-serif;
             transition: background-color 0.8s ease;
             touch-action: none;
-            /* 禁止移动端默认滚动 */
+            /* 关键：禁止浏览器默认缩放行为 */
         }
 
         canvas {
@@ -49,9 +49,39 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        #toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.6);
-            transform: scale(1.05);
+        /* 缩放按钮组 */
+        #zoom-controls {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(4px);
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .zoom-btn:active {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0.95);
         }
 
         #controls {
@@ -113,56 +143,24 @@
             transition: 0.2s;
         }
 
-        .preset-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
-        }
-
         .preset-btn.active {
             background: #E65100;
             color: white;
             border-color: transparent;
             font-weight: bold;
-            box-shadow: 0 2px 8px rgba(230, 81, 0, 0.3);
         }
 
-        /* 幸运按钮样式 */
         .btn-lucky {
             width: 100%;
             padding: 12px;
             margin-bottom: 15px;
             background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
-            background-size: 200% 200%;
-            animation: gradientMove 5s ease infinite;
             border: none;
             border-radius: 8px;
             color: #555;
             font-weight: 800;
             cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
             box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
-            transition: transform 0.2s;
-        }
-
-        .btn-lucky:hover {
-            transform: translateY(-2px);
-        }
-
-        @keyframes gradientMove {
-            0% {
-                background-position: 0% 50%
-            }
-
-            50% {
-                background-position: 100% 50%
-            }
-
-            100% {
-                background-position: 0% 50%
-            }
         }
 
         .form-row {
@@ -179,43 +177,23 @@
             font-weight: 500;
         }
 
-        .form-row input,
-        .form-row select {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid #ccc;
-            color: #333;
-            padding: 4px;
-            border-radius: 4px;
-            outline: none;
-        }
-
-        /* 增加 Range 滑块样式 */
         .form-row input[type="range"] {
             flex: 1;
             margin-left: 10px;
-            cursor: pointer;
         }
 
         .form-row input[type="text"] {
             width: 140px;
-        }
-
-        .form-row input[type="number"] {
-            width: 60px;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
 
         .form-row input[type="color"] {
             width: 40px;
             height: 25px;
-            padding: 0;
             border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .form-row input[type="checkbox"] {
-            width: auto;
+            padding: 0;
             cursor: pointer;
         }
 
@@ -229,11 +207,6 @@
             color: white;
             font-weight: bold;
             cursor: pointer;
-            font-size: 14px;
-        }
-
-        .btn-apply:hover {
-            background: #222;
         }
 
         .credits-section {
@@ -255,31 +228,22 @@
             border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 20px;
             background: rgba(255, 255, 255, 0.5);
-            transition: all 0.2s;
         }
 
-        .btn-credit:hover {
-            background: #E65100;
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 4px 10px rgba(230, 81, 0, 0.2);
-        }
-
-        /* 交互提示气泡 */
         #interaction-hint {
             position: absolute;
-            bottom: 20px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(4px);
-            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.9);
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 12px;
             pointer-events: none;
             opacity: 0;
             animation: fadeInOut 4s 1s forwards;
+            white-space: nowrap;
         }
 
         @keyframes fadeInOut {
@@ -306,14 +270,17 @@
 
     <div id="toggle-btn" onclick="toggleControls()">⚙️ Settings</div>
 
-    <div id="interaction-hint">👈 Drag to Rotate | Scroll to Zoom 🔍</div>
+    <div id="interaction-hint">👆 Drag to Rotate | 🤏 Pinch to Zoom</div>
+
+    <div id="zoom-controls">
+        <div class="zoom-btn" onclick="adjustZoom(0.1)">+</div>
+        <div class="zoom-btn" onclick="adjustZoom(-0.1)">−</div>
+    </div>
 
     <div id="controls">
         <button class="btn-lucky" onclick="applyRandomStyle()"><span>🎲</span> I'm Feeling Lucky</button>
-
-        <h3>Presets</h3>
+        <h3>Presets for Esther❤</h3>
         <div class="preset-grid" id="preset-container"></div>
-
         <h3>Global Settings</h3>
         <div id="dynamic-form"></div>
 
@@ -328,7 +295,7 @@
         </div>
         <div class="form-row">
             <label>Zoom Level</label>
-            <input type="range" min="50" max="200" value="100" oninput="updateZoom(this.value)">
+            <input type="range" min="50" max="200" value="100" id="ui-zoom-slider" oninput="updateZoom(this.value)">
         </div>
 
         <button class="btn-apply" onclick="refreshTree()">Apply Changes / Re-Generate</button>
@@ -344,7 +311,7 @@
     <canvas id="canvas"></canvas>
 
     <script>
-        // ================= 1. 配置数据 =================
+        // ================= 配置数据 =================
         const STYLES = {
             "1": { bg_col: "#0f0505", tree_cols: ["#0B3D0B", "#144514", "#006400"], trunk_col: "#3e2723", decor_cols: ["#FFD700", "#CCA43B", "#8B0000"], star_col: "#FFD700", text_col: "#FFD700", snow_col: "#ffffff", ribbon: true, ribbon_col: "#D4AF37", ribbon_width: 1.5, title: "Merry Christmas Esther" },
             "2": { bg_col: "#F0F2F5", tree_cols: ["#2F4F4F", "#5F9EA0", "#708090"], trunk_col: "#696969", decor_cols: ["#B0C4DE", "#FFFAF0", "#E0FFFF"], star_col: "#B0C4DE", text_col: "#708090", snow_col: "#87CEFA", ribbon: true, ribbon_col: "#B0C4DE", ribbon_width: 1.5, title: "Merry Christmas Esther" },
@@ -359,51 +326,38 @@
             "11": { bg_col: "#0f0524", tree_cols: ["#b7c3e4", "#7aa4ce", "#c0b6f9"], trunk_col: "#4d3f23", decor_cols: ["#173f7b", "#5a8fc4", "#ffffff", "#FFD700"], star_col: "#FFD700", text_col: "#c0b6f9", snow_col: "#ffffff", ribbon: true, ribbon_col: "#5a8fc4", ribbon_width: 0.8, title: "Starry Dream Esther" }
         };
 
-        // ================= 全局变量 =================
         let canvas, ctx;
-        let particles = [];
-        let snowParticles = [];
+        let particles = [], snowParticles = [];
         let currentCfg = JSON.parse(JSON.stringify(STYLES["11"]));
-        let frame = 0; // 用于雪花动画和时间流逝
-        let n_frames = 90;
+        let frame = 0, n_frames = 90;
+        let treeRotation = 0, isAutoRotating = true, rotationSpeed = 0.005, zoomLevel = 1.0;
+        let isDragging = false, lastMouseX = 0;
+        // 双指缩放变量
+        let initialPinchDist = 0;
+        let initialZoom = 1.0;
 
-        // 交互相关变量
-        let treeRotation = 0; // 当前树的旋转角度
-        let isAutoRotating = true;
-        let rotationSpeed = 0.005; // 基础自动旋转速度
-        let zoomLevel = 1.0;
-
-        // 拖拽控制
-        let isDragging = false;
-        let lastMouseX = 0;
-        let dragSensitivity = 0.005;
-
-        // 随机辅助
         const rand = (min, max) => Math.random() * (max - min) + min;
         const randChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-        // 初始化
         function init() {
             canvas = document.getElementById('canvas');
             ctx = canvas.getContext('2d');
 
-            // 事件监听
             window.addEventListener('resize', resize);
+            resize();
 
-            // 鼠标事件
+            // 鼠标/单指事件
             canvas.addEventListener('mousedown', startDrag);
             window.addEventListener('mousemove', drag);
             window.addEventListener('mouseup', stopDrag);
 
-            // 触摸事件 (移动端)
-            canvas.addEventListener('touchstart', (e) => startDrag(e.touches[0]));
-            window.addEventListener('touchmove', (e) => drag(e.touches[0]));
-            window.addEventListener('touchend', stopDrag);
+            // 触摸事件 (Touch) - 支持单指拖拽和双指缩放
+            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            canvas.addEventListener('touchend', stopDrag);
 
-            // 滚轮缩放
             canvas.addEventListener('wheel', handleZoom);
 
-            resize();
             initPresetsUI();
             loadStyle("11");
             loop();
@@ -418,34 +372,80 @@
             ctx.scale(dpr, dpr);
         }
 
-        // ================= 交互逻辑 =================
-        function startDrag(e) {
-            isDragging = true;
-            lastMouseX = e.clientX;
+        // ================= 触摸/手势逻辑核心 =================
+        function handleTouchStart(e) {
+            if (e.touches.length === 1) {
+                // 单指：开始拖拽旋转
+                startDrag(e.touches[0]);
+            } else if (e.touches.length === 2) {
+                // 双指：开始缩放
+                e.preventDefault(); // 禁止浏览器原生缩放
+                initialPinchDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                initialZoom = zoomLevel;
+            }
         }
 
-        function drag(e) {
+        function handleTouchMove(e) {
+            if (e.touches.length === 1) {
+                // 单指：拖拽
+                drag(e.touches[0]);
+            } else if (e.touches.length === 2) {
+                // 双指：捏合缩放
+                e.preventDefault();
+                const dist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                if (initialPinchDist > 0) {
+                    const scale = dist / initialPinchDist;
+                    // 应用缩放，限制范围 0.5 - 2.5
+                    let newZoom = initialZoom * scale;
+                    zoomLevel = Math.max(0.5, Math.min(newZoom, 2.5));
+                    // 同步 UI 滑块
+                    document.getElementById('ui-zoom-slider').value = zoomLevel * 100;
+                }
+            }
+        }
+
+        // 鼠标/通用拖拽逻辑
+        function startDrag(point) {
+            isDragging = true;
+            lastMouseX = point.clientX;
+        }
+
+        function drag(point) {
             if (!isDragging) return;
-            const deltaX = e.clientX - lastMouseX;
-            // 拖拽时直接修改 treeRotation
-            treeRotation += deltaX * dragSensitivity;
-            lastMouseX = e.clientX;
+            const deltaX = point.clientX - lastMouseX;
+            treeRotation += deltaX * 0.005;
+            lastMouseX = point.clientX;
         }
 
         function stopDrag() {
             isDragging = false;
+            initialPinchDist = 0; // 重置 pinch
         }
 
+        // 滚轮缩放
         function handleZoom(e) {
             e.preventDefault();
-            // 滚轮控制 zoomLevel
             zoomLevel += e.deltaY * -0.001;
-            zoomLevel = Math.max(0.5, Math.min(zoomLevel, 2.0)); // 限制缩放范围
+            zoomLevel = Math.max(0.5, Math.min(zoomLevel, 2.5));
+            document.getElementById('ui-zoom-slider').value = zoomLevel * 100;
         }
 
-        // UI 控制函数
+        // 按钮缩放 (+/-)
+        function adjustZoom(delta) {
+            zoomLevel += delta;
+            zoomLevel = Math.max(0.5, Math.min(zoomLevel, 2.5));
+            document.getElementById('ui-zoom-slider').value = zoomLevel * 100;
+        }
+
+        // UI 控制
         function toggleAutoRotate(val) { isAutoRotating = val; }
-        function updateSpeed(val) { rotationSpeed = val * 0.0002; } // 映射滑块 0-100 到 速度
+        function updateSpeed(val) { rotationSpeed = val * 0.0002; }
         function updateZoom(val) { zoomLevel = val / 100; }
 
         // ================= 随机 & 数据生成 =================
@@ -463,59 +463,47 @@
             const baseHue = Math.floor(Math.random() * 360);
             const isLightMode = Math.random() > 0.5;
             let bgCol, treeCols, textCol, snowCol, decorCols, ribbonCol;
-
             if (isLightMode) {
                 bgCol = hslToHex(baseHue, 30, rand(90, 98));
                 treeCols = []; for (let i = 0; i < 3; i++) treeCols.push(hslToHex(baseHue + rand(-20, 20), rand(40, 70), rand(30, 55)));
                 textCol = Math.random() > 0.5 ? "#B8860B" : hslToHex((baseHue + 180) % 360, 80, 30);
-                snowCol = hslToHex(210, 20, 75);
-                ribbonCol = hslToHex((baseHue + 90) % 360, 60, 60);
+                snowCol = hslToHex(210, 20, 75); ribbonCol = hslToHex((baseHue + 90) % 360, 60, 60);
             } else {
                 bgCol = hslToHex(baseHue, 40, rand(5, 15));
                 treeCols = []; for (let i = 0; i < 3; i++) treeCols.push(hslToHex(baseHue + rand(-20, 20), rand(30, 70), rand(30, 60)));
                 textCol = Math.random() > 0.5 ? "#FFD700" : hslToHex(baseHue, 100, 90);
-                snowCol = "#FFFFFF";
-                ribbonCol = hslToHex((baseHue + 90) % 360, 80, 80);
+                snowCol = "#FFFFFF"; ribbonCol = hslToHex((baseHue + 90) % 360, 80, 80);
             }
-
             decorCols = [hslToHex((baseHue + 180) % 360, 80, 70), hslToHex((baseHue + 210) % 360, 90, 60), isLightMode ? "#FFFFFF" : "#FFD700"];
-
             const randomCfg = {
                 bg_col: bgCol, tree_cols: treeCols, trunk_col: isLightMode ? "#5D4037" : "#332211",
                 decor_cols: decorCols, star_col: textCol, text_col: textCol, snow_col: snowCol,
                 ribbon: Math.random() > 0.2, ribbon_col: ribbonCol, ribbon_width: parseFloat(rand(0.6, 1.8).toFixed(1)),
                 title: "Merry Christmas"
             };
-
-            currentCfg = randomCfg;
-            refreshTree();
-            updateFormUI();
+            currentCfg = randomCfg; refreshTree(); updateFormUI();
             document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
             document.body.style.backgroundColor = bgCol;
         }
 
         function generateData(cfg) {
             let data = [];
-            // 树叶
             for (let i = 0; i < 8000; i++) {
                 let h = Math.random(); let y = h - 0.5; let base_r = 1 - h;
                 let r = base_r * 0.65 * (0.4 + 0.6 * Math.pow(1 - (h * 7) % 1, 0.7));
                 let theta = Math.random() * 2 * Math.PI;
                 data.push({ x: r * Math.cos(theta), y: y, z: r * Math.sin(theta), col: randChoice(cfg.tree_cols), size: rand(0.6, 1.8), type: 'tree', alpha: 0.95 });
             }
-            // 树干
             for (let i = 0; i < 1000; i++) {
                 let h = rand(-0.7, -0.45); let r = 0.12; let theta = Math.random() * 2 * Math.PI;
                 data.push({ x: r * Math.cos(theta), y: h, z: r * Math.sin(theta), col: cfg.trunk_col, size: 1.2, type: 'trunk', alpha: 1.0 });
             }
-            // 装饰
             for (let i = 0; i < 600; i++) {
                 let h = rand(0, 0.95); let y = h - 0.5; let base_r = 1 - h;
                 let r = base_r * 0.68 * (0.4 + 0.6 * Math.pow(1 - (h * 7) % 1, 0.7));
                 let theta = Math.random() * 2 * Math.PI;
                 data.push({ x: r * Math.cos(theta), y: y, z: r * Math.sin(theta), col: randChoice(cfg.decor_cols), size: rand(2, 4), type: 'decor', alpha: 1.0 });
             }
-            // 丝带
             if (cfg.ribbon) {
                 for (let i = 0; i < 6000; i++) {
                     let h = i / 6000 * 0.95; let y = h - 0.5; let base_r = (1 - h) * 0.65 * 1.05;
@@ -538,39 +526,29 @@
         function loop() {
             const w = window.innerWidth;
             const h = window.innerHeight;
-
             ctx.fillStyle = currentCfg.bg_col;
             ctx.fillRect(0, 0, w, h);
 
-            // 应用缩放系数
             const scale = (Math.min(w, h) / 1.8) * zoomLevel;
 
-            // 更新旋转角度
-            if (isAutoRotating && !isDragging) {
-                treeRotation += rotationSpeed;
-            }
+            if (isAutoRotating && !isDragging) treeRotation += rotationSpeed;
 
             let cosA = Math.cos(treeRotation);
             let sinA = Math.sin(treeRotation);
 
             let renderList = [];
-
-            // 处理树
             for (let p of particles) {
                 let x_rot = p.x * cosA - p.z * sinA;
                 let z_rot = p.z * cosA + p.x * sinA;
-
                 let depth = 1 / (2.5 - z_rot);
                 let x_proj = x_rot * depth * 2;
                 let y_proj = p.y * depth * 2;
-
                 let size_vis = p.size * depth * (w < 600 ? 0.8 : 1.5);
                 let alpha_vis = p.alpha;
                 if (p.type !== 'snow') {
                     alpha_vis *= (z_rot + 1.2) / 2.2;
                     if (alpha_vis < 0) alpha_vis = 0; if (alpha_vis > 1) alpha_vis = 1;
                 }
-
                 renderList.push({
                     x: w / 2 + x_proj * scale, y: h / 2 - y_proj * scale,
                     z: z_rot, size: size_vis * (scale / 250),
@@ -578,15 +556,12 @@
                 });
             }
 
-            // 处理雪花 (雪花不随树旋转，只随重力下落)
             for (let s of snowParticles) {
                 let currentY = -0.8 + (s.y - frame * s.speed - (-0.8)) % 2;
                 if (currentY < -0.8) currentY += 2;
-
                 let depth = 1 / (2.5 - s.z);
                 let x_proj = s.x * depth * 2;
                 let y_proj = currentY * depth * 2;
-
                 renderList.push({
                     x: w / 2 + x_proj * scale, y: h / 2 - y_proj * scale,
                     z: s.z, size: s.size * depth * (scale / 200),
@@ -605,11 +580,9 @@
             }
             ctx.globalAlpha = 1.0;
 
-            // 星星
             const starY = h / 2 - (0.4 * scale);
             drawStar(w / 2, starY, scale);
 
-            // 文字
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillStyle = currentCfg.text_col;
@@ -634,23 +607,16 @@
             ctx.closePath(); ctx.fill(); ctx.stroke();
         }
 
-        // ================= UI 与 交互 =================
         function loadStyle(id) {
             currentCfg = JSON.parse(JSON.stringify(STYLES[id]));
-            refreshTree();
-            updateFormUI();
+            refreshTree(); updateFormUI();
             document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
             let btn = document.getElementById('btn-' + id); if (btn) btn.classList.add('active');
             document.body.style.backgroundColor = currentCfg.bg_col;
         }
 
-        function refreshTree() {
-            particles = generateData(currentCfg);
-            snowParticles = generateSnow(250);
-        }
-
+        function refreshTree() { particles = generateData(currentCfg); snowParticles = generateSnow(250); }
         function toggleControls() { document.getElementById('controls').classList.toggle('hidden'); }
-
         function initPresetsUI() {
             const container = document.getElementById('preset-container');
             Object.keys(STYLES).sort((a, b) => parseInt(a) - parseInt(b)).forEach(id => {
@@ -659,20 +625,14 @@
                 btn.onclick = () => loadStyle(id); container.appendChild(btn);
             });
         }
-
         function updateFormUI() {
             const container = document.getElementById('dynamic-form'); container.innerHTML = '';
             const fieldConfig = [
-                { key: 'title', label: 'Title Text', type: 'text' },
-                { key: 'bg_col', label: 'Background', type: 'color' },
-                { key: 'tree_cols', label: 'Tree Colors', type: 'array' },
-                { key: 'decor_cols', label: 'Decor Colors', type: 'array' },
-                { key: 'ribbon', label: 'Show Ribbon', type: 'checkbox' },
-                { key: 'ribbon_col', label: 'Ribbon Color', type: 'color' },
-                { key: 'ribbon_width', label: 'Ribbon Width', type: 'number' },
-                { key: 'star_col', label: 'Star Color', type: 'color' },
-                { key: 'text_col', label: 'Text Color', type: 'color' },
-                { key: 'snow_col', label: 'Snow Color', type: 'color' },
+                { key: 'title', label: 'Title Text', type: 'text' }, { key: 'bg_col', label: 'Background', type: 'color' },
+                { key: 'tree_cols', label: 'Tree Colors', type: 'array' }, { key: 'decor_cols', label: 'Decor Colors', type: 'array' },
+                { key: 'ribbon', label: 'Show Ribbon', type: 'checkbox' }, { key: 'ribbon_col', label: 'Ribbon Color', type: 'color' },
+                { key: 'ribbon_width', label: 'Ribbon Width', type: 'number' }, { key: 'star_col', label: 'Star Color', type: 'color' },
+                { key: 'text_col', label: 'Text Color', type: 'color' }, { key: 'snow_col', label: 'Snow Color', type: 'color' },
                 { key: 'trunk_col', label: 'Trunk Color', type: 'color' },
             ];
             fieldConfig.forEach(field => {
@@ -695,9 +655,7 @@
             });
         }
 
-        // 启动
         init();
-
     </script>
 </body>
 
