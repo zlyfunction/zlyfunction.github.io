@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>High-Res 3D Christmas Tree (Lucky Mode)</title>
+    <title>High-Res 3D Christmas Tree (Final Edition)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
@@ -14,6 +14,7 @@
             overflow: hidden;
             background-color: #0f0505;
             font-family: 'Segoe UI', sans-serif;
+            transition: background-color 0.8s ease;
         }
 
         canvas {
@@ -29,7 +30,8 @@
             z-index: 100;
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.4);
-            color: white;
+            color: #333;
+            font-weight: bold;
             padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
@@ -37,10 +39,11 @@
             font-size: 14px;
             user-select: none;
             transition: 0.2s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         #toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.6);
             transform: scale(1.05);
         }
 
@@ -51,13 +54,13 @@
             width: 300px;
             max-height: 85vh;
             overflow-y: auto;
-            background: rgba(20, 20, 25, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 12px;
             padding: 15px;
-            color: #eee;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            color: #333;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s;
             transform-origin: top left;
         }
@@ -73,15 +76,15 @@
         }
 
         #controls::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 3px;
         }
 
         h3 {
             margin: 0 0 10px 0;
             font-size: 15px;
-            color: #FFD700;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: #E65100;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             padding-bottom: 5px;
         }
 
@@ -93,9 +96,9 @@
         }
 
         .preset-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #444;
             padding: 6px;
             border-radius: 4px;
             cursor: pointer;
@@ -104,39 +107,55 @@
         }
 
         .preset-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .preset-btn.active {
-            background: #FFD700;
-            color: black;
+            background: #E65100;
+            color: white;
+            border-color: transparent;
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 2px 8px rgba(230, 81, 0, 0.3);
         }
 
         /* 幸运按钮样式 */
         .btn-lucky {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
+            background-size: 200% 200%;
+            animation: gradientMove 5s ease infinite;
             border: none;
-            border-radius: 6px;
-            color: white;
-            font-weight: bold;
+            border-radius: 8px;
+            color: #555;
+            font-weight: 800;
             cursor: pointer;
             font-size: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
-            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+            transition: transform 0.2s;
         }
 
         .btn-lucky:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%
+            }
+
+            50% {
+                background-position: 100% 50%
+            }
+
+            100% {
+                background-position: 0% 50%
+            }
         }
 
         .form-row {
@@ -149,14 +168,15 @@
 
         .form-row label {
             flex: 1;
-            color: #ccc;
+            color: #555;
+            font-weight: 500;
         }
 
         .form-row input,
         .form-row select {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid #444;
-            color: white;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            color: #333;
             padding: 4px;
             border-radius: 4px;
             outline: none;
@@ -176,6 +196,8 @@
             padding: 0;
             border: none;
             cursor: pointer;
+            border-radius: 4px;
+            overflow: hidden;
         }
 
         .form-row input[type="checkbox"] {
@@ -187,18 +209,47 @@
             width: 100%;
             margin-top: 15px;
             padding: 10px;
-            background: linear-gradient(45deg, #FFD700, #FFA500);
+            background: #444;
             border: none;
             border-radius: 6px;
-            color: black;
+            color: white;
             font-weight: bold;
             cursor: pointer;
             font-size: 14px;
         }
 
         .btn-apply:hover {
-            filter: brightness(1.1);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            background: #222;
+        }
+
+        /* 致谢区域样式 */
+        .credits-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .btn-credit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            text-decoration: none;
+            color: #666;
+            font-size: 12px;
+            padding: 8px 15px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.2s;
+        }
+
+        .btn-credit:hover {
+            background: #E65100;
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 10px rgba(230, 81, 0, 0.2);
         }
     </style>
 </head>
@@ -219,6 +270,13 @@
         <div id="dynamic-form"></div>
 
         <button class="btn-apply" onclick="refreshTree()">Apply Changes / Re-Generate</button>
+
+        <div class="credits-section">
+            <a href="https://www.xiaohongshu.com/discovery/item/6946e425000000001e03a9a0?source=webshare&xhsshare=pc_web&xsec_token=AB0yD1vBgPgon2QausS_BHyrG33nPdygH2n53ryzftMSA=&xsec_source=pc_share"
+                target="_blank" class="btn-credit">
+                <span>❤️</span> R语言画圣诞树 @ summer
+            </a>
+        </div>
     </div>
 
     <canvas id="canvas"></canvas>
@@ -273,9 +331,9 @@
             ctx.scale(dpr, dpr);
         }
 
-        // ================= 🎲 随机生成美学 (The Magic) =================
+        // ================= 🎲 随机生成美学 (Day & Night) =================
 
-        // HSL转Hex工具 (确保生成的颜色能被 <input type="color"> 识别)
+        // HSL转Hex工具
         function hslToHex(h, s, l) {
             l /= 100;
             const a = s * Math.min(l, 1 - l) / 100;
@@ -287,61 +345,87 @@
             return `#${f(0)}${f(8)}${f(4)}`;
         }
 
-        // 生成随机但和谐的配色
+        // 智能随机算法
         function applyRandomStyle() {
-            // 1. 确定主色相 (0-360)
             const baseHue = Math.floor(Math.random() * 360);
 
-            // 2. 生成背景: 使用主色相，但极低亮度 (Dark) 或 互补色的深色
-            // 保证背景很暗，这样发光效果才好
-            const bgHue = (baseHue + 180) % 360; // 互补色背景，或使用 baseHue 都可以
-            const bgCol = hslToHex(bgHue, 40, rand(5, 15)); // 亮度 5%-15%
+            // 决定是【亮色模式】还是【暗色模式】 (50% 概率)
+            const isLightMode = Math.random() > 0.5;
 
-            // 3. 生成树叶: 基于主色相，生成 3 种不同亮度的同类色
-            const treeCols = [];
-            for (let i = 0; i < 3; i++) {
-                // 饱和度 30-70%, 亮度 30-60%
-                treeCols.push(hslToHex(baseHue + rand(-20, 20), rand(30, 70), rand(30, 60)));
+            let bgCol, treeCols, textCol, snowCol, decorCols, ribbonCol;
+
+            if (isLightMode) {
+                // === ☀️ 亮色模式 (Day Mode) ===
+                // 背景: 高亮度 (90-98%)，低饱和度，生成奶白、浅蓝、米色等
+                bgCol = hslToHex(baseHue, 30, rand(90, 98));
+
+                // 树: 必须比背景深。亮度控制在 30-50% 之间，形成剪影或实体感
+                treeCols = [];
+                for (let i = 0; i < 3; i++) {
+                    treeCols.push(hslToHex(baseHue + rand(-20, 20), rand(40, 70), rand(30, 55)));
+                }
+
+                // 文字/星星: 必须是深色才能看清 (如深金、深酒红、午夜蓝)
+                // 策略: 使用互补色，或者单纯的深金色
+                textCol = Math.random() > 0.5 ? "#B8860B" : hslToHex((baseHue + 180) % 360, 80, 30);
+
+                // 雪花: 在白背景上，白色雪花看不见，所以用淡灰/淡蓝
+                snowCol = hslToHex(210, 20, 75); // #AABBDD
+
+                // 丝带: 稍深一点的颜色
+                ribbonCol = hslToHex((baseHue + 90) % 360, 60, 60);
+
+            } else {
+                // === 🌙 暗色模式 (Night Mode) ===
+                // 背景: 极低亮度 (5-15%)
+                bgCol = hslToHex(baseHue, 40, rand(5, 15));
+
+                // 树: 亮度适中，饱和度可以高一点
+                treeCols = [];
+                for (let i = 0; i < 3; i++) {
+                    treeCols.push(hslToHex(baseHue + rand(-20, 20), rand(30, 70), rand(30, 60)));
+                }
+
+                // 文字/星星: 高亮发光色
+                textCol = Math.random() > 0.5 ? "#FFD700" : hslToHex(baseHue, 100, 90);
+
+                // 雪花: 纯白
+                snowCol = "#FFFFFF";
+
+                // 丝带: 亮色
+                ribbonCol = hslToHex((baseHue + 90) % 360, 80, 80);
             }
 
-            // 4. 生成装饰: 使用互补色或三角色，高饱和度，高亮度
-            const decorCols = [];
-            const decorHue = (baseHue + 180) % 360; // 互补色
-            decorCols.push(hslToHex(decorHue, 80, 80)); // 亮
-            decorCols.push(hslToHex((decorHue + 30) % 360, 90, 70));
-            decorCols.push("#FFFFFF"); // 总是加个白色点缀
-            decorCols.push("#FFD700"); // 总是加个金色点缀
+            // 装饰物 (通用): 互补色，高饱和
+            decorCols = [];
+            const decorHue = (baseHue + 180) % 360;
+            decorCols.push(hslToHex(decorHue, 80, 70));
+            decorCols.push(hslToHex((decorHue + 30) % 360, 90, 60));
+            decorCols.push(isLightMode ? "#FFFFFF" : "#FFD700"); // 亮模式加白点缀，暗模式加金点缀
 
-            // 5. 丝带: 高亮颜色
-            const ribbonCol = hslToHex((baseHue + 90) % 360, 80, 80);
-
-            // 6. 文字和星星: 通常是金色或很亮的树主色
-            const textCol = Math.random() > 0.5 ? "#FFD700" : hslToHex(baseHue, 100, 90);
-
-            // 构建配置对象
+            // 构建配置
             const randomCfg = {
                 bg_col: bgCol,
                 tree_cols: treeCols,
-                trunk_col: "#443322", // 树干通常是深棕色，固定即可
+                trunk_col: isLightMode ? "#5D4037" : "#332211", // 亮模式树干稍微浅一点
                 decor_cols: decorCols,
-                star_col: textCol,
+                star_col: textCol, // 星星颜色与文字一致
                 text_col: textCol,
-                snow_col: "#FFFFFF",
-                ribbon: Math.random() > 0.2, // 80% 概率有丝带
+                snow_col: snowCol,
+                ribbon: Math.random() > 0.2,
                 ribbon_col: ribbonCol,
                 ribbon_width: parseFloat(rand(0.6, 1.8).toFixed(1)),
-                title: "Merry Christmas" // 随机模式下恢复默认标题
+                title: "Merry Christmas" // 随机模式默认标题
             };
 
-            // 应用配置
+            // 应用
             currentCfg = randomCfg;
             refreshTree();
-
-            // 更新 UI 表单显示
             updateFormUI();
-
-            // 取消所有预设按钮的高亮
             document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+
+            // 视觉反馈：改变 body 背景以便更平滑过渡
+            document.body.style.backgroundColor = bgCol;
         }
 
         // ================= 数据生成 =================
@@ -547,6 +631,9 @@
             document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
             let btn = document.getElementById('btn-' + id);
             if (btn) btn.classList.add('active');
+
+            // 更新背景过渡
+            document.body.style.backgroundColor = currentCfg.bg_col;
         }
 
         function refreshTree() {
