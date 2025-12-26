@@ -362,7 +362,9 @@
             canvas.addEventListener('wheel', handleZoom);
 
             initPresetsUI();
-            loadStyle("11");
+            document.getElementById('controls').classList.add('hidden');
+            const randomStyle = Object.keys(STYLES)[Math.floor(Math.random() * Object.keys(STYLES).length)];
+            loadStyle(randomStyle);
             loop();
         }
 
