@@ -88,20 +88,24 @@
     <div style="border-bottom: 1px solid #ff0000; margin-bottom: 10px; padding-bottom: 5px; font-weight: bold;">RENDER
       CONSOLE</div>
     <div class="control-group">
-      <label>EXPOSURE (曝光度)</label>
+      <label>EXPOSURE</label>
       <input type="range" id="exposure-slider" min="0" max="5" step="0.1" value="1.5">
     </div>
     <div class="control-group">
-      <label>AMBIENT (环境光)</label>
+      <label>AMBIENT LIGHT</label>
       <input type="range" id="ambient-slider" min="0" max="5" step="0.1" value="1.2">
     </div>
     <div class="control-group">
-      <label>MAIN LIGHT (主灯)</label>
+      <label>MAIN LIGHT</label>
       <input type="range" id="main-light-slider" min="0" max="10" step="0.1" value="2.0">
     </div>
     <div class="control-group">
-      <label>FLICKER BASE (闪烁基准)</label>
+      <label>FLICKER BASE</label>
       <input type="range" id="flicker-slider" min="0" max="500" step="10" value="50">
+    </div>
+    <div class="control-group" style="display: flex; align-items: center; gap: 10px;">
+      <label style="margin-bottom: 0;">WIREFRAME MODE</label>
+      <input type="checkbox" id="wireframe-check" style="width: auto;">
     </div>
   </div>
 
@@ -184,9 +188,9 @@
           console.error(error);
           let msg = 'Error: demogorgon.glb not found';
           if (window.location.protocol === 'file:') {
-            msg = '⚠️ 浏览器安全限制：无法通过 file:// 协议加载 3D 模型。<br><br>请使用 VS Code 的 <b>Live Server</b> 插件或 Python <b>http.server</b> 运行此页面。';
+            msg = '⚠️ Browser Security Restriction: Cannot load 3D models via file:// protocol.<br><br>Please use VS Code <b>Live Server</b> or a local web server.';
           } else {
-            msg = 'ERROR: Could not find "demogorgon.glb" in the current folder.';
+            msg = 'ERROR: Could not find "demogorgon.glb" in the current folder.<br>Check filename casing or ensure the file is uploaded to GitHub.';
           }
           document.getElementById('loading').innerText = msg;
           document.getElementById('loading').style.color = '#ff0000';
@@ -198,6 +202,15 @@
       // 绑定控制台事件
       document.getElementById('exposure-slider').addEventListener('input', (e) => {
         renderer.toneMappingExposure = parseFloat(e.target.value);
+      });
+      document.getElementById('wireframe-check').addEventListener('change', (e) => {
+        if (model) {
+          model.traverse(n => {
+            if (n.isMesh) {
+              n.material.wireframe = e.target.checked;
+            }
+          });
+        }
       });
       document.getElementById('ambient-slider').addEventListener('input', (e) => {
         ambientLight.intensity = parseFloat(e.target.value);
