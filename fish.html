@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>摸鱼🐟 - Moyu Workspace</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #1a3a4a 0%, #051015 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+    }
+
+    canvas {
+      cursor: pointer;
+      filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.2));
+    }
+
+    .ui {
+      position: absolute;
+      bottom: 30px;
+      text-align: center;
+      pointer-events: none;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .hint {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-top: 10px;
+    }
+
+    button {
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.5);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .tools {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      pointer-events: auto;
+    }
+
+    .tool-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.2s;
+      backdrop-filter: blur(5px);
+    }
+
+    .tool-btn.active {
+      background: rgba(0, 255, 255, 0.3);
+      border-color: #00ffff;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="fishCanvas"></canvas>
+
+  <div class="ui">
+    <button onclick="addFish()">增加一只鱼 🐟</button>
+    <div class="tools">
+      <div id="hand-tool" class="tool-btn active" onclick="setTool('hand')">🖐️ 摸鱼</div>
+      <div id="net-tool" class="tool-btn" onclick="setTool('net')">🕸️ 捞鱼</div>
+    </div>
+    <div class="hint" id="tool-hint">摸一摸鱼儿，打发时间</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('fishCanvas');
+    const ctx = canvas.getContext('2d');
+    let fishes = [];
+    let bubbles = [];
+    const bodyTypes = ['ellipse', 'diamond', 'round', 'long'];
+    let currentTool = 'hand';
+
+    function init() {
+      window.addEventListener('resize', resize);
+      resize();
+
+      // 初始召唤三只鱼
+      for (let i = 0; i < 3; i++) addFish();
+
+      canvas.addEventListener('mousedown', handleInteraction);
+      animate();
+    }
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function setTool(tool) {
+      currentTool = tool;
+      document.getElementById('hand-tool').classList.toggle('active', tool === 'hand');
+      document.getElementById('net-tool').classList.toggle('active', tool === 'net');
+
+      const hint = document.getElementById('tool-hint');
+      if (tool === 'hand') {
+        hint.innerText = "当前模式：摸一摸鱼儿，或者点击空白处召唤新鱼";
+        canvas.style.cursor = "pointer";
+      } else {
+        hint.innerText = "当前模式：点击鱼儿把它们捞走";
+        canvas.style.cursor = "crosshair";
+      }
+    }
+
+    function handleInteraction(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+
+      let clickedFishIndex = -1;
+      // 从上往下检查（数组末尾的鱼在最上层）
+      for (let i = fishes.length - 1; i >= 0; i--) {
+        const f = fishes[i];
+        const dx = mx - f.x;
+        const dy = my - f.y;
+        // 简单的碰撞检测：根据缩放后的鱼身大小判断
+        const hitW = (f.bodyW / 2) * f.scale;
+        const hitH = (f.bodyH / 2) * f.scale;
+
+        if (Math.abs(dx) < hitW && Math.abs(dy) < hitH) {
+          clickedFishIndex = i;
+          break;
+        }
+      }
+
+      if (clickedFishIndex !== -1) {
+        if (currentTool === 'hand') {
+          const f = fishes[clickedFishIndex];
+          // 物理反馈：计算点击点到鱼心的角度，并施加反向冲力
+          const angle = Math.atan2(f.y - my, f.x - mx);
+          const force = 12;
+          f.vx = Math.cos(angle) * force;
+          f.vy = Math.sin(angle) * force;
+        } else {
+          // 捞鱼：从数组中移除
+          fishes.splice(clickedFishIndex, 1);
+        }
+      } else if (currentTool === 'hand') {
+        addFish(mx, my);
+      }
+    }
+
+    function randomRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function addFish(x, y) {
+      const hue = Math.floor(Math.random() * 360);
+      const fish = {
+        x: x || Math.random() * canvas.width,
+        y: y || Math.random() * canvas.height,
+        vx: randomRange(-2, 2),
+        vy: randomRange(-1, 1),
+        bodyW: randomRange(120, 300),
+        bodyH: randomRange(60, 150),
+        bodyType: bodyTypes[Math.floor(Math.random() * bodyTypes.length)],
+        hue: hue,
+        tailW: randomRange(40, 80),
+        tailH: randomRange(60, 120),
+        eyeSize: randomRange(8, 18),
+        finSize: randomRange(20, 50),
+        hasStripes: Math.random() > 0.5,
+        stripeCount: Math.floor(randomRange(2, 6)),
+        scale: randomRange(0.4, 0.8),
+        turnSpeed: randomRange(0.02, 0.05)
+      };
+      fishes.push(fish);
+    }
+
+    function createBubble(x, y, size) {
+      bubbles.push({
+        x: x,
+        y: y,
+        r: randomRange(2, 8),
+        speed: randomRange(1, 3),
+        opacity: randomRange(0.3, 0.6)
+      });
+    }
+
+    function update() {
+      // 更新鱼的位置
+      fishes.forEach(f => {
+        f.x += f.vx;
+        f.y += f.vy;
+
+        // 随机改变方向 (游走感)
+        f.vx += (Math.random() - 0.5) * 0.1;
+        f.vy += (Math.random() - 0.5) * 0.1;
+
+        // 限制速度 (平滑减速回正常范围，允许瞬间爆发)
+        const maxSpeed = 2.5;
+        const speed = Math.sqrt(f.vx * f.vx + f.vy * f.vy);
+        if (speed > maxSpeed) {
+          f.vx *= 0.92;
+          f.vy *= 0.92;
+        }
+
+        // 边界检查
+        const margin = 100;
+        if (f.x < -margin) f.x = canvas.width + margin;
+        if (f.x > canvas.width + margin) f.x = -margin;
+        if (f.y < -margin) f.y = canvas.height + margin;
+        if (f.y > canvas.height + margin) f.y = -margin;
+
+        // 随机吐泡泡
+        if (Math.random() < 0.01) {
+          const dir = f.vx > 0 ? 1 : -1;
+          createBubble(f.x + (f.bodyW / 2 * f.scale * dir), f.y, f.r);
+        }
+      });
+
+      // 更新泡泡
+      for (let i = bubbles.length - 1; i >= 0; i--) {
+        bubbles[i].y -= bubbles[i].speed;
+        bubbles[i].x += Math.sin(bubbles[i].y / 20) * 0.5;
+        if (bubbles[i].y < -20) bubbles.splice(i, 1);
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 画泡泡
+      bubbles.forEach(b => {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(255, 255, 255, ${b.opacity})`;
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+
+      // 画鱼
+      fishes.forEach(f => {
+        const { x, y, bodyW, bodyH, hue, tailW, tailH, eyeSize, finSize, scale, vx, bodyType } = f;
+        const flip = vx > 0 ? 1 : -1;
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(scale * flip, scale);
+
+        // 1. 尾巴
+        ctx.fillStyle = `hsl(${hue}, 60%, 40%)`;
+        ctx.beginPath();
+        ctx.moveTo(-bodyW / 2 + 20, 0);
+        ctx.lineTo(-bodyW / 2 - tailW, -tailH / 2);
+        ctx.lineTo(-bodyW / 2 - tailW / 2, 0);
+        ctx.lineTo(-bodyW / 2 - tailW, tailH / 2);
+        ctx.fill();
+
+        // 2. 鱼身
+        const grad = ctx.createLinearGradient(-bodyW / 2, 0, bodyW / 2, 0);
+        grad.addColorStop(0, `hsl(${hue}, 70%, 50%)`);
+        grad.addColorStop(1, `hsl(${hue}, 80%, 65%)`);
+        ctx.fillStyle = grad;
+
+        ctx.beginPath();
+        if (bodyType === 'ellipse') {
+          ctx.ellipse(0, 0, bodyW / 2, bodyH / 2, 0, 0, Math.PI * 2);
+        } else if (bodyType === 'diamond') {
+          ctx.moveTo(-bodyW / 2, 0);
+          ctx.lineTo(0, -bodyH / 2);
+          ctx.lineTo(bodyW / 2, 0);
+          ctx.lineTo(0, bodyH / 2);
+        } else if (bodyType === 'round') {
+          ctx.arc(0, 0, bodyH / 1.2, 0, Math.PI * 2);
+        } else if (bodyType === 'long') {
+          ctx.roundRect(-bodyW / 2, -bodyH / 4, bodyW, bodyH / 2, 20);
+        }
+        ctx.fill();
+
+        // 3. 花纹
+        if (f.hasStripes) {
+          ctx.strokeStyle = `rgba(255, 255, 255, 0.2)`;
+          ctx.lineWidth = 6;
+          for (let i = 0; i < f.stripeCount; i++) {
+            const sx = -bodyW / 4 + (i * bodyW / 2 / f.stripeCount);
+            ctx.beginPath();
+            ctx.moveTo(sx, -bodyH / 3);
+            ctx.lineTo(sx + 5, bodyH / 3);
+            ctx.stroke();
+          }
+        }
+
+        // 4. 眼睛
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(bodyW / 3, -bodyH / 6, eyeSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#051015";
+        ctx.beginPath();
+        ctx.arc(bodyW / 3 + eyeSize / 3, -bodyH / 6, eyeSize / 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 5. 侧鳍
+        ctx.fillStyle = `rgba(255, 255, 255, 0.3)`;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-finSize, finSize / 2);
+        ctx.lineTo(0, finSize);
+        ctx.fill();
+
+        ctx.restore();
+      });
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+
+    init();
+  </script>
+</body>
+
+</html>
