@@ -115,7 +115,10 @@
         scene.add(model);
         document.getElementById('loading').style.display = 'none';
       },
-        (xhr) => { console.log((xhr.loaded / xhr.total * 100) + '% loaded'); },
+        (xhr) => {
+          const percent = Math.round((xhr.loaded / xhr.total) * 100);
+          document.getElementById('loading').innerText = `Summoning Demogorgon... ${percent}%`;
+        },
         (error) => {
           console.error(error);
           let msg = 'Error: demogorgon.glb not found';
