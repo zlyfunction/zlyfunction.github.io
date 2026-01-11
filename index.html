@@ -553,7 +553,7 @@
     <div id="input-line">
       <span class="prompt">guest@zlyfunction:~$</span>
       <div class="input-wrapper">
-        <input type="text" id="command-input" autocomplete="off" spellcheck="false" autofocus>
+        <input type="text" id="command-input" autocomplete="off" spellcheck="false">
         <div id="suggestion"></div>
         <div id="autocomplete-box"></div>
       </div>
@@ -924,6 +924,11 @@ __/ =| o |=-~\\  /~=|_| o | |_| []_|_[]____|  |  |  |  |_______________________|
     processCommand('ls');
     // Help hint
     printLine("Type 'help' to see available commands.", "result");
+
+    // Auto-focus only on desktop to prevent keyboard popup on mobile
+    if (window.innerWidth > 600) {
+      inputField.focus();
+    }
 
     // Modal Logic
     function openModal(url, title) {
