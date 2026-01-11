@@ -4,70 +4,1173 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>zlyfunction's Homepage</title>
+  <title>zlyfunction@term</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-color: #0d1117;
+      --text-color: #c9d1d9;
+      --prompt-color: #58a6ff;
+      --command-color: #f0f6fc;
+      --result-color: #8b949e;
+      --highlight-color: #7ee787;
+      --error-color: #ff7b72;
+      --link-color: #79c0ff;
+      --border-color: #30363d;
+      --glow-color: rgba(88, 166, 255, 0.3);
+      --font-stack: 'Fira Code', 'Courier New', monospace;
+    }
+
     body {
-      font-family: 'Courier New', Courier, monospace;
-      background-color: #1a1a1a;
-      color: #c5c8c6;
-      text-align: center;
-      padding: 50px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-stack);
+      margin: 0;
+      padding: 20px;
+      font-size: 16px;
+      line-height: 1.5;
+      overflow-x: hidden;
+      text-shadow: 0 0 2px var(--glow-color);
     }
 
-    h1 {
-      color: #81a2be;
-      font-size: 2.5em;
+    /* CRT Scanline Effect */
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px);
+      pointer-events: none;
+      z-index: 9999;
     }
 
-    p {
-      font-size: 1.2em;
-      line-height: 1.6;
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
     }
 
-    a {
-      color: #b5bd68;
-      text-decoration: none;
+    ::-webkit-scrollbar-track {
+      background: var(--bg-color);
     }
 
-    a:hover {
-      text-decoration: underline;
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 5px;
     }
 
-    .container {
-      max-width: 800px;
+    #terminal {
+      max-width: 900px;
       margin: 0 auto;
     }
 
-    .bio-item {
-      margin: 10px 0;
+    .output-line {
+      white-space: pre-wrap;
+      margin-bottom: 5px;
+      word-break: break-all;
+    }
+
+    .interaction {
+      margin-bottom: 20px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .prompt {
+      color: var(--prompt-color);
+      font-weight: bold;
+      margin-right: 8px;
+      user-select: none;
+    }
+
+    .command {
+      color: var(--command-color);
+      font-weight: bold;
+    }
+
+    .result {
+      color: var(--result-color);
+      margin-bottom: 15px;
+    }
+
+    .highlight {
+      color: var(--highlight-color);
+      font-weight: bold;
+    }
+
+    .error {
+      color: var(--error-color);
+    }
+
+    .command-link {
+      color: var(--highlight-color);
+      cursor: pointer;
+      border-bottom: 1px dashed var(--highlight-color);
+    }
+
+    a {
+      color: var(--link-color);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--link-color);
+      cursor: pointer;
+    }
+
+    a:hover {
+      background: var(--glow-color);
+    }
+
+    /* Research Paper List Styles */
+    .paper-summary {
+      cursor: pointer;
+      margin-bottom: 10px;
+      padding: 8px;
+      border-left: 3px solid var(--border-color);
+      transition: all 0.2s;
+    }
+
+    .paper-summary:hover {
+      border-left-color: var(--prompt-color);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* LS Output Styles */
+    .ls-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px 20px;
+      margin-bottom: 10px;
+    }
+
+    .ls-item {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 8px;
+    }
+
+    .ls-row {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .ls-icon {
+      margin-right: 10px;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .award-badge {
+      color: #e3b341;
+      font-weight: bold;
+      margin-left: 10px;
+      font-size: 0.9em;
+      border: 1px solid #e3b341;
+      padding: 0 4px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .venue-info {
+      color: var(--result-color);
+      font-size: 0.9em;
+      margin-left: 30px;
+      /* Indent to align with text start */
+      margin-top: 2px;
+    }
+
+    .paper-details {
+      display: none;
+      margin-top: 10px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      animation: fadeIn 0.3s;
+      white-space: normal;
+    }
+
+    .input-wrapper {
+      position: relative;
+      flex-grow: 1;
+      display: flex;
+    }
+
+    #input-line {
+      display: flex;
+      align-items: center;
+    }
+
+    #command-input {
+      background: transparent;
+      border: none;
+      color: var(--command-color);
+      font-family: inherit;
+      font-size: inherit;
+      flex-grow: 1;
+      outline: none;
+      padding: 0;
+      margin: 0;
+      z-index: 2;
+      position: relative;
+    }
+
+    #suggestion {
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: var(--result-color);
+      font-family: inherit;
+      font-size: inherit;
+      z-index: 1;
+      pointer-events: none;
+      white-space: pre;
+    }
+
+    .ascii-art {
+      font-size: 10px;
+      line-height: 10px;
+    }
+
+    .banner {
+      color: var(--highlight-color);
+      font-weight: bold;
+      margin-bottom: 20px;
+      white-space: pre;
+      font-size: 8px;
+      line-height: 8px;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      .prompt {
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      #input-line {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      #command-input {
+        width: 100%;
+      }
+    }
+
+    /* Mobile Toolbar */
+    #mobile-toolbar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--bg-color);
+      border-top: 1px solid var(--border-color);
+      padding: 8px 5px;
+      justify-content: space-around;
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 600px) {
+      #mobile-toolbar {
+        display: flex;
+      }
+
+      body {
+        padding-bottom: 60px;
+      }
+    }
+
+    #mobile-toolbar button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-weight: bold;
+      font-size: 14px;
+      touch-action: manipulation;
+    }
+
+    #mobile-toolbar button:active {
+      background: var(--border-color);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modal Styles */
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+
+    #modal-window {
+      width: 90%;
+      height: 85%;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    #modal-header {
+      padding: 10px 15px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-color);
+      border-radius: 8px 8px 0 0;
+      backdrop-filter: blur(5px);
+    }
+
+    #modal-title {
+      font-weight: bold;
+      color: var(--text-color);
+    }
+
+    .modal-btn {
+      background: none;
+      border: none;
+      color: var(--error-color);
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      margin-left: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .modal-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-btn.resize {
+      color: var(--link-color);
+    }
+
+    .modal-btn.resize:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    #modal-frame {
+      flex-grow: 1;
+      border: none;
+      background: #fff;
+      /* Some pages might need white bg, or transparent */
+      border-radius: 0 0 8px 8px;
+    }
+
+    /* Minimized Modal State */
+    .modal-minimized {
+      width: 60% !important;
+      height: 50% !important;
+    }
+
+    @media (max-width: 600px) {
+      .modal-minimized {
+        width: 90% !important;
+        height: 60% !important;
+      }
+    }
+
+    /* Autocomplete Box */
+    #autocomplete-box {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      max-height: 150px;
+      overflow-y: auto;
+      z-index: 100;
+      min-width: 200px;
+      display: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .suggestion-item {
+      padding: 5px 10px;
+      cursor: pointer;
+      color: var(--result-color);
+    }
+
+    .suggestion-item:hover,
+    .suggestion-item.selected {
+      background: var(--border-color);
+      color: var(--text-color);
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>Hey, I'm zlyfunction! 👋</h1>
-    <div class="bio">
-      <p class="bio-item">Fueling my code with Brown Sugar Boba Tea 🧋</p>
-      <p class="bio-item">Exploring the elegant beauty of geometry 📐</p>
-      <p class="bio-item">Compiling... yet another CS PhD project 💻</p>
+  <div id="terminal">
+    <div id="output"></div>
+    <div id="input-line">
+      <span class="prompt">guest@zlyfunction:~$</span>
+      <div class="input-wrapper">
+        <input type="text" id="command-input" autocomplete="off" spellcheck="false" autofocus>
+        <div id="suggestion"></div>
+        <div id="autocomplete-box"></div>
+      </div>
     </div>
-    <hr>
-    <h2>Side Quests & Cool Stuff</h2>
-    <p>
-      在工位也不好意思工作？来摸鱼！🐟<br>
-      <i>"Moyu" (摸鱼) is the art of slacking off—literally "touching fish" while you're supposed to be working.</i><br>
-      <a href="fish.html">进入摸鱼空间 (Moyu Workspace)</a>
-    </p>
-    <p>
-      Check out my procedural Christmas Tree generator! 🎄<br>
-      <a href="xmas.html">Generate a random Christmas Tree</a>
-    </p>
-    <p>
-      (Warning: Here be dragons... or rather, Christmas drills? 🌀)<br>
-      <a href="xmasgm1.html">Behold, the crazy version!</a>
-    </p>
   </div>
+
+  <div id="mobile-toolbar">
+    <button onclick="simulateKey('Tab')">TAB</button>
+    <button onclick="simulateKey('ArrowUp')">↑</button>
+    <button onclick="simulateKey('ArrowDown')">↓</button>
+    <button onclick="runCommand('clear')">CLS</button>
+  </div>
+
+  <div id="modal-overlay">
+    <div id="modal-window">
+      <div id="modal-header">
+        <span id="modal-title">Executing...</span>
+        <div class="modal-controls">
+          <button class="modal-btn resize" id="modal-resize-btn" onclick="toggleModalSize()">[−] Shrink</button>
+          <button class="modal-btn" onclick="closeModal()">[×] Close</button>
+        </div>
+      </div>
+      <iframe id="modal-frame"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const outputDiv = document.getElementById('output');
+    const inputField = document.getElementById('command-input');
+    const suggestionDiv = document.getElementById('suggestion');
+    const autocompleteBox = document.getElementById('autocomplete-box');
+    const inputPrompt = document.querySelector('#input-line .prompt');
+    let commandHistory = [];
+    let historyIndex = -1;
+    let currentPath = []; // Empty array means root (~/)
+    let suggestions = [];
+    let suggestionIndex = -1;
+
+    // File System Structure
+    const rootFileSystem = {
+      type: "dir",
+      children: {
+        "Research": {
+          type: "dir",
+          description: "Academic Research",
+          children: {
+            "Global_Parameterization": {
+              type: "paper",
+              title: "Global Parameterization from Prescribed Holonomy Signatures",
+              authors: "Hanxiao Shen, Leyi Zhu, Ryan Capouellez, Daniele Panozzo, Marcel Campen, Denis Zorin",
+              venue: "ACM Trans. Graph. (SIGGRAPH 2022)",
+              link: "http://graphics.cs.uos.de/papers/Holonomy_Signature_Parametrization-SIGGRAPH2022_Preprint.pdf",
+              image: "./quadragulation.png",
+              abstract: "We describe a method for the generation of seamless surface parametrizations with guaranteed local injectivity and full control over holonomy."
+            },
+            "Discrete_Conformal_Equivalence": {
+              type: "paper",
+              title: "Efficient and Robust Discrete Conformal Equivalence with Boundary",
+              authors: "Marcel Campen, Ryan Capouellez, Hanxiao Shen, Leyi Zhu, Daniele Panozzo, Denis Zorin",
+              venue: "SIGGRAPH Asia 2021",
+              link: "https://cims.nyu.edu/gcl/papers/2021-Conformal.pdf",
+              image: "./conformal.png",
+              abstract: "We present a method for computing discrete conformal equivalence of triangle meshes with boundary based on the theory of discrete conformal geometry."
+            },
+            "MPM_Fracture": {
+              type: "paper",
+              title: "Simulation and visualization of ductile fracture with the material point method",
+              authors: "S Wang, M Ding, TF Gast, L Zhu, S Gagniere, C Jiang, JM Teran",
+              venue: "Proc. ACM Comput. Graph. Interact. Tech. (2019)",
+              link: "https://stephaniewang.page/files/fracture_paper.pdf",
+              image: "./fracture.png",
+              abstract: "We present a Material Point Method (MPM) for simulating ductile fracture using a new yield criterion.",
+              award: "SCA 2018 Best Paper Award"
+            },
+            "scholar_profile": {
+              type: "link",
+              url: "https://scholar.google.com/citations?user=ZZJP2N4AAAAJ&hl=en&oi=ao",
+              description: "Google Scholar Profile"
+            }
+          }
+        },
+        "Playground": {
+          type: "dir",
+          description: "Fun & Demos",
+          children: {
+            "fish": { type: "link", url: "fish.html", description: "Moyu Workspace 🐟" },
+            "xmas": { type: "link", url: "xmas.html", description: "Christmas Tree 🎄" },
+            "xmasgm1": { type: "link", url: "xmasgm1.html", description: "Christmas Drill 3000 🌀" },
+            "demogorgon": { type: "link", url: "demogorgon.html", description: "The Upside Down 👹" }
+          }
+        },
+        "about": {
+          type: "text",
+          content: `Identity: Leyi (zlyfunction)
+----------------------------------------
+> Fueling my code with Brown Sugar Boba Tea 🧋
+> Exploring the elegant beauty of geometry 📐
+> Researching Geometry Processing & Computer Graphics 💻`
+        },
+        "contact": {
+          type: "text",
+          content: `Email: leyi *AT* nyu.edu
+Feel free to reach out for collaborations or boba tea recommendations!`
+        }
+      }
+    };
+
+    // Advanced path resolution
+    function resolvePath(pathStr) {
+      // Start from root if path starts with / or ~, otherwise start from current
+      let parts = (pathStr.startsWith('/') || pathStr.startsWith('~')) ? [] : [...currentPath];
+
+      // Normalize input path segments
+      const segments = pathStr.replace(/^~/, '').split('/').filter(s => s.length > 0);
+
+      for (const segment of segments) {
+        if (segment === '.') continue;
+        if (segment === '..') {
+          if (parts.length > 0) parts.pop();
+        } else {
+          parts.push(segment);
+        }
+      }
+
+      // Traverse from root using the resolved parts to find canonical names and nodes
+      let currentNode = rootFileSystem;
+      let canonicalPath = [];
+
+      for (const part of parts) {
+        if (currentNode.children) {
+          // Case-insensitive lookup
+          const key = Object.keys(currentNode.children).find(k => k.toLowerCase() === part.toLowerCase());
+          if (key) {
+            currentNode = currentNode.children[key];
+            canonicalPath.push(key);
+          } else {
+            return { node: null, path: parts }; // Invalid path
+          }
+        } else {
+          return { node: null, path: parts }; // Invalid path
+        }
+      }
+
+      return { node: currentNode, path: canonicalPath };
+    }
+
+    function getCurrentDirNode() {
+      const result = resolvePath('');
+      return result.node;
+    }
+
+    function getPrompt() {
+      const pathStr = currentPath.length === 0 ? '~' : '~/' + currentPath.join('/');
+      return `guest@zlyfunction:${pathStr}$`;
+    }
+
+    // Themes Configuration
+    const themes = {
+      default: {
+        '--bg-color': '#0d1117',
+        '--text-color': '#c9d1d9',
+        '--prompt-color': '#58a6ff',
+        '--command-color': '#f0f6fc',
+        '--result-color': '#8b949e',
+        '--highlight-color': '#7ee787',
+        '--error-color': '#ff7b72',
+        '--link-color': '#79c0ff',
+        '--border-color': '#30363d',
+        '--glow-color': 'rgba(88, 166, 255, 0.3)'
+      },
+      hacker: {
+        '--bg-color': '#000000',
+        '--text-color': '#00ff00',
+        '--prompt-color': '#00ff00',
+        '--command-color': '#ccffcc',
+        '--result-color': '#00cc00',
+        '--highlight-color': '#00ff00',
+        '--error-color': '#ff0000',
+        '--link-color': '#00ff00',
+        '--border-color': '#003300',
+        '--glow-color': 'rgba(0, 255, 0, 0.4)'
+      },
+      retro: {
+        '--bg-color': '#1a1a1a',
+        '--text-color': '#ffb000',
+        '--prompt-color': '#ffb000',
+        '--command-color': '#ffe082',
+        '--result-color': '#ffca28',
+        '--highlight-color': '#ffb000',
+        '--error-color': '#ff5252',
+        '--link-color': '#ffb000',
+        '--border-color': '#3e2723',
+        '--glow-color': 'rgba(255, 176, 0, 0.4)'
+      },
+      dracula: {
+        '--bg-color': '#282a36',
+        '--text-color': '#f8f8f2',
+        '--prompt-color': '#bd93f9',
+        '--command-color': '#f8f8f2',
+        '--result-color': '#6272a4',
+        '--highlight-color': '#50fa7b',
+        '--error-color': '#ff5555',
+        '--link-color': '#8be9fd',
+        '--border-color': '#44475a',
+        '--glow-color': 'rgba(189, 147, 249, 0.3)'
+      }
+    };
+
+    const commands = {
+      help: () => {
+        return `Available commands:
+  <span class="command-link" onclick="runCommand('ls')">ls</span>        - List directory contents
+  <span class="command-link" onclick="runCommand('cd research')">cd</span>        - Change directory (e.g., cd research)
+  <span class="command-link" onclick="runCommand('cat about')">cat</span>       - View file content (e.g., cat about)
+  <span class="command-link" onclick="runCommand('pwd')">pwd</span>       - Print working directory
+  <span class="command-link" onclick="runCommand('everything')">everything</span> - Show all content
+  <span class="command-link" onclick="runCommand('screenfetch')">screenfetch</span> - Show system info
+  <span class="command-link" onclick="runCommand('theme')">theme</span>     - Switch theme (default, hacker, retro, dracula)
+  <span class="command-link" onclick="runCommand('history')">history</span>   - Show command history
+  <span class="command-link" onclick="runCommand('date')">date</span>      - Show current date and time
+  <span class="command-link" onclick="runCommand('clear')">clear</span>     - Clear the terminal`;
+      },
+      ls: () => {
+        const dir = getCurrentDirNode();
+        if (!dir || !dir.children) return "";
+
+        let result = "";
+        const entries = Object.entries(dir.children);
+
+        for (const [name, item] of entries) {
+          let displayName = name;
+          let suffix = "";
+          let styleClass = "command-link";
+
+          if (item.type === 'dir') {
+            displayName += "/";
+            styleClass = "highlight";
+            // Make directories clickable to cd into them
+            result += `<span class="${styleClass}" onclick="runCommand('cd ${name}')">${displayName.padEnd(30)}</span>`;
+          } else {
+            // Make files clickable to open them
+            result += `<span class="${styleClass}" onclick="runOpen('${name}')">${displayName.padEnd(30)}</span>`;
+          }
+
+          if (item.description) {
+            result += `<span style="color:var(--result-color)">${item.description}</span>`;
+          } else if (item.type === 'paper') {
+            result += `<span style="color:var(--result-color)">[Paper]</span>`;
+          }
+          result += "\n";
+        }
+        return result;
+      },
+      cd: (args) => {
+        if (!args || args.length === 0) {
+          currentPath = [];
+          return null;
+        }
+        let target = args[0];
+        // Remove trailing slash if present (e.g. from tab completion)
+        if (target.length > 1 && target.endsWith('/')) {
+          target = target.slice(0, -1);
+        }
+
+        if (target === '..') {
+          if (currentPath.length > 0) currentPath.pop();
+          return null;
+        }
+        if (target === '~' || target === '/') {
+          currentPath = [];
+          return null;
+        }
+
+        const currentDir = getCurrentDirNode();
+        if (currentDir.children && currentDir.children[target] && currentDir.children[target].type === 'dir') {
+          currentPath.push(target);
+          return commands.ls();
+        } else {
+          return `<span class='error'>cd: no such directory: ${target}</span>`;
+        }
+      },
+      pwd: () => {
+        return currentPath.length === 0 ? '/' : '/' + currentPath.join('/');
+      },
+      cat: (args) => {
+        if (!args || args.length === 0) return "<span class='error'>Usage: cat &lt;filename&gt;</span>";
+        const filename = args[0];
+
+        // Resolve path to allow catting files in other directories
+        const pathParts = filename.split('/');
+        const fileName = pathParts.pop();
+        const dirPath = pathParts.join('/');
+        const { node: dirNode } = resolvePath(dirPath);
+
+        // Case-insensitive file lookup
+        let realFileName = fileName;
+        if (dirNode && dirNode.children) {
+          realFileName = Object.keys(dirNode.children).find(k => k.toLowerCase() === fileName.toLowerCase()) || fileName;
+        }
+
+        if (dirNode && dirNode.children && dirNode.children[realFileName]) {
+          const item = dirNode.children[realFileName];
+
+          if (item.type === 'dir') {
+            return `<span class='error'>${filename}: Is a directory</span>`;
+          } else if (item.type === 'link') {
+            if (item.url.endsWith('.html') && !item.url.startsWith('http')) {
+              openModal(item.url, item.description || filename);
+              return `Launching ${filename}...`;
+            } else {
+              setTimeout(() => window.open(item.url, '_blank'), 500);
+              return `Opening ${filename}...`;
+            }
+          } else if (item.type === 'text') {
+            return item.content;
+          } else if (item.type === 'paper') {
+            return `<div class="paper-details" style="display:block">
+              <div class="highlight" style="font-size:1.1em; margin-bottom:2px;">${item.title}</div>
+              <div style="color: var(--result-color); margin-bottom:2px;">${item.venue}</div>
+              ${item.award ? `<div style="color: #e3b341; font-weight:bold; margin-bottom:2px;">🏆 ${item.award}</div>` : ''}
+              <div style="color: var(--text-color); margin-bottom:4px; font-style:italic;">${item.authors}</div>
+              <img src="${item.image}" onclick="window.open('${item.link}', '_blank')" alt="Teaser" style="max-width:100%; border-radius:4px; margin-bottom:10px; cursor:pointer; border:1px solid var(--border-color);">
+              <a href="${item.link}" target="_blank">[View Paper]</a>
+            </div>`;
+          }
+        } else {
+          return `<span class='error'>File not found: ${filename}</span>`;
+        }
+      },
+      everything: () => {
+        function traverse(node, depth, pathPrefix) {
+          let output = "";
+          if (!node.children) return "";
+          for (const [name, item] of Object.entries(node.children)) {
+            const indent = "  ".repeat(depth);
+            const fullPath = pathPrefix ? `${pathPrefix}/${name}` : name;
+
+            if (item.type === 'dir') {
+              output += `${indent}<span class="highlight" style="cursor:pointer" onclick="runCommand('cd ${fullPath}')">📂 ${name}/</span>\n`;
+              output += traverse(item, depth + 1, fullPath);
+            } else if (item.type === 'paper') {
+              output += `${indent}<span class="command-link" onclick="runOpen('${fullPath}')">🎓 ${item.title}</span> <span style="color:var(--result-color)">(${item.venue})</span>\n`;
+            } else if (item.type === 'link') {
+              output += `${indent}<span class="command-link" onclick="runOpen('${fullPath}')">🔗 ${name}</span> <span style="color:var(--result-color)">-> ${item.description}</span>\n`;
+            } else if (item.type === 'text') {
+              output += `${indent}<span class="command-link" onclick="runOpen('${fullPath}')">📄 ${name}</span>\n`;
+            }
+          }
+          return output;
+        }
+        return traverse(rootFileSystem, 0, "");
+      },
+      clear: () => {
+        outputDiv.innerHTML = '';
+        return null;
+      },
+      theme: (args) => {
+        if (!args || args.length === 0) {
+          return `Usage: theme &lt;name&gt;\nAvailable themes: ${Object.keys(themes).join(', ')}`;
+        }
+        const themeName = args[0].toLowerCase();
+        if (themes[themeName]) {
+          const theme = themes[themeName];
+          for (const [key, value] of Object.entries(theme)) {
+            document.documentElement.style.setProperty(key, value);
+          }
+          return `Theme switched to <span class="highlight">${themeName}</span>.`;
+        } else {
+          return `<span class="error">Theme '${themeName}' not found.</span>`;
+        }
+      },
+      history: () => {
+        return commandHistory.map((cmd, i) => `${i + 1}  ${cmd}`).join('\n');
+      },
+      date: () => {
+        return new Date().toString();
+      },
+      weather: () => {
+        return "Look out the window, human. ☁️";
+      },
+      // Fun commands
+      sudo: () => {
+        return `<span class='error'>guest is not in the sudoers file. This incident will be reported.</span>`;
+      },
+      whoami: () => {
+        return "guest";
+      },
+      reboot: () => {
+        setTimeout(() => location.reload(), 500);
+        return "Rebooting system...";
+      },
+      sl: () => {
+        return `<pre class="ascii-art">
+      ====        ________                ___________
+  _D _|  |_______/        \\__I_I_____===__|_________|
+   |(_)---  |   H\\________/ |   |        =|___ ___|      _________________
+   /     |  |   H  |  |     |   |         ||_| |_||     _|                \\_____A
+  |      |  |   H  |__--------------------| [___] |   =|                        |
+  | ________|___H__/__|_____/[][]~\\_______|       |   -|                        |
+  |/ |   |-----------I_____I [][] []  D   |=======|____|________________________|_
+__/ =| o |=-~\\  /~=|_| o | |_| []_|_[]____|  |  |  |  |_______________________|
+ |___|___|  ||  || |___|___| |__|  |______|__|__|__|__________________________|
+             \\__/
+        </pre>`;
+      },
+      screenfetch: () => {
+        const banner = `
+                                                             . .     
+ @#######****####**+######*########***#####*#+*####*####**########## 
+ @*********#*****###**#***********####*****####*#####*######*####### 
+ @*#######*****#*****#***+--:.....:=+**####***###**#####*#*####*#### 
+ @*******+#******#****=-=@@@%@@@@@@* *=***####***##*############*### 
+ @**********##******+-+@@ *+@@@*@#@@@@ . .-+*####**##****####*####*# 
+ @****************#==@@ -*%@@%@%%@@@@@@@@@@ -+**##***####*#####*#### 
+ @**************%+*-@@%#@@@@@@@@@@@@@@%@#@@@@ -+*###*#####**#####*## 
+ @*+#*#*********=-- #%-@@@@@+%@%@@@@@@@@@*@@@@#  .-*****####**###### 
+ @******+*****+#-.@#@@@@@@@@@@@@@@@%@@@@@@@@@@@@@@::-*#***####*##### 
+ @*********++-+ *@@@@@@@@@@@@%##@@@@@@@@@@@@@#@@@*@@+.+##**#*##*#### 
+ @+****+***+ @@@@@@@@@+%+@**#%*@#-==--++@@@@@@##@@@@@@.+###**###*### 
+ @***+%%**=:%@@@@@@==.-=-*=+-=---=:--:::.:@@@@+@@@#%#@%-**##**###*## 
+ @****+++=-@@%@@@@==+*%##**#*++=--:===--:.. @@@=@@@%@*@:+*###***#**# 
+ @*******=*@@@@@@+:+-=#+#*##*++++=:=+===.:.  +@@*@@@%@@@:***###*#### 
+ @#**+***=.@@@@@@:+%%+@#@*@%+##**#*---:=--     @@@@=@=%@.***###**### 
+ @#******-.@@@@@@+:=-*##%**%+-+++=+*+=+:=::::    .@@=@=@-+****##**## 
+ @#******=@@*@@@**%@%+=-::::::-+:-===:-.:     .    @@%:@@-***####*## 
+ @#******= @@@@*+%**:*@@@@@@@%-:--=+-:-:+ @#@*= .  @@=%.@+****###*## 
+ @%*******:#@@@--:@.@@@%===%@@@%=+..:@+:+*@* -     @@@@*@##****##**# 
+ %%*******= @@@  @@ @-.@+=.+ =%#@@@#@ +@@--    @@@ @+@%@%@=#**####*# 
+ #%********:#@@-@%@%@@@@.@@ @@*:@@*  .@@@@@ @ :  .*@@@@-=@+****###*# 
+ %@********- *@ =*# #+%%#*#@@-@@@% @@@.@@#:   ..   @@@@+=+*****###*# 
+ #@********=@@@ *+@%++++*++++*%%%#  . *=.#%- .* +-  # @***#***###**# 
+ *@********= @@ %@+####**+%**%%#*%+:.+.-  . *%+--  .*@@#**#***##**## 
+ *@*********.@@ .+#++#**%#%@@..=**.    -@%::-:...  @ @*#*##***##*### 
+ =@*********-@%@-**##**++:*@@@@@@@- @@+%=@@-. ..   # @***##***#**### 
+ =@*********+.%@.:@@@%#-.:@*++*+=%%+.. .  @@*:- . +: @***#***##*##** 
+ =@*****+****+:@@-*@%@@++@@#=+*#--=-::.    @:-...  @@@*###**##**#**# 
+ =@***********==+.%%%%#-@%@@@@@%@*@@@-= @@ @...   @@#*##****#*###*## 
+ -@*************#*=#%%%*+@@%@@@%*-@%% .% @-* .   @@**#***##*###**### 
+ :@***************+=#@#%##+===*@#*+      .:...  @@**#**###*###*##### 
+ :@*****************=@@@%%##@%%#==+**=-*+: .:  @@###**###*##**###*## 
+ :@**********#*****#--#@@%###%#@#+*+==@+:. .. @@*#**###*###*######## 
+ :@*********+******%.@*=##+#++**+-:#.     .-. @##*##**##**####*###*# 
+ :@*#*****#********#.@@@@%@%%@%%@#-#*=- -*-.. @#*#**##*####*####*### 
+ :@%***************%.@%*@#@@@@@@@@@@@%@#:.... @#*##**###*###*%###### 
+ :@%***********=.:-#:@%######%@@@@#=..  ..::. @=**#########*######## 
+ :%%********#*- @@:**@#*%%##%%#%*+=-..   :.:. @@#=+*###*############.
+ :#@###***=.  =@@.=#*%%##%%####*.:*%+  . ....   @@+.:-+*############ 
+ :#@*+-.   @@@@@@@-+###@####@@@@@- + .:::-::..  #@@@@@#:---=+#####%#.
+ :*#. +@@@@@@@@@@@@+-+*%%##*#@@@@@:   .::-...   @@@@@%@@@@@@*--==+*#.
+    @@@@@@@@@@@@@@@@@==+#%#*-=#@@@@*:::.=:.   .@@*@@%%%@@@@@@@@@@@=- 
+:@@@@@@@@@@@@@@@@@@@@@@+-=+#+=.#+*+=+:::.    @@@@%@%%@#@@@%@@@@@@@@@*
+%@@@@@@@%@@@%@@@%@@@@@@@@@*--...:*+==-.    @@@@#@@%@%@%@@%#@@@@%@@@@*
+#@@@@@@@@@@@@@%@@@%@@%@@@@@@@@          @@@@%%@@@@%@%@%%@%@@@%@@@%@@*
+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##@@@@%@@@@@@%@@@#@@*
+%@%%@@@@@@@@@@@@@@%@@@@@@@#@@@@@@@@@@@@@@@%@%%%@@@@@%@@@@@@@@%@@@%@@*
+%@@@#@@@@@@@@@@@@@@@@@@@@@@@@@@@%@@@@@@@%@%@@@@%#@@@@%#@@@@@%%@@%%@@+
+#@@@@@%@@@@@@#@@@@@@@@@@@@@@@@@@@@#@@@@@@%@@#%@@%@@@%@@@@%@@@@@@%@@@+
+%@%@@#%@@@@@@@@@%@@@@@@@@@@@@@@@@@@@#@@@%@@@@@@%@@#@@@%%@@@@%@@@#@@@#
+%@@@@@%@@@@@@@@@@@@@@@@@@@@@@@@@%@@@@%@%@@@%@%@@@@@@@@@%@%@%%@@@#@@@+
+%@@@@@#@@@@@@@@@%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%@@@%@@@%@@@@@@%@@#@@#
+*##%@@*%#%%#%%#%%%%%#%#####%#########*#########*%+%###%*%###+#*%%*@@*
+`;
+        return `<div class="banner">${banner}</div>`;
+      }
+    };
+
+    // Initial greeting
+    // Show about (Simulate command execution for dialogue effect)
+    processCommand('cat about');
+    // Show ls (Simulate command execution)
+    processCommand('ls');
+    // Help hint
+    printLine("Type 'help' to see available commands.", "result");
+
+    // Modal Logic
+    function openModal(url, title) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-frame').src = url;
+      document.getElementById('modal-overlay').style.display = 'flex';
+      // Reset size on open
+      const modal = document.getElementById('modal-window');
+      modal.classList.remove('modal-minimized');
+      document.getElementById('modal-resize-btn').textContent = '[−] Shrink';
+    }
+    window.closeModal = () => {
+      document.getElementById('modal-overlay').style.display = 'none';
+      document.getElementById('modal-frame').src = '';
+    };
+    window.toggleModalSize = () => {
+      const modal = document.getElementById('modal-window');
+      const btn = document.getElementById('modal-resize-btn');
+      modal.classList.toggle('modal-minimized');
+      if (modal.classList.contains('modal-minimized')) {
+        btn.textContent = '[+] Enlarge';
+      } else {
+        btn.textContent = '[−] Shrink';
+      }
+    };
+
+    // Mobile toolbar helper
+    window.simulateKey = (key) => {
+      const event = new KeyboardEvent('keydown', { key: key });
+      inputField.dispatchEvent(event);
+      inputField.focus();
+    };
+
+    inputField.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (historyIndex > 0) {
+          historyIndex--;
+          this.value = commandHistory[historyIndex];
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex < commandHistory.length - 1) {
+          historyIndex++;
+          this.value = commandHistory[historyIndex];
+        } else {
+          historyIndex = commandHistory.length;
+          this.value = '';
+        }
+      }
+
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const currentVal = this.value;
+
+        // Generate suggestions if needed
+        if (suggestions.length === 0) {
+          suggestions = getSuggestions(currentVal);
+          suggestionIndex = -1;
+        }
+
+        if (suggestions.length > 0) {
+          suggestionIndex = (suggestionIndex + 1) % suggestions.length;
+          this.value = suggestions[suggestionIndex];
+          // Clear ghost text when cycling
+          suggestionDiv.textContent = '';
+          updateAutocompleteBox();
+        }
+        return;
+      } else if (e.key !== 'Shift' && e.key !== 'Control' && e.key !== 'Alt') {
+        // Reset suggestions on typing other keys
+        suggestions = [];
+        suggestionIndex = -1;
+      }
+
+      if (e.key === 'Enter') {
+        const input = this.value.trim();
+        if (input) {
+          commandHistory.push(input);
+          historyIndex = commandHistory.length;
+          suggestionDiv.textContent = '';
+          autocompleteBox.style.display = 'none';
+          processCommand(input);
+        } else {
+          const line = document.createElement('div');
+          line.className = 'output-line';
+          line.innerHTML = `<span class="prompt">${getPrompt()}</span>`;
+          outputDiv.appendChild(line);
+        }
+        this.value = '';
+        window.scrollTo(0, document.body.scrollHeight);
+      }
+    });
+
+    inputField.addEventListener('input', function () {
+      const val = this.value;
+      suggestionDiv.textContent = '';
+      if (!val) return;
+
+      // Check for command match
+      const parts = val.split(' ');
+      const cmd = parts[0];
+
+      // Update ghost text (first match only)
+      suggestions = getSuggestions(val);
+      const matches = suggestions;
+
+      if (val && matches.length > 0) {
+        // Only show ghost text if it starts with current input
+        if (matches[0].startsWith(val)) {
+          suggestionDiv.textContent = matches[0];
+        } else {
+          suggestionDiv.textContent = '';
+        }
+        updateAutocompleteBox(matches);
+      } else {
+        suggestionDiv.textContent = '';
+        autocompleteBox.style.display = 'none';
+      }
+    });
+
+    function updateAutocompleteBox(matches) {
+      if (!matches || matches.length === 0) {
+        autocompleteBox.style.display = 'none';
+        return;
+      }
+      autocompleteBox.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="applySuggestion('${m}')">${m}</div>`).join('');
+      autocompleteBox.style.display = 'block';
+    }
+
+    window.applySuggestion = (val) => {
+      inputField.value = val;
+      inputField.focus();
+      autocompleteBox.style.display = 'none';
+      suggestionDiv.textContent = '';
+    };
+
+    function getSuggestions(input) {
+      if (!input) return [];
+      const parts = input.split(' ');
+      const cmd = parts[0];
+      const arg = parts.slice(1).join(' ');
+
+      if (parts.length === 1) {
+        return Object.keys(commands).filter(c => c.startsWith(cmd.toLowerCase()));
+      } else {
+        const dirNode = getCurrentDirNode();
+        if (!dirNode || !dirNode.children) return [];
+
+        const files = Object.keys(dirNode.children).map(name => {
+          if (dirNode.children[name].type === 'dir') return name + '/';
+          return name;
+        });
+
+        if (cmd === 'cd') {
+          // Filter only dirs
+          const dirs = files.filter(f => f.endsWith('/')); // Case insensitive match could be added here
+          return dirs.filter(d => d.toLowerCase().startsWith(arg.toLowerCase())).map(d => `${cmd} ${d}`);
+        } else if (cmd === 'cat') {
+          return files.filter(f => f.toLowerCase().startsWith(arg.toLowerCase())).map(f => `${cmd} ${f}`);
+        }
+      }
+      return [];
+    }
+
+    document.addEventListener('click', (e) => {
+      // Don't focus if selecting text
+      if (window.getSelection().toString()) return;
+      // Don't focus if clicking inside modal or autocomplete
+      if (e.target.closest('#modal-window') || e.target.closest('#autocomplete-box')) return;
+
+      inputField.focus();
+    });
+
+    // Helper for clicking links (files)
+    window.runOpen = (filename) => {
+      inputField.value = `cat ${filename}`;
+      processCommand(inputField.value);
+      inputField.value = '';
+    };
+
+    // Helper for clicking commands (help menu)
+    window.runCommand = (cmd) => {
+      inputField.value = cmd;
+      processCommand(cmd);
+      inputField.value = '';
+    };
+
+    function processCommand(input) {
+      const interaction = document.createElement('div');
+      interaction.className = 'interaction';
+
+      const cmdLine = document.createElement('div');
+      cmdLine.className = 'output-line';
+      cmdLine.innerHTML = `<span class="prompt">${getPrompt()}</span> <span class="command">${escapeHtml(input)}</span>`;
+      interaction.appendChild(cmdLine);
+
+      const parts = input.split(' ');
+      const cmd = parts[0].toLowerCase();
+      const args = parts.slice(1);
+
+      let response = '';
+      if (commands[cmd]) { // Built-in command
+        response = commands[cmd](args);
+      } else if (cmd === '') {
+        response = null;
+      } else {
+        // Implicit command logic: try to resolve as path
+        const { node } = resolvePath(cmd);
+
+        if (node) {
+          if (node.type === 'dir') {
+            // Implicit cd
+            response = commands.cd([cmd]);
+          } else {
+            // Implicit cat (works for files, links, papers)
+            response = commands.cat([cmd]);
+          }
+        } else {
+          response = `<span class='error'>Command not found: ${cmd}. Type 'help' for list of commands.</span>`;
+        }
+      }
+
+      if (response !== null) {
+        const resultLine = document.createElement('div');
+        resultLine.className = `output-line result`;
+        resultLine.innerHTML = response;
+        interaction.appendChild(resultLine);
+      }
+      outputDiv.appendChild(interaction);
+
+      while (outputDiv.children.length > 6) {
+        outputDiv.removeChild(outputDiv.firstChild);
+      }
+
+      // Update the prompt to reflect path changes (e.g. after cd)
+      inputPrompt.textContent = getPrompt();
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function printLine(text, className) {
+      const line = document.createElement('div');
+      line.className = `output-line ${className || ''}`;
+      line.innerHTML = text;
+      outputDiv.appendChild(line);
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
 </body>
 
 </html>
