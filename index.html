@@ -444,31 +444,34 @@
       background: var(--bg-color);
       z-index: 1500;
       flex-direction: column;
-      padding: 20px;
+      padding: 40px;
       box-sizing: border-box;
       overflow-y: auto;
+      animation: fadeIn 0.3s ease-out;
     }
 
     #gui-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 10px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 20px;
     }
 
     #gui-path {
       font-weight: bold;
       color: var(--prompt-color);
-      font-size: 1.2em;
+      font-size: 1.8em;
+      text-shadow: 0 0 10px var(--glow-color);
     }
 
     #gui-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 25px;
       flex-grow: 1;
+      align-content: start;
     }
 
     .gui-item {
@@ -476,32 +479,70 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 15px;
+      padding: 25px;
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      background: rgba(255, 255, 255, 0.02);
     }
 
     .gui-item:hover {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.08);
       border-color: var(--highlight-color);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     }
 
     .gui-icon {
-      font-size: 32px;
-      margin-bottom: 10px;
+      font-size: 48px;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
     }
 
     .gui-label {
-      font-size: 12px;
+      font-size: 14px;
       color: var(--text-color);
       word-break: break-word;
+      font-weight: 500;
     }
 
     #gui-close {
-      font-size: 24px;
+      font-size: 32px;
       cursor: pointer;
+      color: var(--error-color);
+      transition: transform 0.2s;
+    }
+
+    #gui-close:hover {
+      transform: scale(1.1) rotate(90deg);
+    }
+
+    /* Desktop GUI Button */
+    #desktop-gui-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-color);
+      color: var(--highlight-color);
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font-stack);
+      font-weight: bold;
+      z-index: 100;
+      transition: all 0.2s;
+    }
+
+    #desktop-gui-btn:hover {
+      background: var(--border-color);
+    }
+
+    @media (max-width: 600px) {
+      #desktop-gui-btn {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -518,6 +559,8 @@
       </div>
     </div>
   </div>
+
+  <div id="desktop-gui-btn" onclick="toggleGui()">☰ GUI Mode</div>
 
   <!-- GUI Overlay -->
   <div id="gui-overlay">
@@ -620,6 +663,7 @@
   <span class="command-link" onclick="runCommand('pwd')">pwd</span>       - Print working directory
   <span class="command-link" onclick="runCommand('everything')">everything</span> - Show all content
   <span class="command-link" onclick="runCommand('screenfetch')">screenfetch</span> - Show system info
+  <span class="command-link" onclick="runCommand('gui')">gui</span>         - Open graphical interface
   <span class="command-link" onclick="runCommand('theme')">theme</span>     - Switch theme (default, hacker, retro, dracula)
   <span class="command-link" onclick="runCommand('history')">history</span>   - Show command history
   <span class="command-link" onclick="runCommand('date')">date</span>      - Show current date and time
@@ -782,6 +826,10 @@
       },
       weather: () => {
         return "Look out the window, human. ☁️";
+      },
+      gui: () => {
+        toggleGui();
+        return "Opening GUI mode...";
       },
       // Fun commands
       sudo: () => {
