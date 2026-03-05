@@ -1,1 +1,115 @@
-!function(){function n(n,e,t){return n.getAttribute(e)||t}function e(n){return document.getElementsByTagName(n)}function t(){var t=e("script"),o=t.length,i=t[o-1];return{l:o,z:n(i,"zIndex",-1),o:n(i,"opacity",.5),c:n(i,"color","0,0,0"),n:n(i,"count",99)}}function o(){a=m.width=window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth,c=m.height=window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight}function i(){r.clearRect(0,0,a,c);var n,e,t,o,m,l;s.forEach(function(i,x){for(i.x+=i.xa,i.y+=i.ya,i.xa*=i.x>a||i.x<0?-1:1,i.ya*=i.y>c||i.y<0?-1:1,r.fillRect(i.x-.5,i.y-.5,1,1),e=x+1;e<u.length;e++)n=u[e],null!==n.x&&null!==n.y&&(o=i.x-n.x,m=i.y-n.y,l=o*o+m*m,l<n.max&&(n===y&&l>=n.max/2&&(i.x-=.03*o,i.y-=.03*m),t=(n.max-l)/n.max,r.beginPath(),r.lineWidth=t/2,r.strokeStyle="rgba("+d.c+","+(t+.2)+")",r.moveTo(i.x,i.y),r.lineTo(n.x,n.y),r.stroke()))}),x(i)}var a,c,u,m=document.createElement("canvas"),d=t(),l="c_n"+d.l,r=m.getContext("2d"),x=window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(n){window.setTimeout(n,1e3/45)},w=Math.random,y={x:null,y:null,max:2e4};m.id=l,m.style.cssText="position:fixed;top:0;left:0;z-index:"+d.z+";opacity:"+d.o,e("body")[0].appendChild(m),o(),window.onresize=o,window.onmousemove=function(n){n=n||window.event,y.x=n.clientX,y.y=n.clientY},window.onmouseout=function(){y.x=null,y.y=null};for(var s=[],f=0;d.n>f;f++){var h=w()*a,g=w()*c,v=2*w()-1,p=2*w()-1;s.push({x:h,y:g,xa:v,ya:p,max:6e3})}u=s.concat([y]),setTimeout(function(){i()},100)}();
+/**
+ * Particle network background animation
+ * Tuned to match the site's color scheme and aesthetic.
+ */
+(function () {
+    const CONFIG = {
+        count: 60,           // number of particles
+        speed: 0.45,         // max speed per axis
+        color: '42,95,158',  // --color-accent-light (#2a5f9e)
+        opacity: 0.38,       // canvas layer opacity
+        linkDist: 5500,      // max squared distance to draw a line between particles
+        mouseDist: 18000,    // squared distance for mouse interaction
+        mouseRepel: 0.025,   // strength of mouse repulsion
+        zIndex: -1,
+    };
+
+    // Canvas setup
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.style.cssText = [
+        'position:fixed',
+        'top:0',
+        'left:0',
+        `z-index:${CONFIG.zIndex}`,
+        `opacity:${CONFIG.opacity}`,
+        'pointer-events:none',
+    ].join(';');
+    document.body.appendChild(canvas);
+
+    let W, H;
+    function resize() {
+        W = canvas.width = window.innerWidth || document.documentElement.clientWidth;
+        H = canvas.height = window.innerHeight || document.documentElement.clientHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Mouse
+    const mouse = { x: null, y: null, max: CONFIG.mouseDist };
+
+    window.addEventListener('mousemove', e => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+    window.addEventListener('mouseout', () => {
+        mouse.x = null;
+        mouse.y = null;
+    });
+
+    // Particles
+    function randSpeed() {
+        const v = (Math.random() * 2 - 1) * CONFIG.speed;
+        return v === 0 ? CONFIG.speed * 0.3 : v;
+    }
+
+    const particles = Array.from({ length: CONFIG.count }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: randSpeed(),
+        vy: randSpeed(),
+        max: CONFIG.linkDist,
+    }));
+
+    const all = particles.concat([mouse]);
+
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+
+            // Move
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x > W || p.x < 0) p.vx *= -1;
+            if (p.y > H || p.y < 0) p.vy *= -1;
+
+            // Draw dot
+            ctx.fillStyle = `rgba(${CONFIG.color},0.8)`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw links
+            for (let j = i + 1; j < all.length; j++) {
+                const q = all[j];
+                if (q.x === null || q.y === null) continue;
+
+                const dx = p.x - q.x;
+                const dy = p.y - q.y;
+                const dist2 = dx * dx + dy * dy;
+
+                if (dist2 >= q.max) continue;
+
+                // Mouse repulsion
+                if (q === mouse && dist2 < q.max / 2) {
+                    p.x -= CONFIG.mouseRepel * dx;
+                    p.y -= CONFIG.mouseRepel * dy;
+                }
+
+                const alpha = (1 - dist2 / q.max) * 0.6;
+                ctx.beginPath();
+                ctx.lineWidth = alpha * 1.2;
+                ctx.strokeStyle = `rgba(${CONFIG.color},${alpha})`;
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(q.x, q.y);
+                ctx.stroke();
+            }
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    setTimeout(draw, 100);
+})();
