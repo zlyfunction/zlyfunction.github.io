@@ -95,6 +95,27 @@
             color: var(--color-accent);
         }
 
+        #lang-toggle {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--color-accent);
+            background: none;
+            border: 1px solid var(--color-accent);
+            padding: 3px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-sans);
+            letter-spacing: 0.04em;
+            transition: all 0.2s;
+            line-height: 1.5;
+            text-transform: uppercase;
+        }
+
+        #lang-toggle:hover {
+            background: var(--color-accent);
+            color: #fff;
+        }
+
         /* ── Main Container ── */
         .container {
             max-width: var(--max-width);
@@ -554,6 +575,34 @@
             const el = document.getElementById(id);
             el.classList.toggle('show');
         }
+
+        function setLang(lang) {
+            // Swap plain-text elements
+            document.querySelectorAll('[data-en][data-zh]').forEach(function (el) {
+                el.textContent = el.getAttribute('data-' + lang);
+            });
+            // Show/hide dual-content blocks
+            document.querySelectorAll('.lang-en').forEach(function (el) {
+                el.style.display = lang === 'en' ? '' : 'none';
+            });
+            document.querySelectorAll('.lang-zh').forEach(function (el) {
+                el.style.display = lang === 'zh' ? '' : 'none';
+            });
+            // Update toggle button label
+            var btn = document.getElementById('lang-toggle');
+            if (btn) btn.textContent = lang === 'en' ? '中文' : 'EN';
+            // Update html lang attribute
+            document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hans';
+            localStorage.setItem('lang', lang);
+        }
+
+        function toggleLang() {
+            setLang((localStorage.getItem('lang') || 'en') === 'en' ? 'zh' : 'en');
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            setLang(localStorage.getItem('lang') || 'en');
+        });
     </script>
 </head>
 
@@ -561,12 +610,13 @@
     <!-- Navigation -->
     <nav>
         <div class="nav-inner">
-            <span class="nav-name">Leyi Zhu</span>
+            <span class="nav-name" data-en="Leyi Zhu" data-zh="朱乐宜">Leyi Zhu</span>
             <div class="nav-links">
-                <a href="#about">About</a>
-                <a href="#publications">Publications</a>
-                <a href="#misc">Misc</a>
-                <a href="#contact">Contact</a>
+                <a href="#about" data-en="About" data-zh="关于">About</a>
+                <a href="#publications" data-en="Publications" data-zh="论文">Publications</a>
+                <a href="#misc" data-en="Misc" data-zh="其他">Misc</a>
+                <a href="#contact" data-en="Contact" data-zh="联系">Contact</a>
+                <button id="lang-toggle" onclick="toggleLang()">中文</button>
             </div>
         </div>
     </nav>
@@ -578,12 +628,12 @@
             <div class="profile">
                 <img class="profile-photo" src="./public_html/Eric Zhu_files/citations.jpg" alt="Leyi Zhu" width="180" height="180">
                 <div class="profile-info">
-                    <h1>Leyi Zhu</h1>
-                    <p class="subtitle">Ph.D. in Computer Graphics</p>
-                    <p class="affiliation">Courant Institute of Mathematical Sciences, New York University</p>
+                    <h1 data-en="Leyi Zhu" data-zh="朱乐宜">Leyi Zhu</h1>
+                    <p class="subtitle" data-en="Ph.D. in Computer Graphics" data-zh="计算机图形学博士">Ph.D. in Computer Graphics</p>
+                    <p class="affiliation" data-en="Courant Institute of Mathematical Sciences, New York University" data-zh="纽约大学柯朗数学科学研究所">Courant Institute of Mathematical Sciences, New York University</p>
                     <div class="profile-links">
-                        <a href="./public_html/CV.pdf">Curriculum Vitae</a>
-                        <a href="mailto:leyi@nyu.edu">Email</a>
+                        <a href="./public_html/CV.pdf" data-en="Curriculum Vitae" data-zh="个人简历">Curriculum Vitae</a>
+                        <a href="mailto:leyi@nyu.edu" data-en="Email" data-zh="邮件">Email</a>
                     </div>
                 </div>
             </div>
@@ -591,7 +641,7 @@
 
         <!-- Bio -->
         <section class="bio">
-            <p>
+            <p class="lang-en">
                 I received my Ph.D. in Computer Science from the
                 <a href="http://cims.nyu.edu/">Courant Institute of Mathematical Sciences</a>,
                 New York University, advised by
@@ -603,15 +653,26 @@
                 <a href="http://www.ustc.edu.cn/">University of Science and Technology of China</a>,
                 School of the Gifted Young (<span lang="zh-Hans">少年班学院</span>), in 2019.
             </p>
-            <div class="research-interests">
+            <p class="lang-zh" style="display:none">
+                我在<a href="http://cims.nyu.edu/">纽约大学柯朗数学科学研究所</a>获得计算机科学博士学位，导师为
+                <a href="https://cims.nyu.edu/gcl/daniele.html">Daniele Panozzo</a> 教授和
+                <a href="https://cims.nyu.edu/gcl/denis.html">Denis Zorin</a> 教授。
+                我的博士研究专注于<strong>有保证的曲面参数化与重网格化</strong>，
+                开发了具有可证明正确性和鲁棒性的几何处理算法。
+                我于 2019 年在<a href="http://www.ustc.edu.cn/">中国科学技术大学</a><span lang="zh-Hans">少年班学院</span>获得计算数学学士学位。
+            </p>
+            <div class="research-interests lang-en">
                 <strong>Research Interests:</strong> Computer Graphics (Geometric Computing &amp; Physics-based
                 Simulation), Scientific Computing, and Machine Learning.
+            </div>
+            <div class="research-interests lang-zh" style="display:none">
+                <strong>研究方向：</strong>计算机图形学（几何计算与物理仿真）、科学计算与机器学习。
             </div>
         </section>
 
         <!-- Publications -->
         <section class="publications" id="publications">
-            <h2 class="section-title">Selected Publications</h2>
+            <h2 class="section-title" data-en="Selected Publications" data-zh="代表性论文">Selected Publications</h2>
 
             <!-- Pub 1 -->
             <div class="pub-item">
@@ -620,14 +681,14 @@
                 <div class="pub-details">
                     <p class="pub-title">Which Cross Fields Can Be Quadrangulated?</p>
                     <p class="pub-venue">ACM Transaction on Graphics (SIGGRAPH), 2022</p>
-                    <p class="pub-meta">Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo</p>
+                    <p class="pub-meta" data-en="Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo" data-zh="导师：Denis Zorin 教授、Daniele Panozzo 教授">Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo</p>
                     <div class="pub-buttons">
                         <a class="pub-btn"
                             href="http://graphics.cs.uos.de/papers/Holonomy_Signature_Parametrization-SIGGRAPH2022_Preprint.pdf"
-                            target="_blank">Paper</a>
+                            target="_blank" data-en="Paper" data-zh="论文">Paper</a>
                         <a class="pub-btn" href="https://github.com/hankstag/seamless_signature"
-                            target="_blank">Code</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract1')">Abstract</button>
+                            target="_blank" data-en="Code" data-zh="代码">Code</a>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract1')" data-en="Abstract" data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract1" class="abstract">
                         <ul>
@@ -658,13 +719,13 @@
                 <div class="pub-details">
                     <p class="pub-title">Efficient and Robust Discrete Conformal Equivalence with Boundary</p>
                     <p class="pub-venue">ACM Transaction on Graphics (SIGGRAPH Asia), 2021</p>
-                    <p class="pub-meta">Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo</p>
+                    <p class="pub-meta" data-en="Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo" data-zh="导师：Denis Zorin 教授、Daniele Panozzo 教授">Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo</p>
                     <div class="pub-buttons">
                         <a class="pub-btn" href="https://cims.nyu.edu/gcl/papers/2021-Conformal.pdf"
-                            target="_blank">Paper</a>
+                            target="_blank" data-en="Paper" data-zh="论文">Paper</a>
                         <a class="pub-btn" href="https://github.com/geometryprocessing/ConformalIdealDelaunay"
-                            target="_blank">Code</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract2')">Abstract</button>
+                            target="_blank" data-en="Code" data-zh="代码">Code</a>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract2')" data-en="Abstract" data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract2" class="abstract">
                         <ul>
@@ -694,13 +755,13 @@
                     <p class="pub-title">Simulation and Visualization of Ductile Fracture with the Material Point Method
                     </p>
                     <p class="pub-venue">ACM SIGGRAPH / Eurographics Symposium on Computer Animation (SCA), 2019</p>
-                    <span class="pub-award">&#9733; Best Paper Award</span>
-                    <p class="pub-meta">Advisor: Prof. Joseph Teran</p>
+                    <span class="pub-award" data-en="★ Best Paper Award" data-zh="★ 最佳论文奖">★ Best Paper Award</span>
+                    <p class="pub-meta" data-en="Advisor: Prof. Joseph Teran" data-zh="导师：Joseph Teran 教授">Advisor: Prof. Joseph Teran</p>
                     <div class="pub-buttons">
                         <a class="pub-btn" href="https://stephaniewang.page/files/fracture_paper.pdf"
-                            target="_blank">Paper</a>
-                        <a class="pub-btn" href="https://www.youtube.com/watch?v=JsHeG0nk7JU" target="_blank">Video</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract3')">Abstract</button>
+                            target="_blank" data-en="Paper" data-zh="论文">Paper</a>
+                        <a class="pub-btn" href="https://www.youtube.com/watch?v=JsHeG0nk7JU" target="_blank" data-en="Video" data-zh="视频">Video</a>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract3')" data-en="Abstract" data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract3" class="abstract">
                         <ul>
@@ -734,11 +795,11 @@
                 <div class="pub-details">
                     <p class="pub-title">Vehicle Re-Id by Deep Feature Fusion Based on Joint Bayesian Criterion</p>
                     <p class="pub-venue">International Conference on Pattern Recognition (ICPR), 2018</p>
-                    <p class="pub-meta">Advisor: Prof. Mingtao Pei</p>
+                    <p class="pub-meta" data-en="Advisor: Prof. Mingtao Pei" data-zh="导师：裴明涛 教授">Advisor: Prof. Mingtao Pei</p>
                     <div class="pub-buttons">
                         <a class="pub-btn" href="https://ieeexplore.ieee.org/document/8545531/"
-                            target="_blank">Paper</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract4')">Abstract</button>
+                            target="_blank" data-en="Paper" data-zh="论文">Paper</a>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract4')" data-en="Abstract" data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract4" class="abstract">
                         <ul>
@@ -762,33 +823,32 @@
 
         <!-- Miscellaneous -->
         <section class="misc-section" id="misc">
-            <h2 class="section-title">Miscellaneous</h2>
+            <h2 class="section-title" data-en="Miscellaneous" data-zh="其他">Miscellaneous</h2>
             <div class="misc-grid">
                 <a class="misc-card" href="./fish.html">
                     <div class="misc-card-icon">🐟</div>
-                    <p class="misc-card-title">Touch Fish (摸鱼)</p>
-                    <p class="misc-card-desc">Fish procedurally generated with randomized geometric shapes.</p>
+                    <p class="misc-card-title" data-en="Touch Fish (摸鱼)" data-zh="摸鱼">Touch Fish (摸鱼)</p>
+                    <p class="misc-card-desc" data-en="Fish procedurally generated with randomized geometric shapes." data-zh="用随机几何形状程序化生成的鱼。">Fish procedurally generated with randomized geometric shapes.</p>
                 </a>
                 <a class="misc-card" href="./xmas.html">
                     <div class="misc-card-icon">🎄</div>
-                    <p class="misc-card-title">Christmas Tree</p>
-                    <p class="misc-card-desc">A randomly generated, rotating Christmas tree. Inspired by 小红书 @summer.
-                    </p>
+                    <p class="misc-card-title" data-en="Christmas Tree" data-zh="圣诞树">Christmas Tree</p>
+                    <p class="misc-card-desc" data-en="A randomly generated, rotating Christmas tree. Inspired by 小红书 @summer." data-zh="随机生成的旋转圣诞树。灵感来自小红书 @summer。">A randomly generated, rotating Christmas tree. Inspired by 小红书 @summer.</p>
                 </a>
             </div>
 
             <!-- Visitor Map -->
             <div class="visitor-map-wrap">
-                <p class="visitor-map-title">🌍 Visitor Map</p>
+                <p class="visitor-map-title" data-en="🌍 Visitor Map" data-zh="🌍 访客地图">🌍 Visitor Map</p>
                 <script type="text/javascript" id="clstr_globe" src="//clustrmaps.com/globe.js?d=arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"></script>
             </div>
         </section>
 
         <!-- Contact -->
         <section class="contact" id="contact">
-            <h2 class="section-title">Contact</h2>
+            <h2 class="section-title" data-en="Contact" data-zh="联系方式">Contact</h2>
             <div class="contact-card" style="max-width: 400px;">
-                <p class="label">Email</p>
+                <p class="label" data-en="EMAIL" data-zh="邮箱">Email</p>
                 <p class="value"><a href="mailto:leyi@nyu.edu">leyi@nyu.edu</a></p>
             </div>
         </section>
@@ -797,7 +857,7 @@
 
     <footer>
         <div class="container">
-            &copy; 2026 Leyi Zhu
+            <span data-en="© 2026 Leyi Zhu" data-zh="© 2026 朱乐宜">© 2026 Leyi Zhu</span>
         </div>
     </footer>
     <script defer src="./public_html/test.js"></script>
