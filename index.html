@@ -499,6 +499,50 @@
             margin: 0;
         }
 
+        /* ── Thesis Visual ── */
+        .thesis-visual {
+            margin: 28px 0 0;
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--color-surface);
+            transition: box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .thesis-visual:hover {
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+            border-color: #ccc;
+        }
+
+        .thesis-visual img {
+            width: 100%;
+            display: block;
+        }
+
+        .thesis-caption {
+            padding: 12px 18px;
+            font-size: 0.83rem;
+            color: var(--color-text-secondary);
+            margin: 0;
+            text-align: center;
+            border-top: 1px solid var(--color-border);
+            line-height: 1.7;
+        }
+
+        .thesis-caption em {
+            color: var(--color-text);
+            font-style: italic;
+        }
+
+        .thesis-caption a {
+            color: var(--color-accent-light);
+            text-decoration: none;
+        }
+
+        .thesis-caption a:hover {
+            text-decoration: underline;
+        }
+
         /* ── Visitor Map ── */
         .visitor-map-wrap {
             margin-top: 28px;
@@ -667,6 +711,23 @@
             </div>
             <div class="research-interests lang-zh" style="display:none">
                 <strong>研究方向：</strong>计算机图形学（几何计算与物理仿真）、科学计算与机器学习。
+            </div>
+
+            <!-- Thesis Visual -->
+            <div class="thesis-visual">
+                <img src="./public_html/respic/thesis-gemini.png"
+                    alt="Gemini's illustration of Surface Parametrization and Remeshing with Guarantees"
+                    width="1456" height="816">
+                <p class="thesis-caption lang-en">
+                    🤖 Gemini's take on my thesis <em>Surface Parametrization and Remeshing with Guarantees</em>,
+                    advised by <a href="https://cims.nyu.edu/gcl/daniele.html">Prof. Daniele Panozzo</a> and
+                    <a href="https://cims.nyu.edu/gcl/denis.html">Prof. Denis Zorin</a>.
+                </p>
+                <p class="thesis-caption lang-zh" style="display:none">
+                    🤖 Gemini 对我的博士论文《有保证的曲面参数化与重网格化》的理解，
+                    导师为 <a href="https://cims.nyu.edu/gcl/daniele.html">Daniele Panozzo</a> 教授和
+                    <a href="https://cims.nyu.edu/gcl/denis.html">Denis Zorin</a> 教授。
+                </p>
             </div>
         </section>
 
