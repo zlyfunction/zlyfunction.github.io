@@ -13,18 +13,20 @@
         rel="stylesheet">
     <style>
         :root {
-            --color-bg: #fafaf8;
-            --color-surface: #ffffff;
-            --color-text: #1a1a2e;
-            --color-text-secondary: #4a4a6a;
-            --color-accent: #1e3a5f;
-            --color-accent-light: #2a5f9e;
-            --color-border: #e2e2e2;
-            --color-highlight: #f0f4f8;
-            --color-award: #8b6914;
+            --color-bg: #fdf9f4;
+            --color-surface: #fffefb;
+            --color-text: #2a2018;
+            --color-text-secondary: #5a5040;
+            --color-accent: #2c4a7c;
+            --color-accent-light: #3a72b8;
+            --color-border: #e8e0d4;
+            --color-highlight: #f0ece4;
+            --color-award: #9a6c10;
+            --color-card-shadow: rgba(80, 60, 30, 0.08);
             --font-serif: 'Source Serif 4', 'Georgia', serif;
             --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
             --max-width: 820px;
+            --radius-card: 14px;
         }
 
         *,
@@ -53,7 +55,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(253, 249, 244, 0.94);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--color-border);
         }
@@ -138,10 +140,18 @@
             flex-shrink: 0;
             width: 180px;
             height: 180px;
-            border-radius: 12px;
+            border-radius: 20px;
             object-fit: cover;
+            object-position: center 55%;
             border: 3px solid var(--color-border);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 6px 24px var(--color-card-shadow);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .profile-photo:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 32px var(--color-card-shadow);
         }
 
         .profile-info h1 {
@@ -181,9 +191,9 @@
             font-weight: 500;
             color: var(--color-accent);
             text-decoration: none;
-            padding: 6px 14px;
-            border: 1px solid var(--color-accent);
-            border-radius: 6px;
+            padding: 6px 16px;
+            border: 1.5px solid var(--color-accent);
+            border-radius: 20px;
             transition: all 0.2s;
         }
 
@@ -229,7 +239,7 @@
             background: var(--color-highlight);
             border-left: 3px solid var(--color-accent);
             padding: 14px 20px;
-            border-radius: 0 8px 8px 0;
+            border-radius: 0 12px 12px 0;
             margin: 20px 0 0;
             font-size: 0.95rem;
         }
@@ -265,13 +275,14 @@
             margin-bottom: 18px;
             background: var(--color-surface);
             border: 1px solid var(--color-border);
-            border-radius: 10px;
-            transition: box-shadow 0.25s ease, border-color 0.25s ease;
+            border-radius: var(--radius-card);
+            transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
         }
 
         .pub-item:hover {
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
-            border-color: #ccc;
+            box-shadow: 0 8px 28px var(--color-card-shadow);
+            border-color: #d4c8b8;
+            transform: translateY(-1px);
         }
 
         .pub-thumb {
@@ -279,9 +290,9 @@
             width: 150px;
             height: 100px;
             object-fit: cover;
-            border-radius: 6px;
+            border-radius: 10px;
             border: 1px solid var(--color-border);
-            background: #f5f5f5;
+            background: #f5f0e8;
         }
 
         .pub-details {
@@ -345,9 +356,9 @@
             font-weight: 500;
             color: var(--color-accent);
             background: none;
-            border: 1px solid var(--color-accent);
+            border: 1.5px solid var(--color-accent);
             padding: 4px 12px;
-            border-radius: 4px;
+            border-radius: 12px;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 0.04em;
@@ -420,7 +431,7 @@
         .contact-card {
             background: var(--color-surface);
             border: 1px solid var(--color-border);
-            border-radius: 10px;
+            border-radius: var(--radius-card);
             padding: 20px 22px;
         }
 
@@ -464,7 +475,7 @@
         .misc-card {
             background: var(--color-surface);
             border: 1px solid var(--color-border);
-            border-radius: 10px;
+            border-radius: var(--radius-card);
             padding: 20px 22px;
             text-decoration: none;
             color: inherit;
@@ -473,7 +484,7 @@
         }
 
         .misc-card:hover {
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+            box-shadow: 0 8px 28px var(--color-card-shadow);
             border-color: var(--color-accent-light);
             transform: translateY(-2px);
         }
@@ -621,6 +632,14 @@
             el.classList.toggle('show');
         }
 
+        function toggleProfilePhoto() {
+            var img = document.getElementById('profile-photo');
+            var isCartoon = img.dataset.state !== 'real';
+            img.src = isCartoon ? './IMG_7036.JPG' : './IMG_7035.PNG';
+            img.dataset.state = isCartoon ? 'real' : 'cartoon';
+            img.title = isCartoon ? 'Click to see the cartoon version' : 'Click to see the real me';
+        }
+
         function setLang(lang) {
             // Swap plain-text elements
             document.querySelectorAll('[data-en][data-zh]').forEach(function (el) {
@@ -671,7 +690,7 @@
         <!-- Profile -->
         <section class="profile-section" id="about">
             <div class="profile">
-                <img class="profile-photo" src="./public_html/Eric Zhu_files/citations.jpg" alt="Leyi Zhu" width="180" height="180">
+                <img id="profile-photo" class="profile-photo" src="./IMG_7035.PNG" alt="Leyi Zhu" width="180" height="180" data-state="cartoon" title="Click to see the real me" onclick="toggleProfilePhoto()">
                 <div class="profile-info">
                     <h1 data-en="Leyi Zhu" data-zh="朱乐宜">Leyi Zhu</h1>
                     <p class="subtitle" data-en="Ph.D. in Computer Science" data-zh="计算机科学博士">Ph.D. in Computer Science</p>
