@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloth Simulation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0f;
+      overflow: hidden;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    canvas {
+      display: block;
+      cursor: crosshair;
+    }
+    #ui {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      color: rgba(255,255,255,0.5);
+      font-size: 12px;
+      line-height: 1.8;
+      pointer-events: none;
+      user-select: none;
+    }
+    #ui span {
+      color: rgba(255,255,255,0.85);
+    }
+    #controls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    button {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.7);
+      padding: 7px 14px;
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s;
+      letter-spacing: 0.03em;
+    }
+    button:hover {
+      background: rgba(255,255,255,0.13);
+      color: rgba(255,255,255,0.95);
+      border-color: rgba(255,255,255,0.3);
+    }
+    button.active {
+      background: rgba(120,180,255,0.15);
+      border-color: rgba(120,180,255,0.4);
+      color: rgba(140,200,255,0.95);
+    }
+    #title {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.15);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  drag  — <span>pull cloth</span><br>
+  right-click — <span>cut cloth</span><br>
+  shift+drag — <span>wind burst</span>
+</div>
+<div id="controls">
+  <button id="btnReset">reset</button>
+  <button id="btnGravity" class="active">gravity</button>
+  <button id="btnWind">wind</button>
+  <button id="btnColor">color mode</button>
+</div>
+<div id="title">cloth simulation</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+// ── Config ────────────────────────────────────────────────────────────────────
+const CFG = {
+  cols: 40,
+  rows: 28,
+  spacing: 18,
+  stiffness: 15,    // constraint solve iterations
+  gravity: 0.4,
+  damping: 0.99,
+  tearDist: 60,     // max stretch before tear
+  mouseRadius: 40,
+  mousePull: 8,
+  windStrength: 0,
+  windFreq: 0.003,
+};
+
+let gravityOn = true;
+let windOn = false;
+let colorMode = 0; // 0=mono, 1=stress, 2=depth
+let time = 0;
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let particles = [];
+let constraints = [];
+let mouse = { x: 0, y: 0, px: 0, py: 0, down: false, right: false, shift: false };
+
+// ── Particle ──────────────────────────────────────────────────────────────────
+function Particle(x, y, pinned) {
+  return { x, y, px: x, py: y, pinned, vx: 0, vy: 0 };
+}
+
+// ── Constraint ────────────────────────────────────────────────────────────────
+function Constraint(p1, p2) {
+  const dx = p1.x - p2.x, dy = p1.y - p2.y;
+  return { p1, p2, len: Math.sqrt(dx*dx + dy*dy), active: true };
+}
+
+// ── Build cloth ───────────────────────────────────────────────────────────────
+function buildCloth() {
+  particles = [];
+  constraints = [];
+
+  const W = canvas.width, H = canvas.height;
+  const totalW = (CFG.cols - 1) * CFG.spacing;
+  const startX = (W - totalW) / 2;
+  const startY = H * 0.08;
+
+  for (let r = 0; r < CFG.rows; r++) {
+    for (let c = 0; c < CFG.cols; c++) {
+      const x = startX + c * CFG.spacing;
+      const y = startY + r * CFG.spacing;
+      // pin top row at every 4th point
+      const pinned = r === 0 && c % 4 === 0;
+      particles.push(Particle(x, y, pinned));
+    }
+  }
+
+  for (let r = 0; r < CFG.rows; r++) {
+    for (let c = 0; c < CFG.cols; c++) {
+      const i = r * CFG.cols + c;
+      if (c < CFG.cols - 1) constraints.push(Constraint(particles[i], particles[i + 1]));
+      if (r < CFG.rows - 1) constraints.push(Constraint(particles[i], particles[i + CFG.cols]));
+    }
+  }
+}
+
+// ── Physics ───────────────────────────────────────────────────────────────────
+function update() {
+  time++;
+  const grav = gravityOn ? CFG.gravity : 0;
+  const windX = windOn ? Math.sin(time * CFG.windFreq * 2.1) * CFG.windStrength * 0.6 : 0;
+  const windY = windOn ? Math.abs(Math.cos(time * CFG.windFreq)) * CFG.windStrength * 0.1 : 0;
+
+  // Verlet integrate
+  for (const p of particles) {
+    if (p.pinned) continue;
+    const vx = (p.x - p.px) * CFG.damping;
+    const vy = (p.y - p.py) * CFG.damping;
+    p.px = p.x;
+    p.py = p.y;
+    p.x += vx + windX + (Math.random() - 0.5) * (windOn ? 0.3 : 0);
+    p.y += vy + grav + windY;
+    // floor
+    if (p.y > canvas.height - 2) { p.y = canvas.height - 2; p.py = p.y + vy * 0.3; }
+    // walls
+    if (p.x < 0) { p.x = 0; p.px = p.x - vx * 0.3; }
+    if (p.x > canvas.width) { p.x = canvas.width; p.px = p.x - vx * 0.3; }
+  }
+
+  // Mouse interaction
+  if (mouse.down) {
+    const dx = mouse.x - mouse.px;
+    const dy = mouse.y - mouse.py;
+    for (const p of particles) {
+      if (p.pinned) continue;
+      const ex = p.x - mouse.x, ey = p.y - mouse.y;
+      const dist = Math.sqrt(ex*ex + ey*ey);
+      if (mouse.right) {
+        // cut
+        if (dist < CFG.mouseRadius * 0.6) {
+          constraints.forEach(c => {
+            if (c.p1 === p || c.p2 === p) c.active = false;
+          });
+        }
+      } else if (mouse.shift) {
+        // wind burst
+        if (dist < CFG.mouseRadius * 3) {
+          const f = (1 - dist / (CFG.mouseRadius * 3)) * 4;
+          p.x -= ex / dist * f;
+          p.y -= ey / dist * f;
+        }
+      } else {
+        // drag
+        if (dist < CFG.mouseRadius) {
+          const f = (1 - dist / CFG.mouseRadius) * CFG.mousePull;
+          p.x += dx * f * 0.15;
+          p.y += dy * f * 0.15;
+        }
+      }
+    }
+  }
+
+  // Satisfy constraints
+  for (let iter = 0; iter < CFG.stiffness; iter++) {
+    for (const c of constraints) {
+      if (!c.active) continue;
+      const dx = c.p2.x - c.p1.x;
+      const dy = c.p2.y - c.p1.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist > CFG.tearDist) { c.active = false; continue; }
+      if (dist === 0) continue;
+      const diff = (dist - c.len) / dist * 0.5;
+      const ox = dx * diff, oy = dy * diff;
+      if (!c.p1.pinned) { c.p1.x += ox; c.p1.y += oy; }
+      if (!c.p2.pinned) { c.p2.x -= ox; c.p2.y -= oy; }
+    }
+  }
+
+  mouse.px = mouse.x;
+  mouse.py = mouse.y;
+}
+
+// ── Rendering ─────────────────────────────────────────────────────────────────
+function getColor(c) {
+  if (colorMode === 0) {
+    // Mono white with subtle alpha
+    return `rgba(220,225,240,0.55)`;
+  } else if (colorMode === 1) {
+    // Stress coloring
+    const dx = c.p2.x - c.p1.x, dy = c.p2.y - c.p1.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const stress = Math.min(1, Math.abs(dist - c.len) / (CFG.tearDist * 0.3));
+    const r = Math.round(80 + stress * 175);
+    const g = Math.round(160 - stress * 120);
+    const b = Math.round(220 - stress * 100);
+    return `rgba(${r},${g},${b},0.65)`;
+  } else {
+    // Depth / rainbow by Y
+    const avgY = (c.p1.y + c.p2.y) / 2;
+    const t = avgY / canvas.height;
+    const r = Math.round(100 + t * 155);
+    const g = Math.round(80 + Math.sin(t * Math.PI) * 160);
+    const b = Math.round(220 - t * 120);
+    return `rgba(${r},${g},${b},0.6)`;
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Subtle grid bg
+  ctx.fillStyle = '#0a0a0f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw constraints (cloth lines)
+  for (const c of constraints) {
+    if (!c.active) continue;
+    ctx.beginPath();
+    ctx.moveTo(c.p1.x, c.p1.y);
+    ctx.lineTo(c.p2.x, c.p2.y);
+    ctx.strokeStyle = getColor(c);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Draw pinned points
+  for (const p of particles) {
+    if (!p.pinned) continue;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(120,180,255,0.7)';
+    ctx.fill();
+  }
+
+  // Mouse cursor glow
+  if (mouse.down) {
+    const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, CFG.mouseRadius);
+    if (mouse.right) {
+      grad.addColorStop(0, 'rgba(255,80,80,0.25)');
+      grad.addColorStop(1, 'rgba(255,80,80,0)');
+    } else if (mouse.shift) {
+      grad.addColorStop(0, 'rgba(80,220,255,0.2)');
+      grad.addColorStop(1, 'rgba(80,220,255,0)');
+    } else {
+      grad.addColorStop(0, 'rgba(180,200,255,0.15)');
+      grad.addColorStop(1, 'rgba(180,200,255,0)');
+    }
+    ctx.beginPath();
+    ctx.arc(mouse.x, mouse.y, CFG.mouseRadius, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+  }
+}
+
+// ── Loop ──────────────────────────────────────────────────────────────────────
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// ── Resize ────────────────────────────────────────────────────────────────────
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  buildCloth();
+}
+
+// ── Events ────────────────────────────────────────────────────────────────────
+canvas.addEventListener('mousemove', e => {
+  mouse.px = mouse.x;
+  mouse.py = mouse.y;
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+  mouse.shift = e.shiftKey;
+});
+canvas.addEventListener('mousedown', e => {
+  mouse.down = true;
+  mouse.right = e.button === 2;
+  mouse.shift = e.shiftKey;
+  mouse.px = e.clientX;
+  mouse.py = e.clientY;
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+});
+canvas.addEventListener('mouseup', () => { mouse.down = false; mouse.right = false; });
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+// Touch support
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t = e.touches[0];
+  mouse.down = true; mouse.right = false;
+  mouse.px = mouse.x = t.clientX;
+  mouse.py = mouse.y = t.clientY;
+}, { passive: false });
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const t = e.touches[0];
+  mouse.px = mouse.x; mouse.py = mouse.y;
+  mouse.x = t.clientX; mouse.y = t.clientY;
+}, { passive: false });
+canvas.addEventListener('touchend', () => { mouse.down = false; });
+
+// Buttons
+document.getElementById('btnReset').addEventListener('click', buildCloth);
+document.getElementById('btnGravity').addEventListener('click', function() {
+  gravityOn = !gravityOn;
+  this.classList.toggle('active', gravityOn);
+});
+document.getElementById('btnWind').addEventListener('click', function() {
+  windOn = !windOn;
+  CFG.windStrength = windOn ? 1.8 : 0;
+  this.classList.toggle('active', windOn);
+});
+document.getElementById('btnColor').addEventListener('click', function() {
+  colorMode = (colorMode + 1) % 3;
+  const modes = ['mono', 'stress', 'depth'];
+  this.textContent = modes[colorMode];
+});
+
+window.addEventListener('resize', resize);
+resize();
+loop();
+</script>
+</body>
+</html>
