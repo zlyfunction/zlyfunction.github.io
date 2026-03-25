@@ -1,426 +1,425 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cloth Simulation</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #080810; overflow: hidden; font-family: 'SF Mono', 'Fira Code', monospace; }
-    canvas { display: block; }
-    #ui {
-      position: fixed; top: 20px; left: 20px;
-      color: rgba(255,255,255,0.4); font-size: 11px; line-height: 2;
-      pointer-events: none; user-select: none;
-    }
-    #ui b { color: rgba(255,255,255,0.8); font-weight: normal; }
-    #controls {
-      position: fixed; top: 20px; right: 20px;
-      display: flex; flex-direction: column; gap: 7px;
-    }
-    button {
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.6); padding: 6px 13px; font-size: 11px;
-      font-family: inherit; cursor: pointer; border-radius: 5px;
-      transition: all 0.12s; letter-spacing: 0.04em; min-width: 90px;
-    }
-    button:hover { background: rgba(255,255,255,0.11); color: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.25); }
-    button.on { background: rgba(100,160,255,0.13); border-color: rgba(100,160,255,0.35); color: rgba(130,185,255,0.9); }
-    #footer {
-      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
-      color: rgba(255,255,255,0.12); font-size: 10px; letter-spacing: 0.25em;
-      text-transform: uppercase; pointer-events: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloth Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #080810; overflow: hidden; font-family: 'SF Mono', 'Fira Code', monospace; }
+        canvas { display: block; touch-action: none; cursor: crosshair; }
+        #ui {
+            position: fixed; top: 20px; left: 20px;
+            color: rgba(255,255,255,0.4); font-size: 11px; line-height: 2;
+            pointer-events: none; user-select: none;
+        }
+        #ui b { color: rgba(255,255,255,0.8); font-weight: normal; }
+        #controls {
+            position: fixed; top: 20px; right: 20px;
+            display: flex; flex-direction: column; gap: 7px;
+        }
+        button {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.6); padding: 6px 13px; font-size: 11px;
+            font-family: inherit; cursor: pointer; border-radius: 5px; transition: all 0.12s;
+            letter-spacing: 0.04em; min-width: 100px; text-align: left;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:hover { background: rgba(255,255,255,0.11); color: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.25); }
+        button.on   { background: rgba(100,160,255,0.13); border-color: rgba(100,160,255,0.35); color: rgba(130,185,255,0.9); }
+        button.warn { background: rgba(255,100,80,0.1);   border-color: rgba(255,100,80,0.3);   color: rgba(255,140,120,0.9); }
+        hr.sep { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 2px 0; }
+        #footer {
+            position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+            color: rgba(255,255,255,0.12); font-size: 10px; letter-spacing: 0.25em;
+            text-transform: uppercase; pointer-events: none;
+        }
+        @media (max-width: 768px) {
+            #ui { display: none; }
+            button { min-width: 90px; padding: 10px 10px; font-size: 12px; }
+        }
+    </style>
 </head>
 <body>
 <canvas id="c"></canvas>
+
 <div id="ui">
-  <b>drag</b> — grab &amp; pull cloth<br>
-  <b>right-drag</b> — knife cut<br>
-  <b>shift+drag</b> — blow burst
+    <div><b>drag</b> — grab &amp; pull cloth</div>
+    <div><b>right-drag</b> — knife cut</div>
+    <div><b>shift+drag</b> — blow burst</div>
 </div>
+
 <div id="controls">
-  <button id="btnReset">reset</button>
-  <button id="btnGravity" class="on">gravity</button>
-  <button id="btnWind">wind</button>
-  <button id="btnColor">mono</button>
+    <button id="btnReset">reset</button>
+    <button id="btnGravity" class="on">gravity</button>
+    <button id="btnWind">wind</button>
+    <button id="btnColor">mono</button>
+    <hr class="sep">
+    <button id="btnMat">linen</button>
+    <hr class="sep">
+    <button id="btnCoarse">coarsen −</button>
+    <button id="btnFine">refine  +</button>
+    <hr class="sep">
+    <button id="btnTouchMode">✂ cut</button>
 </div>
+
 <div id="footer">cloth simulation</div>
 
 <script>
 'use strict';
 
-// ─── Canvas ───────────────────────────────────────────────────────────────────
+// ─── Canvas ─────────────────────────────────────────────────────────────────
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 
-// ─── Config ───────────────────────────────────────────────────────────────────
-const COLS     = 40;
-const ROWS     = 28;
-const SPACING  = 18;
-const ITERS    = 25;   // constraint iterations — must be >= ROWS to propagate tension top→bottom
-const GRAVITY  = 0.45;
-const DAMPING  = 0.985;
-const GRAB_R   = 50;   // grab radius (px)
-const CUT_R    = 20;   // knife radius around cursor path
-const PIN_STEP = 4;    // pin every Nth point on top row
+// ─── Resolution levels: [cols, rows] — physical cloth size stays constant ───
+const LEVELS = [
+    [20, 14],
+    [30, 21],
+    [40, 28],   // default (matches original)
+    [56, 38],
+];
 
-// ─── State ────────────────────────────────────────────────────────────────────
-let px = [], py = [], ppx = [], ppy = [], pinned = [];  // flat particle arrays
-let cp1 = [], cp2 = [], clen = [], cactive = [];        // constraint arrays
+// ─── Material presets ────────────────────────────────────────────────────────
+// grav: gravity per frame, damp: velocity damping, stiff: constraint stiffness
+const MATERIALS = [
+    { name: 'linen',     grav: 0.65, damp: 0.981, stiff: 1.00 },
+    { name: 'silk',      grav: 0.15, damp: 0.997, stiff: 0.82 },
+    { name: 'cotton',    grav: 0.45, damp: 0.987, stiff: 0.95 },
+    { name: 'polyester', grav: 0.32, damp: 0.993, stiff: 0.98 },
+];
+
+// ─── Config ──────────────────────────────────────────────────────────────────
+const CUT_R    = 20;
+const GRAB_R   = 50;
+const PIN_STEP = 4;
+const CLOTH_W  = 0.75;   // fraction of screen width
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let COLS, ROWS, SPACING, ITERS;
+let px, py, ppx, ppy, pinned;
+let cp1, cp2, clen, cactive;
 let nP = 0, nC = 0;
 
-let gravOn  = true;
-let windOn  = false;
-let colorMode = 0;   // 0=mono, 1=stress, 2=depth
-let time    = 0;
+let level     = 2;     // index into LEVELS
+let matIdx    = 0;     // index into MATERIALS
+let gravOn    = true;
+let windOn    = false;
+let colorMode = 0;
+let touchMode = 0;     // 0=grab, 1=cut
+let time      = 0;
 
-// Wind
-const WIND_SPEED = 1.6;
-function windX() {
-  if (!windOn) return 0;
-  return Math.sin(time * 0.007) * WIND_SPEED
-       + Math.sin(time * 0.013) * WIND_SPEED * 0.4
-       + Math.sin(time * 0.031) * WIND_SPEED * 0.15;
-}
-
-// ─── Mouse ───────────────────────────────────────────────────────────────────
-const mouse = { x: 0, y: 0, px: 0, py: 0, lx: 0, ly: 0, down: false, right: false, shift: false };
-let grabbed = -1;  // index of grabbed particle (-1 = none)
+// ─── Mouse / touch ───────────────────────────────────────────────────────────
+const mouse = { x: 0, y: 0, lx: 0, ly: 0, down: false, right: false, shift: false };
+let grabbed = -1;
 
 // ─── Build cloth ─────────────────────────────────────────────────────────────
 function buildCloth() {
-  const W = canvas.width, H = canvas.height;
-  const startX = (W - (COLS - 1) * SPACING) / 2;
-  const startY = H * 0.07;
+    [COLS, ROWS] = LEVELS[level];
+    const clothPx = Math.min(canvas.width * CLOTH_W, 820);
+    SPACING = clothPx / (COLS - 1);
+    // Iterations scale with rows so top-pin tension propagates fully
+    ITERS = Math.max(20, ROWS + 4);
 
-  nP = COLS * ROWS;
-  px  = new Float32Array(nP);
-  py  = new Float32Array(nP);
-  ppx = new Float32Array(nP);
-  ppy = new Float32Array(nP);
-  pinned = new Uint8Array(nP);
+    const startX = (canvas.width  - (COLS - 1) * SPACING) / 2;
+    const startY =  canvas.height * 0.07;
+    nP = COLS * ROWS;
 
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const i = r * COLS + c;
-      px[i] = ppx[i] = startX + c * SPACING;
-      py[i] = ppy[i] = startY + r * SPACING;
-      pinned[i] = (r === 0 && c % PIN_STEP === 0) ? 1 : 0;
+    px      = new Float32Array(nP);
+    py      = new Float32Array(nP);
+    ppx     = new Float32Array(nP);
+    ppy     = new Float32Array(nP);
+    pinned  = new Uint8Array(nP);
+
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            const i = r * COLS + c;
+            px[i] = ppx[i] = startX + c * SPACING;
+            py[i] = ppy[i] = startY + r * SPACING;
+            pinned[i] = (r === 0 && c % PIN_STEP === 0) ? 1 : 0;
+        }
     }
-  }
 
-  // Build constraints: horizontal + vertical
-  const maxC = (COLS - 1) * ROWS + COLS * (ROWS - 1);
-  cp1     = new Int32Array(maxC);
-  cp2     = new Int32Array(maxC);
-  clen    = new Float32Array(maxC);
-  cactive = new Uint8Array(maxC);
-  nC = 0;
+    const maxC = (COLS - 1) * ROWS + COLS * (ROWS - 1);
+    cp1     = new Int32Array(maxC);
+    cp2     = new Int32Array(maxC);
+    clen    = new Float32Array(maxC);
+    cactive = new Uint8Array(maxC);
+    nC = 0;
 
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const i = r * COLS + c;
-      if (c < COLS - 1) {
-        cp1[nC] = i; cp2[nC] = i + 1;
-        clen[nC] = SPACING; cactive[nC] = 1; nC++;
-      }
-      if (r < ROWS - 1) {
-        cp1[nC] = i; cp2[nC] = i + COLS;
-        clen[nC] = SPACING; cactive[nC] = 1; nC++;
-      }
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            const i = r * COLS + c;
+            if (c < COLS - 1) { cp1[nC]=i; cp2[nC]=i+1;     clen[nC]=SPACING; cactive[nC]=1; nC++; }
+            if (r < ROWS - 1) { cp1[nC]=i; cp2[nC]=i+COLS;  clen[nC]=SPACING; cactive[nC]=1; nC++; }
+        }
     }
-  }
-
-  grabbed = -1;
+    grabbed = -1;
 }
 
-// ─── Physics update ──────────────────────────────────────────────────────────
+// ─── Physics update ───────────────────────────────────────────────────────────
 function update() {
-  time++;
-  const grav = gravOn ? GRAVITY : 0;
-  const wx   = windX();
+    time++;
+    const mat   = MATERIALS[matIdx];
+    const grav  = gravOn ? mat.grav : 0;
+    const damp  = mat.damp;
+    const stiff = mat.stiff;
 
-  // 1. Verlet integrate
-  for (let i = 0; i < nP; i++) {
-    if (pinned[i]) continue;
-    const vx = (px[i] - ppx[i]) * DAMPING;
-    const vy = (py[i] - ppy[i]) * DAMPING;
-    ppx[i] = px[i];
-    ppy[i] = py[i];
-    px[i] += vx + wx;
-    py[i] += vy + grav;
-    // boundary: floor + walls
-    if (py[i] > canvas.height - 1) { py[i] = canvas.height - 1; ppy[i] = py[i] + vy * 0.3; }
-    if (px[i] < 0)                  { px[i] = 0;                 ppx[i] = px[i] - vx * 0.3; }
-    if (px[i] > canvas.width)       { px[i] = canvas.width;      ppx[i] = px[i] - vx * 0.3; }
-  }
-
-  // 2. Satisfy constraints (Gauss-Seidel, sequential)
-  for (let iter = 0; iter < ITERS; iter++) {
-    for (let k = 0; k < nC; k++) {
-      if (!cactive[k]) continue;
-      const a = cp1[k], b = cp2[k];
-      const dx = px[b] - px[a];
-      const dy = py[b] - py[a];
-      const d2 = dx * dx + dy * dy;
-      if (d2 < 1e-8) continue;
-      const d    = Math.sqrt(d2);
-      const diff = (d - clen[k]) / d * 0.5;
-      const ox   = dx * diff;
-      const oy   = dy * diff;
-      if (!pinned[a]) { px[a] += ox; py[a] += oy; }
-      if (!pinned[b]) { px[b] -= ox; py[b] -= oy; }
+    // Wind
+    let wx = 0;
+    if (windOn) {
+        const W = 1.6;
+        wx = Math.sin(time*0.007)*W + Math.sin(time*0.013)*W*0.4 + Math.sin(time*0.031)*W*0.15;
     }
-  }
 
-  // 3. Apply grab (position constraint — runs after distance constraints so
-  //    neighboring constraints will chase on next frame)
-  if (grabbed >= 0 && mouse.down && !mouse.right) {
-    px[grabbed]  = mouse.x;
-    py[grabbed]  = mouse.y;
-    // Carry mouse velocity into particle so it flies on release
-    ppx[grabbed] = mouse.lx;
-    ppy[grabbed] = mouse.ly;
-  }
-
-  // 4. Shift-drag: blow burst (push particles away from cursor)
-  if (mouse.down && mouse.shift && !mouse.right) {
-    const bx = mouse.x, by = mouse.y;
-    const R = 90;
+    // 1. Verlet integrate
     for (let i = 0; i < nP; i++) {
-      if (pinned[i]) continue;
-      const dx = px[i] - bx, dy = py[i] - by;
-      const d2 = dx * dx + dy * dy;
-      if (d2 < R * R && d2 > 0.01) {
-        const d = Math.sqrt(d2);
-        const f = (1 - d / R) * 3.5;
-        px[i] += (dx / d) * f;
-        py[i] += (dy / d) * f;
-      }
+        if (pinned[i]) continue;
+        const vx = (px[i] - ppx[i]) * damp;
+        const vy = (py[i] - ppy[i]) * damp;
+        ppx[i] = px[i];
+        ppy[i] = py[i];
+        px[i] += vx + wx;
+        py[i] += vy + grav;
+        if (py[i] > canvas.height - 1) { py[i] = canvas.height - 1; ppy[i] = py[i] + vy * 0.3; }
+        if (px[i] < 0)                 { px[i] = 0;                  ppx[i] = px[i] - vx * 0.3; }
+        if (px[i] > canvas.width)      { px[i] = canvas.width;       ppx[i] = px[i] - vx * 0.3; }
     }
-  }
 
-  // 5. Knife cut (right-drag): deactivate constraints near the mouse path
-  if (mouse.down && mouse.right) {
-    cutAlongPath(mouse.lx, mouse.ly, mouse.x, mouse.y);
-  }
+    // 2. Satisfy constraints
+    for (let iter = 0; iter < ITERS; iter++) {
+        for (let k = 0; k < nC; k++) {
+            if (!cactive[k]) continue;
+            const a = cp1[k], b = cp2[k];
+            const dx = px[b] - px[a];
+            const dy = py[b] - py[a];
+            const d2 = dx*dx + dy*dy;
+            if (d2 < 1e-8) continue;
+            const d    = Math.sqrt(d2);
+            const diff = (d - clen[k]) / d * 0.5 * stiff;
+            const ox   = dx * diff, oy = dy * diff;
+            if (!pinned[a]) { px[a] += ox; py[a] += oy; }
+            if (!pinned[b]) { px[b] -= ox; py[b] -= oy; }
+        }
+    }
 
+    // 3. Apply grab
+    if (grabbed >= 0 && mouse.down && !mouse.right) {
+        px[grabbed]  = mouse.x;  py[grabbed]  = mouse.y;
+        ppx[grabbed] = mouse.lx; ppy[grabbed] = mouse.ly;
+    }
+
+    // 4. Blow burst (shift+drag)
+    if (mouse.down && mouse.shift && !mouse.right) {
+        const R = 90;
+        for (let i = 0; i < nP; i++) {
+            if (pinned[i]) continue;
+            const dx = px[i] - mouse.x, dy = py[i] - mouse.y;
+            const d2 = dx*dx + dy*dy;
+            if (d2 < R*R && d2 > 0.01) {
+                const d = Math.sqrt(d2), f = (1 - d/R) * 3.5;
+                px[i] += dx/d * f; py[i] += dy/d * f;
+            }
+        }
+    }
+
+    // 5. Knife cut
+    if (mouse.down && mouse.right) {
+        cutAlongPath(mouse.lx, mouse.ly, mouse.x, mouse.y);
+    }
 }
 
-// Deactivate constraints whose midpoint is within CUT_R of the segment (ax,ay)→(bx,by),
-// or use per-segment intersection for precision.
 function cutAlongPath(ax, ay, bx, by) {
-  const pdx = bx - ax, pdy = by - ay;
-  const plen2 = pdx * pdx + pdy * pdy;
-
-  for (let k = 0; k < nC; k++) {
-    if (!cactive[k]) continue;
-    const a = cp1[k], b = cp2[k];
-    // Midpoint of constraint
-    const mx = (px[a] + px[b]) * 0.5;
-    const my = (py[a] + py[b]) * 0.5;
-
-    let dist2;
-    if (plen2 < 1) {
-      // Mouse not moving: point distance
-      const ex = mx - ax, ey = my - ay;
-      dist2 = ex * ex + ey * ey;
-    } else {
-      // Project midpoint onto path segment
-      const t = Math.max(0, Math.min(1, ((mx - ax) * pdx + (my - ay) * pdy) / plen2));
-      const ex = mx - (ax + t * pdx);
-      const ey = my - (ay + t * pdy);
-      dist2 = ex * ex + ey * ey;
+    const pdx = bx - ax, pdy = by - ay;
+    const plen2 = pdx*pdx + pdy*pdy;
+    for (let k = 0; k < nC; k++) {
+        if (!cactive[k]) continue;
+        const a = cp1[k], b = cp2[k];
+        const mx = (px[a] + px[b]) * 0.5;
+        const my = (py[a] + py[b]) * 0.5;
+        let dist2;
+        if (plen2 < 1) {
+            const ex = mx-ax, ey = my-ay;
+            dist2 = ex*ex + ey*ey;
+        } else {
+            const t = Math.max(0, Math.min(1, ((mx-ax)*pdx + (my-ay)*pdy) / plen2));
+            const ex = mx-(ax+t*pdx), ey = my-(ay+t*pdy);
+            dist2 = ex*ex + ey*ey;
+        }
+        if (dist2 < CUT_R*CUT_R) cactive[k] = 0;
     }
-
-    if (dist2 < CUT_R * CUT_R) {
-      cactive[k] = 0;
-    }
-  }
 }
 
 // ─── Grab helpers ─────────────────────────────────────────────────────────────
 function findNearest(mx, my) {
-  let best = -1, bestD2 = GRAB_R * GRAB_R;
-  for (let i = 0; i < nP; i++) {
-    if (pinned[i]) continue;
-    const dx = px[i] - mx, dy = py[i] - my;
-    const d2 = dx * dx + dy * dy;
-    if (d2 < bestD2) { bestD2 = d2; best = i; }
-  }
-  return best;
+    let best = -1, bestD2 = GRAB_R * GRAB_R;
+    for (let i = 0; i < nP; i++) {
+        if (pinned[i]) continue;
+        const dx = px[i]-mx, dy = py[i]-my;
+        const d2 = dx*dx + dy*dy;
+        if (d2 < bestD2) { bestD2 = d2; best = i; }
+    }
+    return best;
 }
 
 // ─── Rendering ────────────────────────────────────────────────────────────────
 function stressColor(k) {
-  const a = cp1[k], b = cp2[k];
-  const dx = px[b] - px[a], dy = py[b] - py[a];
-  const d  = Math.sqrt(dx * dx + dy * dy);
-  const s  = Math.min(1, Math.max(0, (d - clen[k]) / (clen[k] * 0.6)));
-  // cool blue → warm red
-  const r = Math.round(60  + s * 195);
-  const g = Math.round(150 - s * 130);
-  const bl= Math.round(220 - s * 120);
-  return `rgb(${r},${g},${bl})`;
+    const a = cp1[k], b = cp2[k];
+    const dx = px[b]-px[a], dy = py[b]-py[a];
+    const d = Math.sqrt(dx*dx + dy*dy);
+    const s = Math.min(1, Math.max(0, (d - clen[k]) / (clen[k] * 0.6)));
+    return `rgb(${Math.round(60+s*195)},${Math.round(150-s*130)},${Math.round(220-s*120)})`;
 }
 
 function depthColor(k) {
-  const a = cp1[k], b = cp2[k];
-  const t = ((py[a] + py[b]) * 0.5) / canvas.height;
-  const r = Math.round(80  + t * 160);
-  const g = Math.round(60  + Math.sin(t * Math.PI) * 170);
-  const bl= Math.round(230 - t * 130);
-  return `rgb(${r},${g},${bl})`;
+    const a = cp1[k], b = cp2[k];
+    const t = ((py[a]+py[b]) * 0.5) / canvas.height;
+    return `rgb(${Math.round(80+t*160)},${Math.round(60+Math.sin(t*Math.PI)*170)},${Math.round(230-t*130)})`;
 }
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#080810';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#080810';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  if (colorMode === 0) {
-    // Mono: single batched path — fast
-    ctx.beginPath();
-    for (let k = 0; k < nC; k++) {
-      if (!cactive[k]) continue;
-      const a = cp1[k], b = cp2[k];
-      ctx.moveTo(px[a], py[a]);
-      ctx.lineTo(px[b], py[b]);
+    if (colorMode === 0) {
+        ctx.beginPath();
+        for (let k = 0; k < nC; k++) {
+            if (!cactive[k]) continue;
+            ctx.moveTo(px[cp1[k]], py[cp1[k]]);
+            ctx.lineTo(px[cp2[k]], py[cp2[k]]);
+        }
+        ctx.strokeStyle = 'rgba(210,218,240,0.5)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    } else {
+        ctx.lineWidth = 1;
+        for (let k = 0; k < nC; k++) {
+            if (!cactive[k]) continue;
+            ctx.beginPath();
+            ctx.moveTo(px[cp1[k]], py[cp1[k]]);
+            ctx.lineTo(px[cp2[k]], py[cp2[k]]);
+            ctx.strokeStyle = colorMode === 1 ? stressColor(k) : depthColor(k);
+            ctx.stroke();
+        }
     }
-    ctx.strokeStyle = 'rgba(210,218,240,0.5)';
-    ctx.lineWidth = 1;
+
+    // Pinned anchors
+    ctx.fillStyle = 'rgba(110,175,255,0.75)';
+    for (let i = 0; i < nP; i++) {
+        if (!pinned[i]) continue;
+        ctx.beginPath();
+        ctx.arc(px[i], py[i], 3.5, 0, Math.PI*2);
+        ctx.fill();
+    }
+
+    // Grabbed particle highlight
+    if (grabbed >= 0 && mouse.down && !mouse.right) {
+        ctx.beginPath();
+        ctx.arc(px[grabbed], py[grabbed], 6, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.fill();
+    }
+
+    // Cursor indicator
+    const R     = mouse.right ? 14 : mouse.shift ? 80 : 40;
+    const alpha = mouse.down ? 0.18 : 0.07;
+    const col   = mouse.right ? `rgba(255,70,70,${alpha})` :
+                  mouse.shift ? `rgba(60,210,255,${alpha})` :
+                                `rgba(180,200,255,${alpha})`;
+    ctx.beginPath();
+    ctx.arc(mouse.x, mouse.y, R, 0, Math.PI*2);
+    ctx.fillStyle   = col;
+    ctx.fill();
+    ctx.strokeStyle = col.replace(/[\d.]+\)$/, '0.4)');
+    ctx.lineWidth   = 1;
     ctx.stroke();
-  } else {
-    // Per-constraint color
-    ctx.lineWidth = 1;
-    for (let k = 0; k < nC; k++) {
-      if (!cactive[k]) continue;
-      const a = cp1[k], b = cp2[k];
-      ctx.beginPath();
-      ctx.moveTo(px[a], py[a]);
-      ctx.lineTo(px[b], py[b]);
-      ctx.strokeStyle = colorMode === 1 ? stressColor(k) : depthColor(k);
-      ctx.stroke();
-    }
-  }
-
-  // Pinned anchors
-  ctx.fillStyle = 'rgba(110,175,255,0.75)';
-  for (let i = 0; i < nP; i++) {
-    if (!pinned[i]) continue;
-    ctx.beginPath();
-    ctx.arc(px[i], py[i], 3.5, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // Grabbed particle highlight
-  if (grabbed >= 0 && mouse.down && !mouse.right) {
-    ctx.beginPath();
-    ctx.arc(px[grabbed], py[grabbed], 6, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.9)';
-    ctx.fill();
-  }
-
-  // Cursor indicator
-  const R = mouse.right ? 14 : mouse.shift ? 80 : 40;
-  const alpha = mouse.down ? 0.18 : 0.07;
-  const col = mouse.right ? `rgba(255,70,70,${alpha})` : mouse.shift ? `rgba(60,210,255,${alpha})` : `rgba(180,200,255,${alpha})`;
-  ctx.beginPath();
-  ctx.arc(mouse.x, mouse.y, R, 0, Math.PI * 2);
-  ctx.fillStyle = col;
-  ctx.fill();
-  ctx.strokeStyle = col.replace(/[\d.]+\)$/, '0.4)');
-  ctx.lineWidth = 1;
-  ctx.stroke();
 }
 
 // ─── Loop ─────────────────────────────────────────────────────────────────────
-function loop() {
-  update();
-  draw();
-  requestAnimationFrame(loop);
-}
+function loop() { update(); draw(); requestAnimationFrame(loop); }
 
 // ─── Resize ───────────────────────────────────────────────────────────────────
-function resize() {
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
-  buildCloth();
-}
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; buildCloth(); }
 
 // ─── Input ────────────────────────────────────────────────────────────────────
-function updateMousePos(x, y) {
-  mouse.lx = mouse.x; mouse.ly = mouse.y;
-  mouse.x  = x;       mouse.y  = y;
-}
+function updateMousePos(x, y) { mouse.lx = mouse.x; mouse.ly = mouse.y; mouse.x = x; mouse.y = y; }
 
-canvas.addEventListener('mousemove', e => {
-  updateMousePos(e.clientX, e.clientY);
-  mouse.shift = e.shiftKey;
-});
-
+canvas.addEventListener('mousemove', e => { updateMousePos(e.clientX, e.clientY); mouse.shift = e.shiftKey; });
 canvas.addEventListener('mousedown', e => {
-  updateMousePos(e.clientX, e.clientY);
-  mouse.down  = true;
-  mouse.right = e.button === 2;
-  mouse.shift = e.shiftKey;
-  if (!mouse.right && !mouse.shift) {
-    grabbed = findNearest(e.clientX, e.clientY);
-  }
+    updateMousePos(e.clientX, e.clientY);
+    mouse.down = true; mouse.right = e.button === 2; mouse.shift = e.shiftKey;
+    if (!mouse.right && !mouse.shift) grabbed = findNearest(e.clientX, e.clientY);
 });
-
-canvas.addEventListener('mouseup', () => {
-  mouse.down  = false;
-  mouse.right = false;
-  grabbed     = -1;
-});
-
-canvas.addEventListener('mouseleave', () => {
-  mouse.down  = false;
-  mouse.right = false;
-  grabbed     = -1;
-});
-
+canvas.addEventListener('mouseup',    () => { mouse.down = false; mouse.right = false; grabbed = -1; });
+canvas.addEventListener('mouseleave', () => { mouse.down = false; mouse.right = false; grabbed = -1; });
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 
 // Touch
 canvas.addEventListener('touchstart', e => {
-  e.preventDefault();
-  const t = e.touches[0];
-  updateMousePos(t.clientX, t.clientY);
-  mouse.down  = true;
-  mouse.right = false;
-  mouse.shift = false;
-  grabbed = findNearest(t.clientX, t.clientY);
+    e.preventDefault();
+    const tc = e.touches;
+    if (tc.length === 1) {
+        updateMousePos(tc[0].clientX, tc[0].clientY);
+        mouse.down = true; mouse.shift = false; mouse.right = (touchMode === 1);
+        if (touchMode === 0) grabbed = findNearest(tc[0].clientX, tc[0].clientY);
+    } else if (tc.length >= 2) {
+        grabbed = -1;
+        const cx = (tc[0].clientX+tc[1].clientX)*0.5, cy = (tc[0].clientY+tc[1].clientY)*0.5;
+        updateMousePos(cx, cy);
+        mouse.down = true; mouse.right = false; mouse.shift = true;
+    }
 }, { passive: false });
-
 canvas.addEventListener('touchmove', e => {
-  e.preventDefault();
-  const t = e.touches[0];
-  updateMousePos(t.clientX, t.clientY);
+    e.preventDefault();
+    const tc = e.touches;
+    if (tc.length === 1) updateMousePos(tc[0].clientX, tc[0].clientY);
+    else if (tc.length >= 2) updateMousePos((tc[0].clientX+tc[1].clientX)*0.5, (tc[0].clientY+tc[1].clientY)*0.5);
 }, { passive: false });
+canvas.addEventListener('touchend', e => {
+    if (e.touches.length === 0) { mouse.down = false; mouse.right = false; mouse.shift = false; grabbed = -1; }
+});
+canvas.addEventListener('touchcancel', () => { mouse.down = false; mouse.right = false; mouse.shift = false; grabbed = -1; });
 
-canvas.addEventListener('touchend', () => { mouse.down = false; grabbed = -1; });
-
-// Buttons
+// ─── Buttons ──────────────────────────────────────────────────────────────────
 document.getElementById('btnReset').addEventListener('click', buildCloth);
 
-document.getElementById('btnGravity').addEventListener('click', function () {
-  gravOn = !gravOn;
-  this.classList.toggle('on', gravOn);
+document.getElementById('btnGravity').addEventListener('click', function() {
+    gravOn = !gravOn; this.classList.toggle('on', gravOn);
 });
-
-document.getElementById('btnWind').addEventListener('click', function () {
-  windOn = !windOn;
-  this.classList.toggle('on', windOn);
+document.getElementById('btnWind').addEventListener('click', function() {
+    windOn = !windOn; this.classList.toggle('on', windOn);
 });
 
 const colorLabels = ['mono', 'stress', 'depth'];
-document.getElementById('btnColor').addEventListener('click', function () {
-  colorMode = (colorMode + 1) % 3;
-  this.textContent = colorLabels[colorMode];
+document.getElementById('btnColor').addEventListener('click', function() {
+    colorMode = (colorMode + 1) % 3; this.textContent = colorLabels[colorMode];
+});
+
+document.getElementById('btnMat').addEventListener('click', function() {
+    matIdx = (matIdx + 1) % MATERIALS.length;
+    this.textContent = MATERIALS[matIdx].name;
+    buildCloth();
+});
+
+document.getElementById('btnCoarse').addEventListener('click', function() {
+    if (level <= 0) { this.classList.add('warn'); setTimeout(() => this.classList.remove('warn'), 300); return; }
+    level--;
+    buildCloth();
+    document.getElementById('btnFine').classList.remove('warn');
+});
+document.getElementById('btnFine').addEventListener('click', function() {
+    if (level >= LEVELS.length - 1) { this.classList.add('warn'); setTimeout(() => this.classList.remove('warn'), 300); return; }
+    level++;
+    buildCloth();
+    document.getElementById('btnCoarse').classList.remove('warn');
+});
+
+document.getElementById('btnTouchMode').addEventListener('click', function() {
+    touchMode = (touchMode + 1) % 2;
+    this.textContent = touchMode === 0 ? '✂ cut' : '✋ grab';
+    this.classList.toggle('warn', touchMode === 1);
+    mouse.down = false; grabbed = -1;
 });
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
