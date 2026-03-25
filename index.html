@@ -136,8 +136,16 @@
             gap: 36px;
         }
 
-        .profile-photo {
+        .profile-photo-wrap {
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .profile-photo {
             width: 180px;
             height: 180px;
             border-radius: 20px;
@@ -145,13 +153,24 @@
             object-position: center 55%;
             border: 3px solid var(--color-border);
             box-shadow: 0 6px 24px var(--color-card-shadow);
-            cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .profile-photo:hover {
+        .profile-photo-wrap:hover .profile-photo {
             transform: scale(1.03);
             box-shadow: 0 10px 32px var(--color-card-shadow);
+        }
+
+        .photo-hint {
+            font-size: 12px;
+            color: var(--color-link);
+            opacity: 0.75;
+            animation: hint-pulse 2s ease-in-out 1s 3;
+        }
+
+        @keyframes hint-pulse {
+            0%, 100% { opacity: 0.75; }
+            50% { opacity: 1; transform: scale(1.05); }
         }
 
         .profile-info h1 {
@@ -634,10 +653,15 @@
 
         function toggleProfilePhoto() {
             var img = document.getElementById('profile-photo');
+            var hint = document.getElementById('photo-hint');
             var isCartoon = img.dataset.state !== 'real';
             img.src = isCartoon ? './IMG_7036.JPG' : './IMG_7035.PNG';
             img.dataset.state = isCartoon ? 'real' : 'cartoon';
-            img.title = isCartoon ? 'Click to see the cartoon version' : 'Click to see the real me';
+            // Stop pulse animation after first click
+            hint.style.animation = 'none';
+            var curLang = document.getElementById('lang-toggle') && document.getElementById('lang-toggle').textContent === 'English' ? 'zh' : 'en';
+            var key = isCartoon ? (curLang + '-back') : curLang;
+            hint.textContent = hint.getAttribute('data-' + key);
         }
 
         function setLang(lang) {
@@ -652,6 +676,13 @@
             document.querySelectorAll('.lang-zh').forEach(function (el) {
                 el.style.display = lang === 'zh' ? '' : 'none';
             });
+            // Update photo hint based on current photo state
+            var hint = document.getElementById('photo-hint');
+            var photo = document.getElementById('profile-photo');
+            if (hint && photo) {
+                var key = photo.dataset.state === 'real' ? (lang + '-back') : lang;
+                hint.textContent = hint.getAttribute('data-' + key);
+            }
             // Update toggle button label
             var btn = document.getElementById('lang-toggle');
             if (btn) btn.textContent = lang === 'en' ? '中文' : 'EN';
@@ -690,7 +721,10 @@
         <!-- Profile -->
         <section class="profile-section" id="about">
             <div class="profile">
-                <img id="profile-photo" class="profile-photo" src="./IMG_7035.PNG" alt="Leyi Zhu" width="180" height="180" data-state="cartoon" title="Click to see the real me" onclick="toggleProfilePhoto()">
+                <div class="profile-photo-wrap" onclick="toggleProfilePhoto()">
+                    <img id="profile-photo" class="profile-photo" src="./IMG_7035.PNG" alt="Leyi Zhu" width="180" height="180" data-state="cartoon">
+                    <span id="photo-hint" class="photo-hint" data-en="see me in real life" data-zh="点击看真实照片" data-en-back="back to cartoon" data-zh-back="换回卡通">see me in real life</span>
+                </div>
                 <div class="profile-info">
                     <h1 data-en="Leyi Zhu" data-zh="朱乐宜">Leyi Zhu</h1>
                     <p class="subtitle" data-en="Ph.D. in Computer Science" data-zh="计算机科学博士">Ph.D. in Computer Science</p>
