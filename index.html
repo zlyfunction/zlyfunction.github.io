@@ -287,6 +287,123 @@
             margin-bottom: 40px;
         }
 
+        /* ── Academic ── */
+        .academic-section {
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 40px;
+        }
+
+        .academic-group + .academic-group {
+            margin-top: 28px;
+        }
+
+        .academic-group {
+            padding: 0;
+        }
+
+        .academic-subtitle {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-serif);
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin: 0 0 14px;
+        }
+
+        .academic-subtitle::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light));
+            box-shadow: 0 0 0 4px rgba(58, 114, 184, 0.12);
+            flex-shrink: 0;
+        }
+
+        .academic-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 14px;
+        }
+
+        .academic-item {
+            position: relative;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-card);
+            padding: 16px 64px 16px 22px;
+            overflow: hidden;
+            transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+        }
+
+        .academic-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 14px;
+            bottom: 14px;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            background: linear-gradient(180deg, var(--color-accent), var(--color-accent-light));
+        }
+
+        .academic-item-icon {
+            position: absolute;
+            right: 12px;
+            top: 10px;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--color-highlight);
+            border: 1px solid var(--color-border);
+            color: var(--color-accent);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .academic-item-icon svg {
+            width: 18px;
+            height: 18px;
+            display: block;
+            stroke: currentColor;
+        }
+
+        .academic-item:hover {
+            box-shadow: 0 8px 28px var(--color-card-shadow);
+            border-color: #d4c8b8;
+            transform: translateY(-1px);
+        }
+
+        .academic-item-title {
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin: 0 0 4px;
+        }
+
+        .academic-item-meta {
+            font-size: 0.88rem;
+            color: var(--color-text-secondary);
+            margin: 0;
+        }
+
+        .academic-item a {
+            color: var(--color-accent-light);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .academic-item a:hover {
+            text-decoration: underline;
+        }
+
         .pub-item {
             display: flex;
             gap: 20px;
@@ -439,42 +556,6 @@
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-
-        /* ── Contact ── */
-        .contact {
-            padding-bottom: 40px;
-        }
-
-        .contact-card {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-card);
-            padding: 20px 22px;
-        }
-
-        .contact-card .label {
-            font-size: 0.78rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--color-text-secondary);
-            margin: 0 0 6px;
-        }
-
-        .contact-card .value {
-            font-size: 0.95rem;
-            color: var(--color-text);
-            margin: 0;
-        }
-
-        .contact-card a {
-            color: var(--color-accent-light);
-            text-decoration: none;
-        }
-
-        .contact-card a:hover {
-            text-decoration: underline;
         }
 
         /* ── Miscellaneous ── */
@@ -709,8 +790,8 @@
             <div class="nav-links">
                 <a href="#about" data-en="About" data-zh="关于">About</a>
                 <a href="#publications" data-en="Publications" data-zh="论文">Publications</a>
+                <a href="#academic" data-en="Academic" data-zh="学术">Academic</a>
                 <a href="#misc" data-en="Misc" data-zh="其他">Misc</a>
-                <a href="#contact" data-en="Contact" data-zh="联系">Contact</a>
                 <button id="lang-toggle" onclick="toggleLang()">中文</button>
             </div>
         </div>
@@ -936,6 +1017,81 @@
             </div>
         </section>
 
+        <!-- Academic -->
+        <section class="academic-section" id="academic">
+            <h2 class="section-title" data-en="Academic Things" data-zh="学术相关">Academic Things</h2>
+
+            <div class="academic-group">
+                <h3 class="academic-subtitle" data-en="Teaching Assistant" data-zh="助教经历">Teaching Assistant</h3>
+                <ul class="academic-list">
+                    <li class="academic-item">
+                        <span class="academic-item-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 7v14" />
+                                <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
+                            </svg>
+                        </span>
+                        <p class="academic-item-title" data-en="Mathematical Analysis III" data-zh="数学分析B3">Mathematical Analysis III</p>
+                        <p class="academic-item-meta">
+                            2017 Fall · MATH100802@USTC ·
+                            <a href="https://icourse.club/course/2855/" target="_blank" rel="noopener noreferrer">Course Link</a>
+                        </p>
+                    </li>
+                    <li class="academic-item">
+                        <span class="academic-item-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 7v14" />
+                                <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
+                            </svg>
+                        </span>
+                        <p class="academic-item-title" data-en="Mathematical Analysis I" data-zh="数学分析B1">Mathematical Analysis I</p>
+                        <p class="academic-item-meta">
+                            2018 Fall · MATH100606@USTC ·
+                            <a href="https://icourse.club/course/2842/" target="_blank" rel="noopener noreferrer">Course Link</a>
+                        </p>
+                    </li>
+                    <li class="academic-item">
+                        <span class="academic-item-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="20" height="14" x="2" y="3" rx="2" />
+                                <line x1="8" x2="16" y1="21" y2="21" />
+                                <line x1="12" x2="12" y1="17" y2="21" />
+                            </svg>
+                        </span>
+                        <p class="academic-item-title" data-en="Computer Graphics" data-zh="计算机图形学">Computer Graphics</p>
+                        <p class="academic-item-meta">
+                            2020 Spring · CSCI-GA 2270-001@NYU ·
+                            <a href="https://github.com/danielepanozzo/cg" target="_blank" rel="noopener noreferrer">Course Link</a>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="academic-group">
+                <h3 class="academic-subtitle" data-en="Service" data-zh="学术服务">Service</h3>
+                <ul class="academic-list">
+                    <li class="academic-item">
+                        <span class="academic-item-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                                <path d="m9 12 2 2 4-4" />
+                            </svg>
+                        </span>
+                        <p class="academic-item-title">Reviewer, SIGGRAPH 2026</p>
+                    </li>
+                    <li class="academic-item">
+                        <span class="academic-item-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                                <path d="m9 12 2 2 4-4" />
+                            </svg>
+                        </span>
+                        <p class="academic-item-title">Reviewer, Eurographics 2026</p>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
         <!-- Miscellaneous -->
         <section class="misc-section" id="misc">
             <h2 class="section-title" data-en="Miscellaneous" data-zh="其他">Miscellaneous</h2>
@@ -961,15 +1117,6 @@
             <div class="visitor-map-wrap">
                 <p class="visitor-map-title" data-en="🌍 Visitor Map" data-zh="🌍 访客地图">🌍 Visitor Map</p>
                 <script type="text/javascript" id="clstr_globe" src="//clustrmaps.com/globe.js?d=arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"></script>
-            </div>
-        </section>
-
-        <!-- Contact -->
-        <section class="contact" id="contact">
-            <h2 class="section-title" data-en="Contact" data-zh="联系方式">Contact</h2>
-            <div class="contact-card" style="max-width: 400px;">
-                <p class="label" data-en="EMAIL" data-zh="邮箱">Email</p>
-                <p class="value"><a href="mailto:leyi@nyu.edu">leyi@nyu.edu</a></p>
             </div>
         </section>
 
