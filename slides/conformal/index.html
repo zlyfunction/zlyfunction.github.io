@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Efficient and Robust Discrete Conformal Equivalence with Boundary — Slides</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInDocument()"></script>
+<script>
+  function renderMathInDocument(){
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left:'$$', right:'$$', display:true},
+        {left:'\\[', right:'\\]', display:true},
+        {left:'$', right:'$', display:false},
+        {left:'\\(', right:'\\)', display:false}
+      ],
+      throwOnError:false,
+      strict:false
+    });
+  }
+</script>
+<style>
+  :root{
+    --bg:#ffffff;
+    --panel:#f7f9fc;
+    --panel2:#eef3fa;
+    --ink:#1a2330;
+    --ink2:#3a4a60;
+    --muted:#6b7a90;
+    --accent:#2f5fa6;
+    --accent-soft:#e6efff;
+    --accent2:#1f7a85;
+    --warm:#c9463a;
+    --good:#2f8a3e;
+    --gold:#b8860b;
+    --line:#dde4ee;
+    --line-strong:#c4cfde;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;overflow:hidden}
+  .deck{position:relative;width:100vw;height:100vh;overflow:hidden}
+  .slide{position:absolute;inset:0;padding:48px 72px 80px;overflow:auto;
+    opacity:0;visibility:hidden;transition:opacity .35s ease, transform .35s ease;
+    transform:translateY(8px)}
+  .slide.active{opacity:1;visibility:visible;transform:none}
+  .slide-header{display:flex;align-items:baseline;justify-content:space-between;
+    border-bottom:2px solid var(--accent-soft);padding-bottom:10px;margin-bottom:24px}
+  .slide-header h2{font-size:28px;margin:0;font-weight:700;color:var(--accent);letter-spacing:-.005em}
+  .slide-tag{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+  h1{font-size:44px;line-height:1.15;margin:0 0 16px;font-weight:700;letter-spacing:-.01em;color:#0f1a2b}
+  h3{font-size:18px;margin:14px 0 8px;color:var(--accent2);font-weight:600;
+    text-transform:uppercase;letter-spacing:.04em}
+  p,li{font-size:16px;line-height:1.6;color:var(--ink2)}
+  ul{padding-left:20px;margin:6px 0}
+  li{margin-bottom:6px}
+  strong{color:var(--ink)}
+  em{color:var(--ink2)}
+  .meta{color:var(--muted);font-size:14px;margin-top:6px}
+  .pill{display:inline-block;padding:4px 12px;border:1px solid var(--accent);
+    border-radius:999px;color:var(--accent);font-size:12px;background:var(--accent-soft);font-weight:500}
+  .grid{display:grid;gap:20px}
+  .grid.two{grid-template-columns:1fr 1fr}
+  .grid.three{grid-template-columns:repeat(3,1fr)}
+  .grid.split-55{grid-template-columns:1.1fr 1fr;align-items:start}
+  .grid.split-46{grid-template-columns:.9fr 1.1fr;align-items:start}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .card.accent{background:var(--accent-soft);border-color:#bcd2f0}
+  .card.warn{background:#fdf2ee;border-color:#f3cfc1}
+  .figure{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;
+    display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .figure img{max-width:100%;max-height:55vh;display:block;object-fit:contain}
+  .figure.tight img{max-height:38vh}
+  .figcap{color:var(--muted);font-size:12px;margin-top:6px;text-align:center;line-height:1.5}
+  .codeblk{background:#f4f7fc;border:1px solid var(--line);border-radius:8px;padding:14px 16px;
+    font-family:"SF Mono","JetBrains Mono",Menlo,monospace;font-size:13px;color:var(--ink);
+    white-space:pre;line-height:1.55;overflow-x:auto}
+  .codeblk .kw{color:var(--accent);font-weight:600}
+  .codeblk .cm{color:var(--muted);font-style:italic}
+  .codeblk .fn{color:var(--accent2);font-weight:600}
+  .kbd{font-family:"SF Mono",Menlo,monospace;font-size:12px;background:#eef2f8;border:1px solid var(--line);
+    padding:1px 6px;border-radius:4px;color:var(--accent)}
+  .nav{position:fixed;left:0;right:0;bottom:0;height:52px;background:rgba(255,255,255,.95);
+    backdrop-filter:blur(8px);border-top:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:10}
+  .nav .grp{display:flex;gap:10px;align-items:center}
+  .nav button{background:#fff;border:1px solid var(--line);color:var(--ink);
+    padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500}
+  .nav button:hover{border-color:var(--accent);color:var(--accent)}
+  .progress{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));
+    position:fixed;top:0;left:0;z-index:11;transition:width .35s;width:0}
+  .counter{color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px}
+  .title-slide{display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;padding:80px 64px;
+    background:radial-gradient(800px 500px at 30% 25%,#e6efff 0%,transparent 60%),
+               radial-gradient(700px 400px at 75% 80%,#e1f0f2 0%,transparent 60%),#fff}
+  .title-slide h1{font-size:48px;max-width:1100px;margin-bottom:28px;line-height:1.2}
+  .title-slide .authors{color:var(--accent);font-size:18px;margin-bottom:6px;font-weight:500;max-width:1000px}
+  .title-slide .authors .me{background:#fff5cc;padding:1px 6px;border-radius:4px;color:#7a5800}
+  .title-slide .aff{color:var(--muted);font-size:15px;margin-bottom:30px}
+  .title-slide .venue{display:inline-block;padding:10px 22px;border-radius:8px;
+    background:var(--accent);color:#fff;font-size:14px;font-weight:500;letter-spacing:.02em}
+  .check{color:var(--good);font-weight:700;margin-right:4px}
+  .x{color:var(--warm);font-weight:700;margin-right:4px}
+  .arrow{color:var(--accent);font-weight:700;margin-right:4px}
+  .stat{font-size:42px;color:var(--accent);font-weight:700;line-height:1;
+    font-variant-numeric:tabular-nums}
+  .stat.warm{color:var(--warm)}
+  .stat.good{color:var(--good)}
+  .statlabel{color:var(--muted);font-size:13px;margin-top:8px;line-height:1.4}
+  .center{text-align:center}
+  .quoteblk{border-left:3px solid var(--accent);padding:8px 14px;color:var(--accent);
+    margin:12px 0;background:var(--accent-soft);border-radius:0 6px 6px 0;font-size:15px}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px}
+  .compare .col{padding:14px;border-radius:8px;border:1px solid var(--line)}
+  .compare .col.bad{background:#fdf2ee;border-color:#f3cfc1}
+  .compare .col.good{background:#eef9f0;border-color:#c8e7cd}
+  .compare h3{margin-top:0}
+  .toc{counter-reset:item;display:grid;grid-template-columns:1fr 1fr;gap:14px 32px;margin-top:20px}
+  .toc .item{display:flex;align-items:center;gap:14px;padding:10px 14px;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;cursor:pointer;
+    transition:all .15s}
+  .toc .item:hover{background:var(--accent-soft);border-color:var(--accent)}
+  .toc .num{font-size:18px;font-weight:700;color:var(--accent);min-width:28px}
+  .toc .ttl{font-size:14px;color:var(--ink)}
+  .math-display{margin:10px 0}
+  .katex{font-size:1.05em !important}
+  .katex-display{margin:.6em 0 !important}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+  .legend span{font-size:12px;color:var(--muted)}
+  .legend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;
+    vertical-align:middle}
+  .scroll-hint{position:fixed;right:18px;bottom:62px;font-size:11px;color:var(--muted);
+    background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px 8px;z-index:9}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 Title -->
+  <section class="slide title-slide">
+    <div class="pill">ACM Transactions on Graphics · SIGGRAPH Asia 2021</div>
+    <h1 style="margin-top:18px">Efficient and Robust Discrete Conformal Equivalence with Boundary</h1>
+    <div class="authors">
+      Marcel Campen &nbsp;·&nbsp; Ryan Capouellez &nbsp;·&nbsp; Hanxiao Shen &nbsp;·&nbsp;
+      <span class="me">Leyi Zhu</span> &nbsp;·&nbsp; Daniele Panozzo &nbsp;·&nbsp; Denis Zorin
+    </div>
+    <div class="aff">Osnabrück University &nbsp;|&nbsp; Courant Institute, New York University</div>
+    <div class="venue">DOI: 10.1145/3478513.3480557 &nbsp;·&nbsp; Vol. 40, No. 6 &nbsp;·&nbsp; December 2021</div>
+    <div class="meta" style="margin-top:36px">Use <span class="kbd">↓</span> / <span class="kbd">↑</span>, scroll wheel, or <span class="kbd">Space</span> to navigate &nbsp; · &nbsp; <span class="kbd">F</span> for fullscreen</div>
+  </section>
+
+  <!-- 2 Outline -->
+  <section class="slide">
+    <div class="slide-header"><h2>Outline</h2><div class="slide-tag">02 / 16</div></div>
+    <p>This talk walks through the problem, the mathematical machinery, our algorithmic contributions, and the empirical results.</p>
+    <div class="toc">
+      <div class="item" data-go="3"><div class="num">01</div><div class="ttl">Motivation &amp; problem statement</div></div>
+      <div class="item" data-go="4"><div class="num">02</div><div class="ttl">Discrete conformal equivalence</div></div>
+      <div class="item" data-go="5"><div class="num">03</div><div class="ttl">Why fixed triangulations fail</div></div>
+      <div class="item" data-go="6"><div class="num">04</div><div class="ttl">Two flip strategies: degeneration vs. Delaunay</div></div>
+      <div class="item" data-go="7"><div class="num">05</div><div class="ttl">The hyperbolic Ptolemy trick</div></div>
+      <div class="item" data-go="8"><div class="num">06</div><div class="ttl">Newton algorithm with line search</div></div>
+      <div class="item" data-go="9"><div class="num">07</div><div class="ttl">Boundary handling: symmetric double cover</div></div>
+      <div class="item" data-go="10"><div class="num">08</div><div class="ttl">Symmetric flip catalogue</div></div>
+      <div class="item" data-go="11"><div class="num">09</div><div class="ttl">Results on real meshes</div></div>
+      <div class="item" data-go="14"><div class="num">10</div><div class="ttl">Numerical limits &amp; comparison</div></div>
+    </div>
+  </section>
+
+  <!-- 3 Problem -->
+  <section class="slide">
+    <div class="slide-header"><h2>Motivation &amp; Problem</h2><div class="slide-tag">03 / 16</div></div>
+    <div class="grid split-55">
+      <div>
+        <p>Given a manifold triangle mesh $M=(V,E,F)$ with edge lengths $\ell:E\to\mathbb{R}^{>0}$ and a target curvature $\hat\kappa_i$ per vertex, find new edge lengths that realise these curvatures while remaining <strong>conformally equivalent</strong> to the input.</p>
+
+        <h3>Discrete curvature</h3>
+        <p>Let $\Theta_i = \sum_{T_{ijk}}\alpha^i_{jk}$ be the angle sum at $v_i$. Then</p>
+        <div class="math-display">$$\kappa_i = \begin{cases}2\pi - \Theta_i & v_i\text{ interior (Gaussian)}\\ \pi - \Theta_i & v_i\text{ boundary (geodesic)}\end{cases}$$</div>
+
+        <h3>Applications</h3>
+        <ul>
+          <li><strong>Flattenings</strong>: prescribe $\hat\kappa_i = 0$ in the interior.</li>
+          <li><strong>Cone metrics</strong>: prescribe non-zero $\hat\kappa$ at a few cone points.</li>
+          <li><strong>Seamless quad maps</strong>: $\hat\kappa_i = k_i\,\pi/2$ with $k_i\in\mathbb{Z}$.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="figure"><img src="images/heatmap-3.png" alt="scale heatmap"></div>
+        <p class="figcap">Conformal scale factor on a complex model — easily spans many orders of magnitude.</p>
+        <div class="card warn" style="margin-top:14px">
+          <h3 style="margin-top:0">Why is this hard?</h3>
+          <ul>
+            <li>Conformal scale factors can span <strong>hundreds of orders of magnitude</strong>.</li>
+            <li>Triangle inequality cuts the feasible region $\Omega$ into a tricky shape.</li>
+            <li>Surfaces with boundary need symmetry-aware machinery.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Conformal Equivalence -->
+  <section class="slide">
+    <div class="slide-header"><h2>Discrete Conformal Equivalence</h2><div class="slide-tag">04 / 16</div></div>
+    <p>Per-vertex log-scale factors $\mathbf{u}:V\to\mathbb{R}$ reshape edge lengths multiplicatively (Luo, 2004):</p>
+    <div class="math-display">$$\tilde\ell_{ij}(\mathbf{u}) \;=\; \ell_{ij}\;\exp\!\Big(\tfrac{u_i+u_j}{2}\Big)$$</div>
+
+    <p>For target angles $\hat\Theta$, a conformally equivalent metric satisfies, for every $i$:</p>
+    <div class="math-display">$$g_i(\mathbf{u}) \;=\; \hat\Theta_i \;-\; \Theta_i(\mathbf{u}) \;=\; \hat\Theta_i \;-\; \sum_{T_{ijk}}\alpha^i_{jk}(\mathbf{u}) \;=\; 0$$</div>
+
+    <div class="grid split-55" style="margin-top:14px">
+      <div class="card accent">
+        <h3 style="margin-top:0">Key fact (Springborn 2008)</h3>
+        <p>$\mathbf{g}(\mathbf{u})$ is the gradient of a twice-differentiable <strong>convex</strong> energy on the feasible set $\Omega_M\subset\mathbb{R}^n$.</p>
+        <p>So in principle a Newton method on $\mathbf{u}$ converges to the unique optimum.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">The catch</h3>
+        <p>The optimum may live <em>outside</em> $\Omega_M$ — the prescribed $\hat\Theta$ may be unreachable with the input triangulation.</p>
+        <p>For a vertex $v_i$ of valence $k$, no Euclidean metric admits</p>
+        <div class="math-display">$$\kappa_i \;\le\; (2-k)\pi$$</div>
+        <p>since each interior angle is bounded by $\pi$.</p>
+      </div>
+    </div>
+    <p class="quoteblk" style="margin-top:14px"><strong>Resolution.</strong> Allow the triangulation itself to change <em>during</em> optimisation.</p>
+  </section>
+
+  <!-- 5 Two strategies -->
+  <section class="slide">
+    <div class="slide-header"><h2>Two Strategies for Dynamic Triangulation</h2><div class="slide-tag">05 / 16</div></div>
+    <div class="grid split-46">
+      <div>
+        <div class="figure"><img src="images/omega.png" alt="flips and feasible region"></div>
+        <p class="figcap">Left: flip-on-degeneration. Right: flip-on-Delaunay-violation. Light blue: feasible $\Omega$. White: Delaunay cell $\Delta$. The cross marks the current $\mathbf{u}$.</p>
+      </div>
+      <div>
+        <div class="compare">
+          <div class="col bad">
+            <h3>Degeneration flips</h3>
+            <p style="font-size:14px">Luo 2004; Campen et al. 2017</p>
+            <ul>
+              <li>Flip when a triangle degenerates (boundary of $\Omega$).</li>
+              <li>Stays in Euclidean feasible region.</li>
+              <li>Must locate every flip event along the path.</li>
+              <li>Open theoretical issues with simultaneous degeneracies.</li>
+            </ul>
+          </div>
+          <div class="col good">
+            <h3>Delaunay flips</h3>
+            <p style="font-size:14px">Gu et al. 2018; Springborn 2019</p>
+            <ul>
+              <li>Flip when four vertices become co-circular (boundary of $\Delta$).</li>
+              <li>Maintains an intrinsic Delaunay triangulation.</li>
+              <li>Energy becomes convex on <strong>all of $\mathbb{R}^n$</strong>.</li>
+              <li>More flips, but each is local and cheap.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="quoteblk" style="margin-top:14px">The Delaunay strategy unlocks an unconstrained Newton method — and crucially, a hyperbolic re-interpretation that lets flips be applied in <em>any order</em>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 Hyperbolic / Ptolemy -->
+  <section class="slide">
+    <div class="slide-header"><h2>The Hyperbolic Ptolemy Trick</h2><div class="slide-tag">06 / 16</div></div>
+    <div class="grid split-55">
+      <div>
+        <p>Instead of marching $t$ from 0 to 1 and detecting each Delaunay-critical event, jump straight to $t=1$ and run a generic <strong>flip algorithm</strong> on the (possibly invalid) lengths.</p>
+
+        <h3>Algebraic Delaunay test</h3>
+        <p>An edge $e_{ij}$ shared by triangles $T_{ijk},T_{jim}$ is Delaunay iff</p>
+        <div class="math-display">$$\frac{\tilde\ell_{jk}^2+\tilde\ell_{ki}^2-\tilde\ell_{ij}^2}{\tilde\ell_{jk}\,\tilde\ell_{ki}} \;+\; \frac{\tilde\ell_{jm}^2+\tilde\ell_{mi}^2-\tilde\ell_{ij}^2}{\tilde\ell_{jm}\,\tilde\ell_{mi}} \;\ge\; 0$$</div>
+
+        <h3>Ptolemy length update</h3>
+        <p>When a flip swaps $e_{ij}\to e_{km}$ in an inscribed quadrilateral:</p>
+        <div class="math-display">$$\boxed{\;\ell_{km} \;=\; \frac{\ell_{jk}\,\ell_{im} \;+\; \ell_{ki}\,\ell_{mj}}{\ell_{ij}}\;}$$</div>
+        <p>Applied in the <em>original</em> metric — scale factors $u_i$ cancel.</p>
+      </div>
+      <div>
+        <div class="figure tight"><img src="images/ptolemy.png" alt="Ptolemy flip"></div>
+        <p class="figcap">A Delaunay-critical edge $e_{ij}$ in an inscribed quadrilateral, replaced by $e_{km}$.</p>
+
+        <div class="card accent" style="margin-top:14px">
+          <h3 style="margin-top:0">Proposition (Weeks; Gu et al.)</h3>
+          <p>Starting from any conformally scaled lengths $\tilde\ell$ — even if they violate the triangle inequality — the flip algorithm using the algebraic test and Ptolemy update terminates with an intrinsic Delaunay triangulation, conformally equivalent to the input. <strong>Flips may be applied in any order.</strong></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 Algorithm -->
+  <section class="slide">
+    <div class="slide-header"><h2>Newton Algorithm</h2><div class="slide-tag">07 / 16</div></div>
+    <div class="grid split-46">
+      <div>
+        <div class="codeblk"><span class="kw">function</span> <span class="fn">FindConformalMetric</span>(M, ℓ, Θ̂):
+  u ← 0
+  (M, ℓ) ← <span class="fn">MakeDelaunay</span>(M, ℓ, u)
+  <span class="kw">while not</span> <span class="fn">converged</span>(M, ℓ, u):
+    g ← Θ̂ − Θ(M, ℓ̃)        <span class="cm"># gradient</span>
+    H ← <span class="fn">Hessian</span>(M, ℓ̃)         <span class="cm"># Hessian</span>
+    d ← <span class="fn">solve</span>(H d = −g)        <span class="cm"># Newton dir.</span>
+    (M, ℓ, u) ← <span class="fn">LineSearch</span>(M, ℓ, u, d)
+  ℓ̃ ← <span class="fn">ScaleConformally</span>(M, ℓ, u)
+  <span class="kw">return</span> (M, ℓ̃)</div>
+
+        <p style="font-size:13px;color:var(--muted);margin-top:10px">Each iteration solves one sparse SPD system. Re-flipping happens lazily inside the line search.</p>
+      </div>
+      <div>
+        <h3>Line search innovations</h3>
+        <ul>
+          <li><strong>Trial Delaunay re-flip</strong> after every step using Ptolemy, so the Newton direction can step freely beyond $\Omega$.</li>
+          <li><strong>Armijo-like</strong> acceptance test combining gradients at the full and half step:
+            <div class="math-display" style="font-size:14px">$$\tfrac12\!\left(\mathbf{d}^{\!\top}\!g_{1} + \mathbf{d}^{\!\top}\!g_{1/2}\right) \;\le\; \alpha\,\mathbf{d}^{\!\top}\!g_0$$</div>
+          </li>
+          <li><strong>Backtracking</strong> until the projected gradient $\mathbf{d}^{\!\top}\!g(\mathbf{u}+\mathbf{d}) \le 0$.</li>
+        </ul>
+
+        <h3>Empirical convergence</h3>
+        <ul>
+          <li>$\le 10^{-10}$ angle accuracy in <strong>&lt; 15</strong> Newton iterations on the standard MPZ dataset.</li>
+          <li><strong>0.4 s</strong> average wall time on a 1K-vertex sphere with random target curvatures.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 Boundary -->
+  <section class="slide">
+    <div class="slide-header"><h2>Surfaces with Boundary — Symmetric Double Cover</h2><div class="slide-tag">08 / 16</div></div>
+    <div class="grid split-46">
+      <div>
+        <div class="figure"><img src="images/double.png" alt="double cover"></div>
+        <p class="figcap">Glue two reflected copies of the boundaried mesh along their boundary loops. The result is closed but carries a reflection symmetry $R$.</p>
+      </div>
+      <div>
+        <p>Reduce the boundary case to the closed case (Sun et al. 2015 idea), then run the closed-case Newton algorithm — but the symmetry $R$ must be preserved at every step.</p>
+
+        <h3>What goes wrong with naïve flipping</h3>
+        <ul>
+          <li>The reflection creates <strong>stable Delaunay-critical configurations</strong>: many quadruples become co-circular simultaneously.</li>
+          <li>Some flips would break $R$; others must happen in coordinated mirror pairs.</li>
+        </ul>
+
+        <h3>Our combinatorial machinery</h3>
+        <ul>
+          <li>Classify every edge / face by symmetry class: <span class="kbd">F¹</span>, <span class="kbd">F²</span>, <span class="kbd">Fˢ</span>; same for edges.</li>
+          <li>Every flip is labelled by a triple $(\text{face}_a,\text{edge},\text{face}_b)$ — only a small number of combinations actually occur.</li>
+          <li>Prove that several of these combinations are <strong>Delaunay regardless of metric</strong> and can be skipped (Prop. on label compatibility).</li>
+          <li>For the rest, give explicit halfedge-cycle and reflection-map updates.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 Sym flips -->
+  <section class="slide">
+    <div class="slide-header"><h2>Symmetric Flip Catalogue</h2><div class="slide-tag">09 / 16</div></div>
+    <div class="grid two">
+      <div>
+        <h3>Symmetric pair flips</h3>
+        <div class="figure"><img src="images/symmflips.png" alt="sym flips"></div>
+        <p class="figcap">Two mirror-image flips executed jointly to preserve the reflection $R$.</p>
+      </div>
+      <div>
+        <h3>Self-symmetric (on-axis) flips</h3>
+        <div class="figure"><img src="images/asymmflips.png" alt="asym flips"></div>
+        <p class="figcap">A single flip that is its own mirror image — happens at edges lying on the symmetry line.</p>
+      </div>
+    </div>
+    <div class="card accent" style="margin-top:14px">
+      <p style="margin:0"><strong>Why this matters.</strong> Without the catalogue, naïvely applying the closed-case flip algorithm on a symmetric mesh produces broken symmetry, runaway flips at the boundary, or incorrect Delaunay states. The classification gives a finite, provably-correct flip vocabulary.</p>
+    </div>
+  </section>
+
+  <!-- 10 Results closed -->
+  <section class="slide">
+    <div class="slide-header"><h2>Results — Closed Surfaces</h2><div class="slide-tag">10 / 16</div></div>
+    <div class="figure"><img src="images/res_closed.png" alt="closed results"></div>
+    <p class="figcap">Conformal maps on the Myles et al. 2014 dataset, visualised with an adaptive grid texture. Cone vertices in green/red. Numbers in the corner indicate the number of orders of magnitude spanned by the conformal scale.</p>
+  </section>
+
+  <!-- 11 Results boundary -->
+  <section class="slide">
+    <div class="slide-header"><h2>Results — Surfaces with Boundary</h2><div class="slide-tag">11 / 16</div></div>
+    <div class="figure"><img src="images/res_boundary.png" alt="boundary results"></div>
+    <p class="figcap">Geodesic curvature prescribed to zero along boundary loops — the texture grid lines therefore meet the boundary at a constant angle per loop.</p>
+  </section>
+
+  <!-- 12 Cuts -->
+  <section class="slide">
+    <div class="slide-header"><h2>Results — Cut-Aligned Maps</h2><div class="slide-tag">12 / 16</div></div>
+    <div class="figure"><img src="images/res_cuts.png" alt="cut results"></div>
+    <p class="figcap">Closed models cut to disk topology along a cut graph (black). Geodesic curvature $\hat\kappa = \pi$ is prescribed along the cut so it becomes axis-aligned in the parametrisation. Numerically the most demanding scenario — one example spans 55 orders of magnitude in scale.</p>
+  </section>
+
+  <!-- 13 Extreme -->
+  <section class="slide">
+    <div class="slide-header"><h2>Pushing the Limits — Single-Cone Stress Test</h2><div class="slide-tag">13 / 16</div></div>
+    <div class="grid split-46">
+      <div>
+        <div class="figure"><img src="images/6torus.png" alt="6-torus single cone"></div>
+        <p class="figcap">A genus-6 torus with all curvature concentrated at one vertex. Top to bottom: input mesh; resulting intrinsic retriangulation; overlay triangulation; hierarchical grid texture spanning 25 levels.</p>
+      </div>
+      <div>
+        <p>Concentrate <em>all</em> curvature at a single vertex of a $g$-torus (cone angle $2\pi(2g-1)$):</p>
+        <div class="grid two" style="margin-top:14px">
+          <div class="card center"><div class="stat">232</div><div class="statlabel">orders of magnitude in scale at $g=12$ (still benign in double precision)</div></div>
+          <div class="card center"><div class="stat">$10^{-29}$</div><div class="statlabel">residual at $g=150$ with 200-bit arithmetic</div></div>
+          <div class="card center"><div class="stat">611</div><div class="statlabel">orders of magnitude at $g=400$</div></div>
+          <div class="card center"><div class="stat">$10^{-65}$</div><div class="statlabel">residual at $g=400$ with 400-bit arithmetic</div></div>
+        </div>
+        <p class="quoteblk" style="margin-top:14px">By varying arithmetic precision we can exchange compute for accuracy on truly extreme inputs — there is no fundamental algorithmic barrier.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 Comparison -->
+  <section class="slide">
+    <div class="slide-header"><h2>Comparison vs. Degeneration-Flip Method</h2><div class="slide-tag">14 / 16</div></div>
+    <div class="grid three">
+      <div class="card center"><div class="stat good">73×</div><div class="statlabel">average speed-up over the degeneration-flip method on 1000 random cases (10K-vertex sphere)</div></div>
+      <div class="card center"><div class="stat">0.4 s</div><div class="statlabel">average wall time to $\varepsilon = 10^{-10}$<br>vs. <strong>29.6 s</strong> for degeneration flips</div></div>
+      <div class="card center"><div class="stat">$10^{-10}$</div><div class="statlabel">angle accuracy reached in &lt; 15 Newton iterations on the standard dataset</div></div>
+    </div>
+    <div class="grid two" style="margin-top:18px">
+      <div class="card">
+        <h3 style="margin-top:0">Why faster?</h3>
+        <p>More flips (cheap, local) but far fewer linear system solves (expensive, global). The Newton step is unconstrained, so the line search no longer fights with feasibility boundaries.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Why more robust?</h3>
+        <p>The hyperbolic interpretation lets intermediate states violate the triangle inequality safely. Extreme small/large prescribed angles converge in cases where the degeneration-flip method stalls or diverges.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 Contributions -->
+  <section class="slide">
+    <div class="slide-header"><h2>Contributions</h2><div class="slide-tag">15 / 16</div></div>
+    <ul style="font-size:17px;line-height:1.7">
+      <li><span class="check">✓</span> An <strong>efficient, robust Newton algorithm</strong> for discrete conformal equivalence built on the hyperbolic-Delaunay framework of Gu et al. and Springborn — with a new line search that exploits the algorithm&rsquo;s ability to flip in arbitrary order.</li>
+      <li><span class="check">✓</span> First clean treatment of <strong>surfaces with boundary</strong> via a symmetric double cover, including a complete classification of symmetric flips and proofs of which configurations are unconditionally Delaunay.</li>
+      <li><span class="check">✓</span> Stable handling of <strong>Delaunay-critical configurations</strong> introduced by symmetry — a previously open algorithmic issue.</li>
+      <li><span class="check">✓</span> A construction of a <strong>continuous conformal map</strong> from the discrete metric using the overlay data structure of Fisher et al. — usable for parametrisation and quadrangulation.</li>
+      <li><span class="check">✓</span> Extensive numerical evaluation, including <strong>arbitrary-precision experiments</strong> spanning hundreds of orders of magnitude in scale.</li>
+    </ul>
+  </section>
+
+  <!-- 16 Closing -->
+  <section class="slide title-slide">
+    <h1>Thank you</h1>
+    <p style="font-size:18px;color:var(--accent);max-width:900px;margin-top:8px">
+      Code, data, and additional results accompany the ACM TOG publication.
+    </p>
+    <div class="meta" style="margin-top:32px;line-height:1.7">
+      Marcel Campen, Ryan Capouellez, Hanxiao Shen, Leyi Zhu, Daniele Panozzo, Denis Zorin<br>
+      <em>ACM Transactions on Graphics (SIGGRAPH Asia), Vol. 40, No. 6, December 2021</em><br>
+      DOI 10.1145/3478513.3480557
+    </div>
+  </section>
+
+</div>
+
+<div class="scroll-hint">scroll · ↑↓ · space</div>
+
+<div class="nav">
+  <div class="grp">
+    <button id="prev">← Prev</button>
+    <button id="next">Next →</button>
+  </div>
+  <div class="counter"><span id="cur">1</span> / <span id="tot">0</span></div>
+  <div class="grp">
+    <span class="kbd">↑↓</span>
+    <span class="kbd">Space</span>
+    <span class="kbd">F</span> fullscreen
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides = document.querySelectorAll('.slide');
+  var total = slides.length;
+  var idx = 0;
+  document.getElementById('tot').textContent = total;
+
+  function go(n){
+    idx = ((n % total) + total) % total;
+    for (var i = 0; i < slides.length; i++){
+      if (i === idx){ slides[i].classList.add('active'); slides[i].scrollTop = 0; }
+      else slides[i].classList.remove('active');
+    }
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('progress').style.width = ((idx+1)/total*100) + '%';
+  }
+
+  document.getElementById('next').addEventListener('click', function(){ go(idx+1); });
+  document.getElementById('prev').addEventListener('click', function(){ go(idx-1); });
+
+  // TOC links
+  document.querySelectorAll('.toc .item').forEach(function(el){
+    el.addEventListener('click', function(){
+      var t = parseInt(el.getAttribute('data-go'),10);
+      if (!isNaN(t)) go(t-1);
+    });
+  });
+
+  // Keyboard
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault(); go(idx+1);
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault(); go(idx-1);
+    } else if (e.key === 'Home') { go(0); }
+    else if (e.key === 'End') { go(total-1); }
+    else if (e.key === 'f' || e.key === 'F'){
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  // Wheel paging — debounced, respects in-slide scrolling
+  var wheelLock = false;
+  var WHEEL_THRESHOLD = 30;
+  var WHEEL_COOLDOWN = 650;
+  document.addEventListener('wheel', function(e){
+    if (wheelLock) { e.preventDefault(); return; }
+    var slide = slides[idx];
+    var canScrollDown = slide.scrollHeight - slide.scrollTop - slide.clientHeight > 4;
+    var canScrollUp = slide.scrollTop > 4;
+    if (e.deltaY > WHEEL_THRESHOLD){
+      if (canScrollDown) return;          // let internal scroll happen
+      e.preventDefault();
+      wheelLock = true; go(idx+1);
+      setTimeout(function(){ wheelLock = false; }, WHEEL_COOLDOWN);
+    } else if (e.deltaY < -WHEEL_THRESHOLD){
+      if (canScrollUp) return;
+      e.preventDefault();
+      wheelLock = true; go(idx-1);
+      setTimeout(function(){ wheelLock = false; }, WHEEL_COOLDOWN);
+    }
+  }, { passive:false });
+
+  // Touch swipe
+  var touchY = null;
+  document.addEventListener('touchstart', function(e){ touchY = e.touches[0].clientY; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if (touchY === null) return;
+    var dy = e.changedTouches[0].clientY - touchY;
+    if (dy < -60) go(idx+1);
+    else if (dy > 60) go(idx-1);
+    touchY = null;
+  }, {passive:true});
+
+  go(0);
+})();
+</script>
+</body>
+</html>

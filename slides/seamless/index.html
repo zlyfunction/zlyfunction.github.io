@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Which Cross Fields can be Quadrangulated? — Slides</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInDocument()"></script>
+<script>
+  function renderMathInDocument(){
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left:'$$', right:'$$', display:true},
+        {left:'\\[', right:'\\]', display:true},
+        {left:'$', right:'$', display:false},
+        {left:'\\(', right:'\\)', display:false}
+      ],
+      throwOnError:false,
+      strict:false
+    });
+  }
+</script>
+<style>
+  :root{
+    --bg:#ffffff;
+    --panel:#f7f9fc;
+    --panel2:#eef3fa;
+    --ink:#1a2330;
+    --ink2:#3a4a60;
+    --muted:#6b7a90;
+    --accent:#2f5fa6;
+    --accent-soft:#e6efff;
+    --accent2:#1f7a85;
+    --warm:#c9463a;
+    --good:#2f8a3e;
+    --gold:#b8860b;
+    --line:#dde4ee;
+    --line-strong:#c4cfde;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;overflow:hidden}
+  .deck{position:relative;width:100vw;height:100vh;overflow:hidden}
+  .slide{position:absolute;inset:0;padding:48px 72px 80px;overflow:auto;
+    opacity:0;visibility:hidden;transition:opacity .35s ease, transform .35s ease;
+    transform:translateY(8px)}
+  .slide.active{opacity:1;visibility:visible;transform:none}
+  .slide-header{display:flex;align-items:baseline;justify-content:space-between;
+    border-bottom:2px solid var(--accent-soft);padding-bottom:10px;margin-bottom:24px}
+  .slide-header h2{font-size:28px;margin:0;font-weight:700;color:var(--accent);letter-spacing:-.005em}
+  .slide-tag{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+  h1{font-size:44px;line-height:1.15;margin:0 0 16px;font-weight:700;letter-spacing:-.01em;color:#0f1a2b}
+  h3{font-size:18px;margin:14px 0 8px;color:var(--accent2);font-weight:600;
+    text-transform:uppercase;letter-spacing:.04em}
+  p,li{font-size:16px;line-height:1.6;color:var(--ink2)}
+  ul{padding-left:20px;margin:6px 0}
+  li{margin-bottom:6px}
+  strong{color:var(--ink)}
+  em{color:var(--ink2)}
+  .meta{color:var(--muted);font-size:14px;margin-top:6px}
+  .pill{display:inline-block;padding:4px 12px;border:1px solid var(--accent);
+    border-radius:999px;color:var(--accent);font-size:12px;background:var(--accent-soft);font-weight:500}
+  .grid{display:grid;gap:20px}
+  .grid.two{grid-template-columns:1fr 1fr}
+  .grid.three{grid-template-columns:repeat(3,1fr)}
+  .grid.split-55{grid-template-columns:1.1fr 1fr;align-items:start}
+  .grid.split-46{grid-template-columns:.9fr 1.1fr;align-items:start}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .card.accent{background:var(--accent-soft);border-color:#bcd2f0}
+  .card.warn{background:#fdf2ee;border-color:#f3cfc1}
+  .figure{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;
+    display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .figure img{max-width:100%;max-height:55vh;display:block;object-fit:contain}
+  .figure.tight img{max-height:38vh}
+  .figcap{color:var(--muted);font-size:12px;margin-top:6px;text-align:center;line-height:1.5}
+  .codeblk{background:#f4f7fc;border:1px solid var(--line);border-radius:8px;padding:14px 16px;
+    font-family:"SF Mono","JetBrains Mono",Menlo,monospace;font-size:13px;color:var(--ink);
+    white-space:pre;line-height:1.55;overflow-x:auto}
+  .codeblk .kw{color:var(--accent);font-weight:600}
+  .codeblk .cm{color:var(--muted);font-style:italic}
+  .codeblk .fn{color:var(--accent2);font-weight:600}
+  .kbd{font-family:"SF Mono",Menlo,monospace;font-size:12px;background:#eef2f8;border:1px solid var(--line);
+    padding:1px 6px;border-radius:4px;color:var(--accent)}
+  .nav{position:fixed;left:0;right:0;bottom:0;height:52px;background:rgba(255,255,255,.95);
+    backdrop-filter:blur(8px);border-top:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:10}
+  .nav .grp{display:flex;gap:10px;align-items:center}
+  .nav button{background:#fff;border:1px solid var(--line);color:var(--ink);
+    padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500}
+  .nav button:hover{border-color:var(--accent);color:var(--accent)}
+  .progress{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));
+    position:fixed;top:0;left:0;z-index:11;transition:width .35s;width:0}
+  .counter{color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px}
+  .title-slide{display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;padding:80px 64px;
+    background:radial-gradient(800px 500px at 30% 25%,#e6efff 0%,transparent 60%),
+               radial-gradient(700px 400px at 75% 80%,#e1f0f2 0%,transparent 60%),#fff}
+  .title-slide h1{font-size:46px;max-width:1150px;margin-bottom:28px;line-height:1.2}
+  .title-slide .authors{color:var(--accent);font-size:18px;margin-bottom:6px;font-weight:500;max-width:1000px}
+  .title-slide .authors .me{background:#fff5cc;padding:1px 6px;border-radius:4px;color:#7a5800}
+  .title-slide .aff{color:var(--muted);font-size:15px;margin-bottom:30px}
+  .title-slide .venue{display:inline-block;padding:10px 22px;border-radius:8px;
+    background:var(--accent);color:#fff;font-size:14px;font-weight:500;letter-spacing:.02em}
+  .check{color:var(--good);font-weight:700;margin-right:4px}
+  .x{color:var(--warm);font-weight:700;margin-right:4px}
+  .arrow{color:var(--accent);font-weight:700;margin-right:4px}
+  .stat{font-size:42px;color:var(--accent);font-weight:700;line-height:1;
+    font-variant-numeric:tabular-nums}
+  .stat.warm{color:var(--warm)}
+  .stat.good{color:var(--good)}
+  .statlabel{color:var(--muted);font-size:13px;margin-top:8px;line-height:1.4}
+  .center{text-align:center}
+  .quoteblk{border-left:3px solid var(--accent);padding:8px 14px;color:var(--accent);
+    margin:12px 0;background:var(--accent-soft);border-radius:0 6px 6px 0;font-size:15px}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px}
+  .compare .col{padding:14px;border-radius:8px;border:1px solid var(--line)}
+  .compare .col.bad{background:#fdf2ee;border-color:#f3cfc1}
+  .compare .col.good{background:#eef9f0;border-color:#c8e7cd}
+  .compare h3{margin-top:0}
+  .toc{counter-reset:item;display:grid;grid-template-columns:1fr 1fr;gap:14px 32px;margin-top:20px}
+  .toc .item{display:flex;align-items:center;gap:14px;padding:10px 14px;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;cursor:pointer;
+    transition:all .15s}
+  .toc .item:hover{background:var(--accent-soft);border-color:var(--accent)}
+  .toc .num{font-size:18px;font-weight:700;color:var(--accent);min-width:28px}
+  .toc .ttl{font-size:14px;color:var(--ink)}
+  .math-display{margin:10px 0}
+  .katex{font-size:1.05em !important}
+  .katex-display{margin:.6em 0 !important}
+  .scroll-hint{position:fixed;right:18px;bottom:62px;font-size:11px;color:var(--muted);
+    background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px 8px;z-index:9}
+  .pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
+  .pipeline .step{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:10px;text-align:center;font-size:12px;color:var(--ink2);position:relative}
+  .pipeline .step .lbl{font-weight:700;color:var(--accent);font-size:11px;letter-spacing:.05em;
+    text-transform:uppercase;margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 Title -->
+  <section class="slide title-slide">
+    <div class="pill">ACM Transactions on Graphics · SIGGRAPH 2022</div>
+    <h1 style="margin-top:18px">Which Cross Fields can be Quadrangulated?<br><span style="font-size:32px;color:var(--ink2);font-weight:600">Global Parameterization from Prescribed Holonomy Signatures</span></h1>
+    <div class="authors">
+      Hanxiao Shen &nbsp;·&nbsp; <span class="me">Leyi Zhu</span> &nbsp;·&nbsp; Ryan Capouellez &nbsp;·&nbsp; Daniele Panozzo &nbsp;·&nbsp; Marcel Campen &nbsp;·&nbsp; Denis Zorin
+    </div>
+    <div class="aff">New York University &nbsp;|&nbsp; Osnabrück University</div>
+    <div class="venue">DOI: 10.1145/3528223.3530187 &nbsp;·&nbsp; Vol. 41, No. 4 &nbsp;·&nbsp; July 2022</div>
+    <div class="meta" style="margin-top:36px">Use <span class="kbd">↓</span> / <span class="kbd">↑</span>, scroll wheel, or <span class="kbd">Space</span> to navigate &nbsp; · &nbsp; <span class="kbd">F</span> for fullscreen</div>
+  </section>
+
+  <!-- 2 Outline -->
+  <section class="slide">
+    <div class="slide-header"><h2>Outline</h2><div class="slide-tag">02 / 16</div></div>
+    <p>This talk covers seamless parametrization, the role of holonomy, our existence theorem, and the rerouting algorithm that makes prescribed holonomy realisable.</p>
+    <div class="toc">
+      <div class="item" data-go="3"><div class="num">01</div><div class="ttl">Teaser &amp; motivation</div></div>
+      <div class="item" data-go="4"><div class="num">02</div><div class="ttl">Seamless parametrization &amp; holonomy</div></div>
+      <div class="item" data-go="5"><div class="num">03</div><div class="ttl">Holonomy signature &amp; cross fields</div></div>
+      <div class="item" data-go="6"><div class="num">04</div><div class="ttl">Why prior methods fall short</div></div>
+      <div class="item" data-go="7"><div class="num">05</div><div class="ttl">Existence theorem &amp; GCD condition</div></div>
+      <div class="item" data-go="8"><div class="num">06</div><div class="ttl">Quasi-additivity &amp; rerouting around a cone</div></div>
+      <div class="item" data-go="9"><div class="num">07</div><div class="ttl">Algorithm pipeline</div></div>
+      <div class="item" data-go="10"><div class="num">08</div><div class="ttl">Field-guided cut graph &amp; basis extraction</div></div>
+      <div class="item" data-go="11"><div class="num">09</div><div class="ttl">Segment rerouting (Dijkstra + fallback)</div></div>
+      <div class="item" data-go="13"><div class="num">10</div><div class="ttl">Results &amp; comparison</div></div>
+    </div>
+  </section>
+
+  <!-- 3 Teaser -->
+  <section class="slide">
+    <div class="slide-header"><h2>Teaser — full topological control</h2><div class="slide-tag">03 / 16</div></div>
+    <div class="figure"><img src="images/teaser_version4_shadow.png" alt="teaser"></div>
+    <p class="figcap">
+      <strong>(a)</strong> Input loop system with a prescribed holonomy signature.
+      <strong>(b)</strong> A state-of-the-art seamless map (Campen et al. 2018) that ignores global holonomy.
+      <strong>(c)</strong> Our rerouted, topologically equivalent loop system.
+      <strong>(d)</strong> Our seamless parametrization — perfectly matches the prescribed signature, with lower distortion and better field alignment.
+    </p>
+  </section>
+
+  <!-- 4 Background -->
+  <section class="slide">
+    <div class="slide-header"><h2>Seamless Parametrization &amp; Holonomy Angle</h2><div class="slide-tag">04 / 16</div></div>
+    <div class="grid split-46">
+      <div>
+        <div class="figure"><img src="images/strip2.png" alt="holonomy angle"></div>
+        <p class="figcap">The holonomy angle of a dual loop is the sum of signed inner angles along the strip — equivalently, the angle between first and last edge after laying the strip flat.</p>
+      </div>
+      <div>
+        <h3>Seamless parametrization</h3>
+        <p>A piecewise-linear, locally injective map $F:M^c\to\mathbb{R}^2$ such that for every cut edge $e$ with mate $e'$, there is a rigid transform $\sigma_e(x)=R_e x + t_e$ with $R_e$ a rotation by an integer multiple of $\pi/2$, mapping $F(e)$ to $F(e')$.</p>
+
+        <h3>Holonomy angle of a loop $\gamma$</h3>
+        <div class="math-display">$$\kappa_\gamma^F \;=\; \sum_{f^*\in\gamma}\alpha_\gamma(f^*)$$</div>
+        <p>and the <strong>holonomy number</strong> is $k_\gamma^F = \kappa_\gamma^F / (2\pi)$. For seamless maps it lives in $\tfrac14\mathbb{Z}$.</p>
+
+        <h3>Cone index</h3>
+        <p>For a vertex loop $\partial v^*$, the index is $I_v^F = 1 - k_{\partial v^*}^F \in \tfrac14\mathbb{Z}$.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 Holonomy Signature -->
+  <section class="slide">
+    <div class="slide-header"><h2>Holonomy Signature &amp; Cross Fields</h2><div class="slide-tag">05 / 16</div></div>
+    <div class="grid split-55">
+      <div>
+        <h3>Definition</h3>
+        <p>Holonomy numbers along a homology basis of $M\setminus C$:</p>
+        <div class="math-display">$$\big(k_{\gamma_1},\,\dots,\,k_{\gamma_{2g}};\;\;k_{\partial v_1^*},\,\dots,\,k_{\partial v_m^*}\big)$$</div>
+        <p>This finite signature determines the holonomy number of <strong>every</strong> loop on the surface (via Gauss-Bonnet).</p>
+
+        <h3>Equivalence (non-uniqueness)</h3>
+        <p>Different choices of basis loops give different numbers but represent the <em>same parametrization topology</em> — see right.</p>
+
+        <h3>Connection to cross fields</h3>
+        <p>For a discrete cross field with turning numbers $T_\gamma$ on a homology basis, matching $T$ to $k$ on the basis forces a match for <strong>every</strong> loop. This is a Poincaré-Hopf-style identity:</p>
+        <div class="math-display">$$T_{\partial S} \;=\; -\chi(S)$$</div>
+        <p>Cross fields with any prescribed turning-number signature can be built by a linear solve [Crane et al., Trivial Connections]. Our method extends this <strong>topological control to parametrizations</strong>.</p>
+      </div>
+      <div>
+        <div class="figure"><img src="images/non_unique.png" alt="non unique signature"></div>
+        <p class="figcap">Two equivalent signatures. Cones: red $-\tfrac14$, blue $+\tfrac14$. Loop holonomy numbers boxed (0 vs $\tfrac14$). Sliding the loop across the leftmost red cone changes the number by exactly $-I_v = +\tfrac14$.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 Why prior methods fall short -->
+  <section class="slide">
+    <div class="slide-header"><h2>Why Prior Methods Fall Short</h2><div class="slide-tag">06 / 16</div></div>
+    <p>Constructing a seamless parametrization that matches a prescribed cross field requires getting <strong>both local and global holonomy right</strong>.</p>
+    <div class="compare">
+      <div class="col bad">
+        <h3>Seamless Padding (Campen 2018)</h3>
+        <ul>
+          <li>Guarantees local injectivity and matches the cones (local holonomy).</li>
+          <li>Cut graph is a generic hole-chain — its global holonomy along non-contractible loops is whatever the construction happens to produce.</li>
+          <li>If global holonomy mismatches the input field, the result <strong>cannot</strong> be continuously optimised into alignment — there is a topological obstacle.</li>
+        </ul>
+      </div>
+      <div class="col good">
+        <h3>Our method</h3>
+        <ul>
+          <li>Same guarantees on local injectivity and cones.</li>
+          <li>Provably constructs a cut graph whose induced parametrization has <strong>exactly</strong> the prescribed global holonomy (under a mild GCD condition).</li>
+          <li>Resulting maps align cleanly with the input cross field — lower distortion, better quad layout.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="quoteblk" style="margin-top:14px">Topological match between cross field and parametrization is mandatory for high-quality quad meshing — it cannot be repaired downstream.</p>
+  </section>
+
+  <!-- 7 Existence theorem -->
+  <section class="slide">
+    <div class="slide-header"><h2>Existence Theorem &amp; the GCD Condition</h2><div class="slide-tag">07 / 16</div></div>
+    <div class="grid split-55">
+      <div>
+        <h3>The question</h3>
+        <p style="font-style:italic;color:var(--accent)">For which holonomy signatures does a seamless parametrization exist?</p>
+
+        <h3>Our answer (Prop. 2)</h3>
+        <p>Let $H=\{\gamma_1,\dots,\gamma_{2g}\}$ be a system of loops cutting $M$ to a disk, and let cones $v_1,\dots,v_m$ have prescribed indices $I_1,\dots,I_m\in\tfrac14\mathbb{Z}$. If</p>
+        <div class="math-display">$$\gcd(I_1,\,\dots,\,I_m) \;=\; \tfrac14$$</div>
+        <p>then for any target shifts $k_1,\dots,k_{2g}\in\tfrac14\mathbb{Z}$, there is an alternative basis $\delta_1,\dots,\delta_{2g}$ (still cutting $M$ to a disk) with</p>
+        <div class="math-display">$$k_{\delta_i}^F \;=\; k_{\gamma_i}^F + k_i \quad\forall\,i.$$</div>
+      </div>
+      <div>
+        <div class="card accent">
+          <h3 style="margin-top:0">When is the GCD condition met?</h3>
+          <ul>
+            <li>It suffices to have <strong>one</strong> cone of index $\pm\tfrac14$ — i.e., a single valence-3 or valence-5 quad vertex.</li>
+            <li>Cross fields optimised for smoothness or curvature alignment <strong>essentially always</strong> satisfy this.</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin-top:0">Consequence</h3>
+          <p>For genus $\neq 1$, a seamless parametrization exists for <strong>any</strong> holonomy signature satisfying the GCD condition.</p>
+          <p>For genus 1, the only known counterexample (two cones with angles $\tfrac{3\pi}{2},\tfrac{5\pi}{2}$) is the <strong>only</strong> obstruction in the class.</p>
+        </div>
+
+        <p class="quoteblk" style="margin-top:14px">Cross-field topology and seamless-map topology nearly coincide — the gap is essentially empty in practice.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 Quasi-Additivity -->
+  <section class="slide">
+    <div class="slide-header"><h2>Quasi-Additivity &amp; Rerouting Around a Cone</h2><div class="slide-tag">08 / 16</div></div>
+    <div class="grid split-46">
+      <div>
+        <div class="figure"><img src="images/rerouting_a.png" alt="quasi additivity"></div>
+        <p class="figcap">Two non-intersecting loops $\gamma,\delta$ joined by a path $\alpha$.</p>
+        <div class="figure" style="margin-top:10px"><img src="images/singularities.png" alt="rerouting around cone"></div>
+        <p class="figcap">Rerouting a loop around a cone of index $\tfrac14$ twice — holonomy changes by $\tfrac12$.</p>
+      </div>
+      <div>
+        <h3>Quasi-Additivity (Prop. 1)</h3>
+        <p>If $\alpha$ connects the right side of $\gamma$ to the right side of $\delta$, there is a simple loop $\gamma_0$ — arbitrarily close to $\gamma\cup\alpha\cup\delta$ — with</p>
+        <div class="math-display">$$k_{\gamma_0}^F \;=\; k_\gamma^F + k_\delta^F - 1.$$</div>
+        <p>If $\alpha$ goes left-to-left, the $-1$ becomes $+1$.</p>
+
+        <h3>Specialisation: rerouting around a cone $v_i$</h3>
+        <p>Take $\delta = \partial v_i^*$ (the cone loop, $k_\delta = 1 - I_{v_i}$). Then</p>
+        <div class="math-display">$$k_{\gamma_0}^F \;=\; k_\gamma^F \pm I_{v_i}^F.$$</div>
+        <p>Sign depends on which side of $\gamma$ the path $\alpha$ comes in from.</p>
+
+        <p class="quoteblk">Repeated rerouting around chosen cones can shift a loop's holonomy number by any integer combination of cone indices — an Extended Euclidean Algorithm reaches any target if the GCD condition holds.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 Pipeline -->
+  <section class="slide">
+    <div class="slide-header"><h2>Algorithmic Pipeline</h2><div class="slide-tag">09 / 16</div></div>
+    <div class="figure"><img src="images/genus1_example.png" alt="pipeline"></div>
+    <p class="figcap">
+      <strong>(a)</strong> Input signature loops (yellow, green) with cones (red, blue).
+      <strong>(b)</strong> Equivalent signature after rerouting — yellow takes a different path between cones.
+      <strong>(c)</strong> Conformal parametrization respecting cones &amp; cut alignment, yielding the prescribed holonomy pattern.
+      <strong>(d)</strong> Padding makes it seamless.
+      <strong>(e)</strong> Distortion + cross-field alignment optimisation within the topological class.
+    </p>
+    <div class="pipeline" style="margin-top:14px">
+      <div class="step"><div class="lbl">Step 1</div>Field-guided<br>hole-chain $G$</div>
+      <div class="step"><div class="lbl">Step 2</div>Extract loop<br>basis $H \subset G$</div>
+      <div class="step"><div class="lbl">Step 3</div>Reroute $H\!\to\!H'$<br>yield $G'$</div>
+      <div class="step"><div class="lbl">Step 4</div>Cut-aligned<br>conformal map</div>
+      <div class="step"><div class="lbl">Step 5</div>Padding +<br>optimisation</div>
+    </div>
+  </section>
+
+  <!-- 10 Cut graph -->
+  <section class="slide">
+    <div class="slide-header"><h2>Field-Guided Cut Graph &amp; Basis Extraction</h2><div class="slide-tag">10 / 16</div></div>
+    <div class="grid split-46">
+      <div>
+        <div class="figure"><img src="images/holechain2.png" alt="hole chain"></div>
+        <p class="figcap">A hole-chain cut graph. Highlighted in red: a loop making two left turns — its parametrization holonomy number will be $\tfrac24 = \tfrac12$.</p>
+      </div>
+      <div>
+        <h3>Hole-chain cut graph</h3>
+        <p>Built from $g$ non-contractible loops (one per handle) plus $2g-1$ connector paths chaining them. Both are computed on a four-sheeted cover $M_4$ using a <strong>cross-field-aligned anisotropic metric</strong> [Diaz et al. 2009; Campen 2014].</p>
+
+        <h3>Why field-guided?</h3>
+        <p>Soft-guidance promotes loops whose left/right-turn balance already matches the field's turning numbers — minimising downstream rerouting.</p>
+
+        <h3>Homology basis $H$</h3>
+        <p>Take a spanning tree $T$ of $G$. Each of the remaining $2g$ <em>bridge</em> edges defines a unique loop (bridge + tree paths to root). These $2g$ loops form a system of loops.</p>
+
+        <p class="quoteblk">Crucial fact: each bridge belongs to <strong>exactly one</strong> basis loop, so we can shift each loop's holonomy <strong>independently</strong>.</p>
+
+        <h3>SP holonomy pattern</h3>
+        <p>Along any loop in $G$, the SP method's output has holonomy number $\tfrac14(m_\ell - m_r)$ (left turns minus right turns). Our job is to make this balance equal the target.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 Segment Rerouting -->
+  <section class="slide">
+    <div class="slide-header"><h2>Segment Rerouting — Two-Tier Strategy</h2><div class="slide-tag">11 / 16</div></div>
+    <div class="grid split-55">
+      <div>
+        <p>For each basis loop with current balance $\tfrac14(m_\ell - m_r)$ and target $t$, reroute its bridge segment so that the balance changes by</p>
+        <div class="math-display">$$k \;=\; \tfrac14(m_\ell - m_r) - t.$$</div>
+
+        <h3>Tier 1 — Holonomy-aware Dijkstra</h3>
+        <ul>
+          <li>Dual shortest path on $M^c$, with edges tagged by the index sum of cones they enclose w.r.t. the bridge segment.</li>
+          <li>Terminates as soon as the enclosed index sum reaches the required holonomy shift.</li>
+          <li>Field-aware costs &rarr; usually returns a clean, simple replacement path.</li>
+          <li>May fail (path turns out non-simple after projection) — fall through.</li>
+        </ul>
+
+        <h3>Tier 2 — Constructive fallback</h3>
+        <ul>
+          <li>Pick a multiset $V$ of cones with index sum $k$ — found by the <strong>Extended Euclidean Algorithm</strong> under the GCD condition.</li>
+          <li>For each $v^*\in V$, splice the bridge tightly around $v^*$ via the shortest path on the appropriate side.</li>
+          <li>Edge splits ensure the new path stays disjoint from the rest of $G$.</li>
+          <li><strong>Provably succeeds</strong> whenever the GCD condition holds.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="figure"><img src="images/equivalent_signature.png" alt="equivalent signatures"></div>
+        <p class="figcap">Two different rerouted loop systems for the same prescribed holonomy. The final parametrizations are identical up to a seamless transformation.</p>
+
+        <div class="card accent" style="margin-top:14px">
+          <h3 style="margin-top:0">Soft-guidance pays off</h3>
+          <p>Because the initial hole-chain is already field-aware, in many cases <strong>no rerouting</strong> is needed — and when needed, the field-guided Dijkstra resolves most cases without falling back.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 Padding & Conformal -->
+  <section class="slide">
+    <div class="slide-header"><h2>Cut-Aligned Conformal Map &amp; Padding</h2><div class="slide-tag">12 / 16</div></div>
+    <div class="grid split-55">
+      <div>
+        <h3>Cut-aligned conformal metric</h3>
+        <p>On the cut mesh $M^c$ we compute a discrete conformal metric with</p>
+        <ul>
+          <li>prescribed cone angles at vertices of $C$,</li>
+          <li>prescribed geodesic curvature along the cut $G'$ — segments become <strong>straight</strong>, branch corners become <strong>right angles</strong>.</li>
+        </ul>
+        <p>We use the convergent algorithm of <em>Campen et al. 2021 / Gillespie 2021</em> (the same hyperbolic-Delaunay framework presented in our SIGGRAPH Asia 2021 paper), which gives strict convergence guarantees on these challenging boundary shapes.</p>
+
+        <h3>Padding</h3>
+        <p>Mate boundary segments are straight and meet at multiples of $\pi/2$, but lengths may differ. Stretch a thin cone-free strip along each segment so that mated segments equalise — provably feasible, preserves seamlessness.</p>
+
+        <h3>Final optimisation</h3>
+        <p>Projected Newton on cross-field alignment $E_A$ + small symmetric Dirichlet $E_D$ as injectivity barrier; reduced-row-echelon parameterisation of constraints for stability.</p>
+      </div>
+      <div>
+        <div class="figure"><img src="images/padding.png" alt="padding"></div>
+        <p class="figcap">Padding in the parameter domain: a thin strip along the top straight cut segment is stretched vertically; vertices then shift horizontally to match their mates across the cut.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 Results comparison -->
+  <section class="slide">
+    <div class="slide-header"><h2>Results — Topology Match vs. SP Baseline</h2><div class="slide-tag">13 / 16</div></div>
+    <div class="figure"><img src="images/comparison_with_cuts_bright.png" alt="comparison"></div>
+    <p class="figcap">
+      Rows <strong>(a, e)</strong> SP cut graph &nbsp;|&nbsp; Rows <strong>(b)</strong> SP parametrization.<br>
+      Rows <strong>(c, f)</strong> Our rerouted cut graph &nbsp;|&nbsp; Rows <strong>(d)</strong> Our parametrization.<br>
+      The SP cut graph is topologically wrong relative to the field — its parametrization has high distortion that <strong>cannot</strong> be optimised away.
+    </p>
+  </section>
+
+  <!-- 14 Two-torus example -->
+  <section class="slide">
+    <div class="slide-header"><h2>Genus-2 Stress Test</h2><div class="slide-tag">14 / 16</div></div>
+    <div class="grid split-55">
+      <div>
+        <div class="figure"><img src="images/two_torus_example.png" alt="two torus"></div>
+        <p class="figcap">A genus-2 model walked through the rerouting + padding pipeline.</p>
+      </div>
+      <div>
+        <h3>Empirical observations</h3>
+        <ul>
+          <li>Tested on the standard Myles 2014 dataset (genus $&gt; 0$).</li>
+          <li>Cut-graph stage <strong>succeeds in 100%</strong> of cases (all satisfy the GCD condition; everything is combinatorial and exact).</li>
+          <li>Field-guided Dijkstra resolves the majority of reroutings; constructive fallback is invoked only occasionally.</li>
+          <li>Final parametrization succeeds in most cases — a handful of high-genus models hit numerical limits in optimisation, not topology.</li>
+        </ul>
+
+        <div class="card accent" style="margin-top:14px">
+          <h3 style="margin-top:0">Headline result</h3>
+          <p>Our parametrizations, by construction, exhibit the cross-field's holonomy signature exactly. The remaining distortion (Table 2 in the paper) is significantly lower than the bare SP method — and the remaining map can be smoothly optimised toward the field, with no topological obstacle in the way.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 Contributions -->
+  <section class="slide">
+    <div class="slide-header"><h2>Contributions</h2><div class="slide-tag">15 / 16</div></div>
+    <ul style="font-size:17px;line-height:1.7">
+      <li><span class="check">✓</span> An <strong>existence theorem</strong> for seamless parametrizations with prescribed holonomy signatures, identifying the GCD condition as essentially the only barrier — and showing that the gap between cross-field topology and parametrization topology is empty in practice.</li>
+      <li><span class="check">✓</span> A <strong>quasi-additivity</strong> result for loop holonomy numbers, and its specialisation to rerouting around a cone (Prop. 1, 2).</li>
+      <li><span class="check">✓</span> A <strong>cut-graph construction algorithm</strong> with two-tier rerouting (field-guided Dijkstra + constructive Extended-Euclidean fallback) that realises any prescribed holonomy combinatorially.</li>
+      <li><span class="check">✓</span> A <strong>seamless parametrization pipeline</strong> built on the convergent conformal-metric algorithm of Campen 2021 / Gillespie 2021, with padding and projected-Newton optimisation.</li>
+      <li><span class="check">✓</span> Demonstrated on the Myles 2014 benchmark — full holonomy match in every case, lower distortion than bare SP, and clean alignment with input cross fields.</li>
+    </ul>
+  </section>
+
+  <!-- 16 Closing -->
+  <section class="slide title-slide">
+    <h1>Thank you</h1>
+    <p style="font-size:18px;color:var(--accent);max-width:900px;margin-top:8px">
+      Code, data, and additional results accompany the ACM TOG publication.
+    </p>
+    <div class="meta" style="margin-top:32px;line-height:1.7">
+      Hanxiao Shen, Leyi Zhu, Ryan Capouellez, Daniele Panozzo, Marcel Campen, Denis Zorin<br>
+      <em>ACM Transactions on Graphics (SIGGRAPH), Vol. 41, No. 4, July 2022</em><br>
+      DOI 10.1145/3528223.3530187
+    </div>
+  </section>
+
+</div>
+
+<div class="scroll-hint">scroll · ↑↓ · space</div>
+
+<div class="nav">
+  <div class="grp">
+    <button id="prev">← Prev</button>
+    <button id="next">Next →</button>
+  </div>
+  <div class="counter"><span id="cur">1</span> / <span id="tot">0</span></div>
+  <div class="grp">
+    <span class="kbd">↑↓</span>
+    <span class="kbd">Space</span>
+    <span class="kbd">F</span> fullscreen
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides = document.querySelectorAll('.slide');
+  var total = slides.length;
+  var idx = 0;
+  document.getElementById('tot').textContent = total;
+
+  function go(n){
+    idx = ((n % total) + total) % total;
+    for (var i = 0; i < slides.length; i++){
+      if (i === idx){ slides[i].classList.add('active'); slides[i].scrollTop = 0; }
+      else slides[i].classList.remove('active');
+    }
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('progress').style.width = ((idx+1)/total*100) + '%';
+  }
+
+  document.getElementById('next').addEventListener('click', function(){ go(idx+1); });
+  document.getElementById('prev').addEventListener('click', function(){ go(idx-1); });
+
+  document.querySelectorAll('.toc .item').forEach(function(el){
+    el.addEventListener('click', function(){
+      var t = parseInt(el.getAttribute('data-go'),10);
+      if (!isNaN(t)) go(t-1);
+    });
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault(); go(idx+1);
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault(); go(idx-1);
+    } else if (e.key === 'Home') { go(0); }
+    else if (e.key === 'End') { go(total-1); }
+    else if (e.key === 'f' || e.key === 'F'){
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  var wheelLock = false;
+  var WHEEL_THRESHOLD = 30;
+  var WHEEL_COOLDOWN = 650;
+  document.addEventListener('wheel', function(e){
+    if (wheelLock) { e.preventDefault(); return; }
+    var slide = slides[idx];
+    var canScrollDown = slide.scrollHeight - slide.scrollTop - slide.clientHeight > 4;
+    var canScrollUp = slide.scrollTop > 4;
+    if (e.deltaY > WHEEL_THRESHOLD){
+      if (canScrollDown) return;
+      e.preventDefault();
+      wheelLock = true; go(idx+1);
+      setTimeout(function(){ wheelLock = false; }, WHEEL_COOLDOWN);
+    } else if (e.deltaY < -WHEEL_THRESHOLD){
+      if (canScrollUp) return;
+      e.preventDefault();
+      wheelLock = true; go(idx-1);
+      setTimeout(function(){ wheelLock = false; }, WHEEL_COOLDOWN);
+    }
+  }, { passive:false });
+
+  var touchY = null;
+  document.addEventListener('touchstart', function(e){ touchY = e.touches[0].clientY; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if (touchY === null) return;
+    var dy = e.changedTouches[0].clientY - touchY;
+    if (dy < -60) go(idx+1);
+    else if (dy > 60) go(idx-1);
+    touchY = null;
+  }, {passive:true});
+
+  go(0);
+})();
+</script>
+</body>
+</html>
