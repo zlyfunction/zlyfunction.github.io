@@ -169,8 +169,16 @@
         }
 
         @keyframes hint-pulse {
-            0%, 100% { opacity: 0.75; }
-            50% { opacity: 1; transform: scale(1.05); }
+
+            0%,
+            100% {
+                opacity: 0.75;
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
         }
 
         .profile-info h1 {
@@ -294,7 +302,7 @@
             margin-bottom: 40px;
         }
 
-        .academic-group + .academic-group {
+        .academic-group+.academic-group {
             margin-top: 28px;
         }
 
@@ -803,13 +811,17 @@
         <section class="profile-section" id="about">
             <div class="profile">
                 <div class="profile-photo-wrap" onclick="toggleProfilePhoto()">
-                    <img id="profile-photo" class="profile-photo" src="./IMG_7035.PNG" alt="Leyi Zhu" width="180" height="180" data-state="cartoon">
-                    <span id="photo-hint" class="photo-hint" data-en="see me in real life" data-zh="点击看真实照片" data-en-back="back to cartoon" data-zh-back="换回卡通">see me in real life</span>
+                    <img id="profile-photo" class="profile-photo" src="./IMG_7035.PNG" alt="Leyi Zhu" width="180"
+                        height="180" data-state="cartoon">
+                    <span id="photo-hint" class="photo-hint" data-en="see me in real life" data-zh="点击看真实照片"
+                        data-en-back="back to cartoon" data-zh-back="换回卡通">see me in real life</span>
                 </div>
                 <div class="profile-info">
                     <h1 data-en="Leyi Zhu" data-zh="朱乐宜">Leyi Zhu</h1>
-                    <p class="subtitle" data-en="Ph.D. in Computer Science" data-zh="计算机科学博士">Ph.D. in Computer Science</p>
-                    <p class="affiliation" data-en="Courant Institute of Mathematical Sciences, New York University" data-zh="纽约大学柯朗数学科学研究所">Courant Institute of Mathematical Sciences, New York University</p>
+                    <p class="subtitle" data-en="Ph.D. in Computer Science" data-zh="计算机科学博士">Ph.D. in Computer Science
+                    </p>
+                    <p class="affiliation" data-en="Courant Institute of Mathematical Sciences, New York University"
+                        data-zh="纽约大学柯朗数学科学研究所">Courant Institute of Mathematical Sciences, New York University</p>
                     <div class="profile-links">
                         <a href="./public_html/CV.pdf" data-en="Curriculum Vitae" data-zh="个人简历">Curriculum Vitae</a>
                         <a href="mailto:leyi@nyu.edu" data-en="Email" data-zh="邮件">Email</a>
@@ -850,9 +862,9 @@
 
             <!-- Thesis Visual -->
             <div class="thesis-visual">
-                <img src="./public_html/respic/thesis-gemini-small.jpg"
-                    alt="Gemini's illustration of Surface Parametrization and Remeshing with Guarantees"
-                    width="1456" height="816">
+                <img src="./public_html/respic/thesis-gpt-small.jpg"
+                    alt="ChatGPT's illustration of Surface Parametrization and Remeshing with Guarantees" width="1456"
+                    height="816">
                 <p class="thesis-caption lang-en">
                     🤖 Gemini's take on my thesis <em>Surface Parametrization and Remeshing with Guarantees</em>,
                     advised by <a href="https://cims.nyu.edu/gcl/daniele.html">Prof. Daniele Panozzo</a> and
@@ -877,15 +889,19 @@
                 <div class="pub-details">
                     <p class="pub-title">Which Cross Fields Can Be Quadrangulated?</p>
                     <p class="pub-venue">ACM Transaction on Graphics (SIGGRAPH), 2022</p>
-                    <p class="pub-meta" data-en="Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo" data-zh="导师：Denis Zorin 教授、Daniele Panozzo 教授">Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo</p>
+                    <p class="pub-meta" data-en="Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo"
+                        data-zh="导师：Denis Zorin 教授、Daniele Panozzo 教授">Advisors: Prof. Denis Zorin, Prof. Daniele
+                        Panozzo</p>
                     <div class="pub-buttons">
                         <a class="pub-btn"
                             href="http://graphics.cs.uos.de/papers/Holonomy_Signature_Parametrization-SIGGRAPH2022_Preprint.pdf"
                             target="_blank" data-en="Paper" data-zh="论文">Paper</a>
-                        <a class="pub-btn" href="https://github.com/hankstag/seamless_signature"
-                            target="_blank" data-en="Code" data-zh="代码">Code</a>
-                        <a class="pub-btn" href="./slides/seamless/" target="_blank" data-en="Slides" data-zh="幻灯片">Slides</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract1')" data-en="Abstract" data-zh="摘要">Abstract</button>
+                        <a class="pub-btn" href="https://github.com/hankstag/seamless_signature" target="_blank"
+                            data-en="Code" data-zh="代码">Code</a>
+                        <a class="pub-btn" href="./slides/seamless/" target="_blank" data-en="Slides"
+                            data-zh="幻灯片">Slides</a>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract1')" data-en="Abstract"
+                            data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract1" class="abstract">
                         <ul>
@@ -916,14 +932,18 @@
                 <div class="pub-details">
                     <p class="pub-title">Efficient and Robust Discrete Conformal Equivalence with Boundary</p>
                     <p class="pub-venue">ACM Transaction on Graphics (SIGGRAPH Asia), 2021</p>
-                    <p class="pub-meta" data-en="Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo" data-zh="导师：Denis Zorin 教授、Daniele Panozzo 教授">Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo</p>
+                    <p class="pub-meta" data-en="Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo"
+                        data-zh="导师：Denis Zorin 教授、Daniele Panozzo 教授">Advisors: Prof. Denis Zorin, Prof. Daniele
+                        Panozzo</p>
                     <div class="pub-buttons">
-                        <a class="pub-btn" href="https://cims.nyu.edu/gcl/papers/2021-Conformal.pdf"
-                            target="_blank" data-en="Paper" data-zh="论文">Paper</a>
+                        <a class="pub-btn" href="https://cims.nyu.edu/gcl/papers/2021-Conformal.pdf" target="_blank"
+                            data-en="Paper" data-zh="论文">Paper</a>
                         <a class="pub-btn" href="https://github.com/geometryprocessing/ConformalIdealDelaunay"
                             target="_blank" data-en="Code" data-zh="代码">Code</a>
-                        <a class="pub-btn" href="./slides/conformal/" target="_blank" data-en="Slides" data-zh="幻灯片">Slides</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract2')" data-en="Abstract" data-zh="摘要">Abstract</button>
+                        <a class="pub-btn" href="./slides/conformal/" target="_blank" data-en="Slides"
+                            data-zh="幻灯片">Slides</a>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract2')" data-en="Abstract"
+                            data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract2" class="abstract">
                         <ul>
@@ -948,18 +968,22 @@
 
             <!-- Pub 3 -->
             <div class="pub-item">
-                <img class="pub-thumb" src="./public_html/respic/8-gemini-small.jpg" alt="Ductile Fracture Simulation" width="160" height="160">
+                <img class="pub-thumb" src="./public_html/respic/8-gemini-small.jpg" alt="Ductile Fracture Simulation"
+                    width="160" height="160">
                 <div class="pub-details">
                     <p class="pub-title">Simulation and Visualization of Ductile Fracture with the Material Point Method
                     </p>
                     <p class="pub-venue">ACM SIGGRAPH / Eurographics Symposium on Computer Animation (SCA), 2019</p>
                     <span class="pub-award" data-en="★ Best Paper Award" data-zh="★ 最佳论文奖">★ Best Paper Award</span>
-                    <p class="pub-meta" data-en="Advisor: Prof. Joseph Teran" data-zh="导师：Joseph Teran 教授">Advisor: Prof. Joseph Teran</p>
+                    <p class="pub-meta" data-en="Advisor: Prof. Joseph Teran" data-zh="导师：Joseph Teran 教授">Advisor:
+                        Prof. Joseph Teran</p>
                     <div class="pub-buttons">
-                        <a class="pub-btn" href="https://stephaniewang.page/files/fracture_paper.pdf"
-                            target="_blank" data-en="Paper" data-zh="论文">Paper</a>
-                        <a class="pub-btn" href="https://www.youtube.com/watch?v=JsHeG0nk7JU" target="_blank" data-en="Video" data-zh="视频">Video</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract3')" data-en="Abstract" data-zh="摘要">Abstract</button>
+                        <a class="pub-btn" href="https://stephaniewang.page/files/fracture_paper.pdf" target="_blank"
+                            data-en="Paper" data-zh="论文">Paper</a>
+                        <a class="pub-btn" href="https://www.youtube.com/watch?v=JsHeG0nk7JU" target="_blank"
+                            data-en="Video" data-zh="视频">Video</a>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract3')" data-en="Abstract"
+                            data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract3" class="abstract">
                         <ul>
@@ -989,15 +1013,18 @@
 
             <!-- Pub 4 -->
             <div class="pub-item">
-                <img class="pub-thumb" src="./public_html/respic/4-gemini-small.jpg" alt="Vehicle Re-Identification" width="160" height="160">
+                <img class="pub-thumb" src="./public_html/respic/4-gemini-small.jpg" alt="Vehicle Re-Identification"
+                    width="160" height="160">
                 <div class="pub-details">
                     <p class="pub-title">Vehicle Re-Id by Deep Feature Fusion Based on Joint Bayesian Criterion</p>
                     <p class="pub-venue">International Conference on Pattern Recognition (ICPR), 2018</p>
-                    <p class="pub-meta" data-en="Advisor: Prof. Mingtao Pei" data-zh="导师：裴明涛 教授">Advisor: Prof. Mingtao Pei</p>
+                    <p class="pub-meta" data-en="Advisor: Prof. Mingtao Pei" data-zh="导师：裴明涛 教授">Advisor: Prof. Mingtao
+                        Pei</p>
                     <div class="pub-buttons">
-                        <a class="pub-btn" href="https://ieeexplore.ieee.org/document/8545531/"
-                            target="_blank" data-en="Paper" data-zh="论文">Paper</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract4')" data-en="Abstract" data-zh="摘要">Abstract</button>
+                        <a class="pub-btn" href="https://ieeexplore.ieee.org/document/8545531/" target="_blank"
+                            data-en="Paper" data-zh="论文">Paper</a>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract4')" data-en="Abstract"
+                            data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract4" class="abstract">
                         <ul>
@@ -1028,42 +1055,53 @@
                 <ul class="academic-list">
                     <li class="academic-item">
                         <span class="academic-item-icon" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 7v14" />
-                                <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
+                                <path
+                                    d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
                             </svg>
                         </span>
-                        <p class="academic-item-title" data-en="Mathematical Analysis III" data-zh="数学分析B3">Mathematical Analysis III</p>
+                        <p class="academic-item-title" data-en="Mathematical Analysis III" data-zh="数学分析B3">Mathematical
+                            Analysis III</p>
                         <p class="academic-item-meta">
                             2017 Fall · MATH100802@USTC ·
-                            <a href="https://icourse.club/course/2855/" target="_blank" rel="noopener noreferrer">Course Link</a>
+                            <a href="https://icourse.club/course/2855/" target="_blank" rel="noopener noreferrer">Course
+                                Link</a>
                         </p>
                     </li>
                     <li class="academic-item">
                         <span class="academic-item-icon" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 7v14" />
-                                <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
+                                <path
+                                    d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
                             </svg>
                         </span>
-                        <p class="academic-item-title" data-en="Mathematical Analysis I" data-zh="数学分析B1">Mathematical Analysis I</p>
+                        <p class="academic-item-title" data-en="Mathematical Analysis I" data-zh="数学分析B1">Mathematical
+                            Analysis I</p>
                         <p class="academic-item-meta">
                             2018 Fall · MATH100606@USTC ·
-                            <a href="https://icourse.club/course/2842/" target="_blank" rel="noopener noreferrer">Course Link</a>
+                            <a href="https://icourse.club/course/2842/" target="_blank" rel="noopener noreferrer">Course
+                                Link</a>
                         </p>
                     </li>
                     <li class="academic-item">
                         <span class="academic-item-icon" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect width="20" height="14" x="2" y="3" rx="2" />
                                 <line x1="8" x2="16" y1="21" y2="21" />
                                 <line x1="12" x2="12" y1="17" y2="21" />
                             </svg>
                         </span>
-                        <p class="academic-item-title" data-en="Computer Graphics" data-zh="计算机图形学">Computer Graphics</p>
+                        <p class="academic-item-title" data-en="Computer Graphics" data-zh="计算机图形学">Computer Graphics
+                        </p>
                         <p class="academic-item-meta">
                             2020 Spring · CSCI-GA 2270-001@NYU ·
-                            <a href="https://github.com/danielepanozzo/cg" target="_blank" rel="noopener noreferrer">Course Link</a>
+                            <a href="https://github.com/danielepanozzo/cg" target="_blank"
+                                rel="noopener noreferrer">Course Link</a>
                         </p>
                     </li>
                 </ul>
@@ -1074,8 +1112,10 @@
                 <ul class="academic-list">
                     <li class="academic-item">
                         <span class="academic-item-icon" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
                                 <path d="m9 12 2 2 4-4" />
                             </svg>
                         </span>
@@ -1083,8 +1123,10 @@
                     </li>
                     <li class="academic-item">
                         <span class="academic-item-icon" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
                                 <path d="m9 12 2 2 4-4" />
                             </svg>
                         </span>
@@ -1101,24 +1143,32 @@
                 <a class="misc-card" href="./fish.html">
                     <div class="misc-card-icon">🐟</div>
                     <p class="misc-card-title" data-en="Touch Fish (摸鱼)" data-zh="摸鱼">Touch Fish (摸鱼)</p>
-                    <p class="misc-card-desc" data-en="Fish procedurally generated with randomized geometric shapes." data-zh="用随机几何形状程序化生成的鱼。">Fish procedurally generated with randomized geometric shapes.</p>
+                    <p class="misc-card-desc" data-en="Fish procedurally generated with randomized geometric shapes."
+                        data-zh="用随机几何形状程序化生成的鱼。">Fish procedurally generated with randomized geometric shapes.</p>
                 </a>
                 <a class="misc-card" href="./xmas.html">
                     <div class="misc-card-icon">🎄</div>
                     <p class="misc-card-title" data-en="Christmas Tree" data-zh="圣诞树">Christmas Tree</p>
-                    <p class="misc-card-desc" data-en="A randomly generated, rotating Christmas tree. Inspired by 小红书 @summer." data-zh="随机生成的旋转圣诞树。灵感来自小红书 @summer。">A randomly generated, rotating Christmas tree. Inspired by 小红书 @summer.</p>
+                    <p class="misc-card-desc"
+                        data-en="A randomly generated, rotating Christmas tree. Inspired by 小红书 @summer."
+                        data-zh="随机生成的旋转圣诞树。灵感来自小红书 @summer。">A randomly generated, rotating Christmas tree. Inspired by
+                        小红书 @summer.</p>
                 </a>
                 <a class="misc-card" href="./cloth.html">
                     <div class="misc-card-icon">🧵</div>
                     <p class="misc-card-title" data-en="Cloth Simulation" data-zh="布料模拟">Cloth Simulation</p>
-                    <p class="misc-card-desc" data-en="Poke it, cut it, blow it — a piece of cloth that will not fight back." data-zh="戳它、割它、对它吹风 —— 一块任你欺负的布。">Poke it, cut it, blow it — a piece of cloth that will not fight back.</p>
+                    <p class="misc-card-desc"
+                        data-en="Poke it, cut it, blow it — a piece of cloth that will not fight back."
+                        data-zh="戳它、割它、对它吹风 —— 一块任你欺负的布。">Poke it, cut it, blow it — a piece of cloth that will not
+                        fight back.</p>
                 </a>
             </div>
 
             <!-- Visitor Map -->
             <div class="visitor-map-wrap">
                 <p class="visitor-map-title" data-en="🌍 Visitor Map" data-zh="🌍 访客地图">🌍 Visitor Map</p>
-                <script type="text/javascript" id="clstr_globe" src="//clustrmaps.com/globe.js?d=arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"></script>
+                <script type="text/javascript" id="clstr_globe"
+                    src="//clustrmaps.com/globe.js?d=arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"></script>
             </div>
         </section>
 
