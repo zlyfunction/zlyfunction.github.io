@@ -262,6 +262,55 @@
             border-bottom-color: var(--color-accent-light);
         }
 
+        .bio .logo-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 2.05em;
+            margin: 0 0.16em;
+            padding: 0;
+            border-bottom: 0;
+            vertical-align: -0.58em;
+            line-height: 1;
+        }
+
+        .bio .logo-link:hover {
+            border-bottom: 0;
+            opacity: 0.86;
+        }
+
+        .bio-logo {
+            display: inline-block;
+            width: auto;
+            height: 1.82em;
+            max-width: 10em;
+            object-fit: contain;
+            vertical-align: middle;
+        }
+
+        .logo-link-square {
+            width: 2.08em;
+        }
+
+        .bio-logo-square {
+            height: 1.9em;
+            max-width: 1.9em;
+        }
+
+        .bio-logo-nyu {
+            height: 2.05em;
+            max-width: 1.5em;
+        }
+
+        .bio-logo-pixel {
+            height: 1.52em;
+            max-width: 10.4em;
+        }
+
+        .bio-logo-phrase {
+            white-space: nowrap;
+        }
+
         .research-interests {
             background: var(--color-highlight);
             border-left: 3px solid var(--color-accent);
@@ -834,23 +883,51 @@
         <section class="bio">
             <p class="lang-en">
                 I received my Ph.D. in Computer Science from the
-                <a href="http://cims.nyu.edu/">Courant Institute of Mathematical Sciences</a>,
-                New York University, advised by
+                <a href="http://cims.nyu.edu/">Courant Institute of Mathematical Sciences</a>
+                at New York University
+                <a class="logo-link logo-link-square" href="https://www.nyu.edu/" aria-label="New York University">
+                    <img class="bio-logo bio-logo-nyu" src="./88bebcb7bac3c3971543582e359ca569.png" alt="NYU logo">
+                </a>, where I was advised by
                 <a href="https://cims.nyu.edu/gcl/daniele.html">Daniele Panozzo</a> and
                 <a href="https://cims.nyu.edu/gcl/denis.html">Denis Zorin</a>.
-                My doctoral research focused on <strong>Surface Parametrization and Remeshing with Guarantees</strong>,
-                developing algorithms with provable correctness and robustness for geometry processing tasks.
-                I received my B.S. in Computational Mathematics from the
-                <a href="http://www.ustc.edu.cn/">University of Science and Technology of China</a>,
-                School of the Gifted Young (<span lang="zh-Hans">少年班学院</span>), in 2019.
+                My doctoral research focused on surface parametrization and remeshing with guarantees, with an emphasis
+                on developing robust geometry processing algorithms with provable correctness.
+                Prior to NYU, I received my B.S. in Computational Mathematics from the School of the Gifted Young
+                (<span lang="zh-Hans">少年班学院</span>) at the
+                <a href="http://www.ustc.edu.cn/">University of Science and Technology of China</a>
+                <a class="logo-link logo-link-square" href="http://www.ustc.edu.cn/"
+                    aria-label="University of Science and Technology of China">
+                    <img class="bio-logo bio-logo-square" src="./pngegg.png" alt="USTC logo">
+                </a>.
+                I also worked as a research intern at
+                <span class="bio-logo-phrase">
+                    <a class="logo-link" href="https://www.tencent.com/en-us/" aria-label="Pixel Lab, Tencent America">
+                        <img class="bio-logo bio-logo-pixel" src="./PixelLabLogo.png" alt="Pixel Lab logo">
+                    </a>, Tencent America.
+                </span>
             </p>
             <p class="lang-zh" style="display:none">
-                我在<a href="http://cims.nyu.edu/">纽约大学柯朗数学科学研究所</a>获得计算机科学博士学位，导师为
+                我在纽约大学
+                <a class="logo-link logo-link-square" href="https://www.nyu.edu/" aria-label="纽约大学">
+                    <img class="bio-logo bio-logo-nyu" src="./88bebcb7bac3c3971543582e359ca569.png" alt="NYU logo">
+                </a>
+                <a href="http://cims.nyu.edu/">柯朗数学科学研究所</a>
+                获得计算机科学博士学位，导师为
                 <a href="https://cims.nyu.edu/gcl/daniele.html">Daniele Panozzo</a> 教授和
                 <a href="https://cims.nyu.edu/gcl/denis.html">Denis Zorin</a> 教授。
-                我的博士研究专注于<strong>有保证的曲面参数化与重网格化</strong>，
-                开发了具有可证明正确性和鲁棒性的几何处理算法。
-                我于 2019 年在<a href="http://www.ustc.edu.cn/">中国科学技术大学</a><span lang="zh-Hans">少年班学院</span>获得计算数学学士学位。
+                我的博士研究专注于有保证的曲面参数化与重网格化，重点是开发具有可证明正确性的鲁棒几何处理算法。
+                在进入纽约大学之前，我在
+                <a href="http://www.ustc.edu.cn/">中国科学技术大学</a>
+                <a class="logo-link logo-link-square" href="http://www.ustc.edu.cn/" aria-label="中国科学技术大学">
+                    <img class="bio-logo bio-logo-square" src="./pngegg.png" alt="USTC logo">
+                </a><span lang="zh-Hans">少年班学院</span>获得计算数学学士学位。
+                我曾在腾讯的
+                <span class="bio-logo-phrase">
+                    <a class="logo-link" href="https://www.tencent.com/en-us/" aria-label="Pixel Lab, Tencent America">
+                        <img class="bio-logo bio-logo-pixel" src="./PixelLabLogo.png" alt="Pixel Lab logo">
+                    </a>
+                    担任实习研究员。
+                </span>
             </p>
             <div class="research-interests lang-en">
                 <strong>Research Interests:</strong> Computer Graphics (Geometric Computing &amp; Physics-based
