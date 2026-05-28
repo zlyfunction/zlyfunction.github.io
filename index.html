@@ -823,9 +823,59 @@
             margin: 0 0 14px;
         }
 
-        .visitor-map-wrap .clstrm_outer {
-            zoom: 0.38;
+        .visitor-map-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 160px;
+            overflow: visible;
+        }
+
+        .visitor-map-static {
             display: inline-block;
+            line-height: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: opacity 0.25s ease;
+        }
+
+        .visitor-map-static img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border: 0;
+        }
+
+        .visitor-map-container.is-live .visitor-map-static {
+            display: none;
+        }
+
+        /* ClustrMaps injects .clustrmaps-inline-widget or legacy .clstrm_outer */
+        .visitor-map-container .clustrmaps-inline-widget,
+        .visitor-map-container .clstrm_outer {
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .visitor-map-fallback {
+            display: none;
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin: 12px 0 0;
+        }
+
+        .visitor-map-fallback.is-visible {
+            display: block;
+        }
+
+        .visitor-map-fallback a {
+            color: var(--color-accent);
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .visitor-map-fallback a:hover {
+            text-decoration: underline;
         }
 
         /* ── Footer ── */
@@ -939,6 +989,12 @@
             // Update html lang attribute
             document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hans';
             localStorage.setItem('lang', lang);
+
+            var visitorMapLink = document.getElementById('visitor-map-static');
+            if (visitorMapLink) {
+                var titleKey = lang === 'zh' ? 'data-zh-title' : 'data-en-title';
+                visitorMapLink.setAttribute('title', visitorMapLink.getAttribute(titleKey) || '');
+            }
         }
 
         function toggleLang() {
@@ -947,7 +1003,56 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             setLang(localStorage.getItem('lang') || 'en');
+            initVisitorMap();
         });
+
+        function initVisitorMap() {
+            var SITE_ID = 'arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM';
+            var container = document.getElementById('visitor-map-container');
+            var staticLink = document.getElementById('visitor-map-static');
+            var fallback = document.getElementById('visitor-map-fallback');
+            if (!container) return;
+
+            function showFallback() {
+                if (fallback) fallback.classList.add('is-visible');
+            }
+
+            function widgetPresent() {
+                return !!container.querySelector(
+                    '.clustrmaps-inline-widget, .clstrm_outer, iframe[src*="clustrmaps"]'
+                );
+            }
+
+            function markLive() {
+                container.classList.add('is-live');
+                if (fallback) fallback.classList.remove('is-visible');
+            }
+
+            var script = document.createElement('script');
+            script.id = 'clustrmaps';
+            script.async = true;
+            script.src = 'https://clustrmaps.com/map_v2.js?cl=ffffff&w=280&t=tt&d=' + SITE_ID;
+
+            script.onload = function () {
+                var attempts = 0;
+                var poll = setInterval(function () {
+                    attempts += 1;
+                    if (widgetPresent()) {
+                        clearInterval(poll);
+                        markLive();
+                    } else if (attempts >= 20) {
+                        clearInterval(poll);
+                        showFallback();
+                    }
+                }, 250);
+            };
+
+            script.onerror = function () {
+                showFallback();
+            };
+
+            container.appendChild(script);
+        }
     </script>
 </head>
 
@@ -1367,20 +1472,27 @@
                 </a>
             </div>
 
-            <!-- Visitor Map -->
+            <!-- Visitor Map (ClustrMaps) -->
             <div class="visitor-map-wrap">
                 <p class="visitor-map-title" data-en="🌍 Visitor Map" data-zh="🌍 访客地图">🌍 Visitor Map</p>
-                <div id="visitor-map-container">
-                    <script type="text/javascript" id="clstr_globe"
-                        src="https://clustrmaps.com/globe.js?d=arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"
-                        onerror="document.getElementById('visitor-map-fallback').style.display='block';this.remove()"></script>
-                    <p id="visitor-map-fallback"
-                        style="display:none;color:var(--color-text-secondary);font-size:0.9rem;margin:0;">
-                        Map unavailable — visit <a
-                            href="https://clustrmaps.com/site/arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"
-                            target="_blank" rel="noopener noreferrer">clustrmaps.com</a> to view.
-                    </p>
+                <div id="visitor-map-container" class="visitor-map-container">
+                    <a id="visitor-map-static" class="visitor-map-static"
+                        href="https://clustrmaps.com/site/arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"
+                        target="_blank" rel="noopener noreferrer"
+                        data-en-title="Visitor map on ClustrMaps" data-zh-title="在 ClustrMaps 查看访客地图"
+                        title="Visitor map on ClustrMaps">
+                        <img src="https://clustrmaps.com/map_v2.png?cl=ffffff&amp;w=280&amp;d=arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"
+                            alt="Visitor map" width="280" height="140" loading="lazy" decoding="async">
+                    </a>
                 </div>
+                <p id="visitor-map-fallback" class="visitor-map-fallback" role="status">
+                    <span data-en="Interactive map could not load — view the "
+                        data-zh="交互地图无法加载 — 请前往 ">Interactive map could not load — view the </span><a
+                        href="https://clustrmaps.com/site/arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"
+                        target="_blank" rel="noopener noreferrer"
+                        data-en="visitor map on ClustrMaps" data-zh="ClustrMaps 访客地图">visitor map on ClustrMaps</a><span
+                        data-en="." data-zh="查看。">.</span>
+                </p>
             </div>
         </section>
 
