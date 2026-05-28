@@ -739,9 +739,36 @@
         }
 
         .misc-card-icon {
-            font-size: 1.9rem;
-            margin-bottom: 12px;
-            line-height: 1;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            transition: transform 0.25s ease;
+        }
+
+        .misc-card:hover .misc-card-icon {
+            transform: scale(1.06) rotate(-3deg);
+        }
+
+        .misc-card-icon svg {
+            width: 28px;
+            height: 28px;
+            display: block;
+        }
+
+        .misc-card-icon--fish {
+            background: var(--google-blue-light);
+        }
+
+        .misc-card-icon--tree {
+            background: #e6f4ea;
+        }
+
+        .misc-card-icon--cloth {
+            background: #fef7e0;
         }
 
         .misc-card-title {
@@ -750,6 +777,23 @@
             font-weight: 500;
             color: var(--color-text);
             margin: 0 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .misc-card-title .misc-card-arrow {
+            width: 16px;
+            height: 16px;
+            color: var(--color-accent);
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .misc-card:hover .misc-card-title .misc-card-arrow {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .misc-card-desc {
@@ -805,77 +849,101 @@
             text-decoration: underline;
         }
 
-        /* ── Visitor Map ── */
-        .visitor-map-wrap {
-            margin-top: 32px;
+        /* ── Fun Facts ── */
+        .funfacts-section {
+            padding-bottom: 48px;
+            border-bottom: 1px solid var(--color-border-light);
+            margin-bottom: 48px;
+        }
+
+        .funfacts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .funfact-card {
+            position: relative;
             background: var(--color-surface);
             border: 1px solid var(--color-border-light);
             border-radius: var(--radius-card-lg);
-            padding: 24px;
+            padding: 26px 22px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
         }
 
-        .visitor-map-wrap .visitor-map-title {
+        .funfact-card:hover {
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.1), 0 4px 10px 2px rgba(60, 64, 67, 0.08);
+            border-color: var(--color-border);
+            transform: translateY(-2px);
+        }
+
+        .funfact-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            transition: transform 0.25s ease;
+        }
+
+        .funfact-card:hover .funfact-icon {
+            transform: scale(1.06);
+        }
+
+        .funfact-icon svg {
+            width: 34px;
+            height: 34px;
+            display: block;
+        }
+
+        .funfact-icon--go {
+            background: #f1f3f4;
+        }
+
+        .funfact-icon--erdos {
+            background: var(--google-blue-light);
+        }
+
+        .funfact-icon--tea {
+            background: #fce8e6;
+        }
+
+        .funfact-value {
             font-family: var(--font-display);
-            font-size: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.15;
+            margin: 0 0 4px;
+            letter-spacing: -0.01em;
+            color: var(--color-text);
+        }
+
+        .funfact-value .funfact-unit {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+        }
+
+        .funfact-label {
+            font-family: var(--font-display);
+            font-size: 0.9375rem;
             font-weight: 500;
             color: var(--color-text);
-            margin: 0 0 14px;
+            margin: 0 0 4px;
         }
 
-        .visitor-map-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 160px;
-            overflow: visible;
-        }
-
-        .visitor-map-static {
-            display: inline-block;
-            line-height: 0;
-            border-radius: 12px;
-            overflow: hidden;
-            transition: opacity 0.25s ease;
-        }
-
-        .visitor-map-static img {
-            display: block;
-            max-width: 100%;
-            height: auto;
-            border: 0;
-        }
-
-        .visitor-map-container.is-live .visitor-map-static {
-            display: none;
-        }
-
-        /* ClustrMaps injects .clustrmaps-inline-widget or legacy .clstrm_outer */
-        .visitor-map-container .clustrmaps-inline-widget,
-        .visitor-map-container .clstrm_outer {
-            display: inline-block;
-            max-width: 100%;
-        }
-
-        .visitor-map-fallback {
-            display: none;
+        .funfact-desc {
+            font-size: 0.8125rem;
             color: var(--color-text-secondary);
-            font-size: 0.9rem;
-            margin: 12px 0 0;
-        }
-
-        .visitor-map-fallback.is-visible {
-            display: block;
-        }
-
-        .visitor-map-fallback a {
-            color: var(--color-accent);
-            font-weight: 500;
-            text-decoration: none;
-        }
-
-        .visitor-map-fallback a:hover {
-            text-decoration: underline;
+            line-height: 1.55;
+            margin: 0;
         }
 
         /* ── Footer ── */
@@ -936,6 +1004,10 @@
                 margin-left: 4px;
             }
 
+            .funfacts-grid {
+                grid-template-columns: 1fr;
+            }
+
             .misc-grid {
                 grid-template-columns: 1fr;
             }
@@ -989,12 +1061,6 @@
             // Update html lang attribute
             document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hans';
             localStorage.setItem('lang', lang);
-
-            var visitorMapLink = document.getElementById('visitor-map-static');
-            if (visitorMapLink) {
-                var titleKey = lang === 'zh' ? 'data-zh-title' : 'data-en-title';
-                visitorMapLink.setAttribute('title', visitorMapLink.getAttribute(titleKey) || '');
-            }
         }
 
         function toggleLang() {
@@ -1003,56 +1069,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             setLang(localStorage.getItem('lang') || 'en');
-            initVisitorMap();
         });
-
-        function initVisitorMap() {
-            var SITE_ID = 'arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM';
-            var container = document.getElementById('visitor-map-container');
-            var staticLink = document.getElementById('visitor-map-static');
-            var fallback = document.getElementById('visitor-map-fallback');
-            if (!container) return;
-
-            function showFallback() {
-                if (fallback) fallback.classList.add('is-visible');
-            }
-
-            function widgetPresent() {
-                return !!container.querySelector(
-                    '.clustrmaps-inline-widget, .clstrm_outer, iframe[src*="clustrmaps"]'
-                );
-            }
-
-            function markLive() {
-                container.classList.add('is-live');
-                if (fallback) fallback.classList.remove('is-visible');
-            }
-
-            var script = document.createElement('script');
-            script.id = 'clustrmaps';
-            script.async = true;
-            script.src = 'https://clustrmaps.com/map_v2.js?cl=ffffff&w=280&t=tt&d=' + SITE_ID;
-
-            script.onload = function () {
-                var attempts = 0;
-                var poll = setInterval(function () {
-                    attempts += 1;
-                    if (widgetPresent()) {
-                        clearInterval(poll);
-                        markLive();
-                    } else if (attempts >= 20) {
-                        clearInterval(poll);
-                        showFallback();
-                    }
-                }, 250);
-            };
-
-            script.onerror = function () {
-                showFallback();
-            };
-
-            container.appendChild(script);
-        }
     </script>
 </head>
 
@@ -1065,6 +1082,7 @@
                 <a href="#about" data-en="About" data-zh="关于">About</a>
                 <a href="#publications" data-en="Publications" data-zh="论文">Publications</a>
                 <a href="#academic" data-en="Academic" data-zh="学术">Academic</a>
+                <a href="#funfacts" data-en="Fun Facts" data-zh="趣事">Fun Facts</a>
                 <a href="#misc" data-en="Misc" data-zh="其他">Misc</a>
                 <button id="lang-toggle" onclick="toggleLang()">中文</button>
             </div>
@@ -1444,55 +1462,137 @@
             </div>
         </section>
 
+        <!-- Fun Facts -->
+        <section class="funfacts-section" id="funfacts">
+            <h2 class="section-title" data-en="Fun Facts" data-zh="一些趣事">Fun Facts</h2>
+            <div class="funfacts-grid">
+                <!-- Go ranking -->
+                <div class="funfact-card">
+                    <span class="funfact-icon funfact-icon--go" aria-hidden="true">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g stroke="#5f6368" stroke-width="1.5" stroke-linecap="round">
+                                <path d="M9 9v30M19 9v30M29 9v30M39 9v30" />
+                                <path d="M9 9h30M9 19h30M9 29h30M9 39h30" />
+                            </g>
+                            <circle cx="19" cy="19" r="6.2" fill="#202124" />
+                            <circle cx="29" cy="29" r="6.2" fill="#ffffff" stroke="#bdc1c6" stroke-width="1.3" />
+                        </svg>
+                    </span>
+                    <p class="funfact-value">5<span class="funfact-unit" data-en="&nbsp;dan" data-zh="&nbsp;段">&nbsp;dan</span></p>
+                    <p class="funfact-label" data-en="Go (围棋)" data-zh="围棋">Go (围棋)</p>
+                    <p class="funfact-desc" data-en="Amateur 5-dan on the board." data-zh="业余 5 段棋力。">Amateur 5-dan on
+                        the board.</p>
+                </div>
+
+                <!-- Erdős number -->
+                <div class="funfact-card">
+                    <span class="funfact-icon funfact-icon--erdos" aria-hidden="true">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g stroke="#1a73e8" stroke-width="2" stroke-linecap="round">
+                                <path d="M11 13 24 24M24 24 37 13M24 24 17 36M24 24 33 35" />
+                            </g>
+                            <circle cx="11" cy="13" r="4" fill="#ea4335" />
+                            <circle cx="37" cy="13" r="4" fill="#fbbc04" />
+                            <circle cx="17" cy="36" r="4" fill="#34a853" />
+                            <circle cx="33" cy="35" r="4" fill="#1a73e8" />
+                            <circle cx="24" cy="24" r="5" fill="#202124" />
+                        </svg>
+                    </span>
+                    <p class="funfact-value">4</p>
+                    <p class="funfact-label" data-en="Erdős Number" data-zh="厄多斯数">Erdős Number</p>
+                    <p class="funfact-desc" data-en="Four hops from Paul Erdős." data-zh="距离保罗·厄多斯 4 步之遥。">Four hops from
+                        Paul Erdős.</p>
+                </div>
+
+                <!-- Favorite milk tea -->
+                <div class="funfact-card">
+                    <span class="funfact-icon funfact-icon--tea" aria-hidden="true">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 16h20l-2.2 22a3 3 0 0 1-3 2.7H19.2a3 3 0 0 1-3-2.7L14 16Z" fill="#fde7c3"
+                                stroke="#ea4335" stroke-width="2" stroke-linejoin="round" />
+                            <path d="M12 16h24" stroke="#ea4335" stroke-width="2.4" stroke-linecap="round" />
+                            <path d="M30 7 27 16" stroke="#ea4335" stroke-width="2" stroke-linecap="round" />
+                            <circle cx="20" cy="33" r="2" fill="#3c2415" />
+                            <circle cx="27" cy="35" r="2" fill="#3c2415" />
+                            <circle cx="24" cy="29" r="2" fill="#3c2415" />
+                            <circle cx="28" cy="29" r="1.6" fill="#3c2415" />
+                            <circle cx="20" cy="28" r="1.6" fill="#3c2415" />
+                        </svg>
+                    </span>
+                    <p class="funfact-value" style="font-size:1.25rem">Molly Tea</p>
+                    <p class="funfact-label" data-en="Favorite Boba" data-zh="最爱奶茶">Favorite Boba</p>
+                    <p class="funfact-desc" data-en="Current go-to milk tea." data-zh="目前的心头好奶茶。">Current go-to milk
+                        tea.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Miscellaneous -->
         <section class="misc-section" id="misc">
             <h2 class="section-title" data-en="Miscellaneous" data-zh="其他">Miscellaneous</h2>
             <div class="misc-grid">
                 <a class="misc-card" href="./fish.html">
-                    <div class="misc-card-icon">🐟</div>
-                    <p class="misc-card-title" data-en="Touch Fish (摸鱼)" data-zh="摸鱼">Touch Fish (摸鱼)</p>
+                    <span class="misc-card-icon misc-card-icon--fish" aria-hidden="true">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 24c5-8 14-12 22-12 4 0 7 1.4 9.5 3.4L44 12l-1.6 8L44 28l-4.5-3.4C37 26.6 34 28 30 28c-8 0-17-4-22-4Z"
+                                fill="#1a73e8" />
+                            <path d="M8 24c2.5-1.6 6-2.6 9-2.6" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" />
+                            <circle cx="16" cy="20" r="1.8" fill="#ffffff" />
+                        </svg>
+                    </span>
+                    <p class="misc-card-title" data-en="Touch Fish (摸鱼)" data-zh="摸鱼">Touch Fish (摸鱼)<svg
+                            class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M7 17 17 7M9 7h8v8" />
+                        </svg></p>
                     <p class="misc-card-desc" data-en="Fish procedurally generated with randomized geometric shapes."
                         data-zh="用随机几何形状程序化生成的鱼。">Fish procedurally generated with randomized geometric shapes.</p>
                 </a>
                 <a class="misc-card" href="./xmas.html">
-                    <div class="misc-card-icon">🎄</div>
-                    <p class="misc-card-title" data-en="Christmas Tree" data-zh="圣诞树">Christmas Tree</p>
+                    <span class="misc-card-icon misc-card-icon--tree" aria-hidden="true">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M24 6 33 19H15L24 6Z" fill="#34a853" />
+                            <path d="M24 15 35 30H13L24 15Z" fill="#34a853" />
+                            <path d="M24 24 38 41H10L24 24Z" fill="#34a853" />
+                            <rect x="21.5" y="41" width="5" height="4" rx="1" fill="#8d6e54" />
+                            <path d="M24 4.5 25 7l2.5.4-1.8 1.8.4 2.5L24 10.5 21.9 11.7l.4-2.5L20.5 7.4 23 7 24 4.5Z"
+                                fill="#fbbc04" />
+                            <circle cx="19" cy="28" r="1.6" fill="#ea4335" />
+                            <circle cx="29" cy="34" r="1.6" fill="#1a73e8" />
+                            <circle cx="24" cy="21" r="1.5" fill="#fbbc04" />
+                        </svg>
+                    </span>
+                    <p class="misc-card-title" data-en="Christmas Tree" data-zh="圣诞树">Christmas Tree<svg
+                            class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M7 17 17 7M9 7h8v8" />
+                        </svg></p>
                     <p class="misc-card-desc"
                         data-en="A randomly generated, rotating Christmas tree. Inspired by 小红书 @summer."
                         data-zh="随机生成的旋转圣诞树。灵感来自小红书 @summer。">A randomly generated, rotating Christmas tree. Inspired by
                         小红书 @summer.</p>
                 </a>
                 <a class="misc-card" href="./cloth.html">
-                    <div class="misc-card-icon">🧵</div>
-                    <p class="misc-card-title" data-en="Cloth Simulation" data-zh="布料模拟">Cloth Simulation</p>
+                    <span class="misc-card-icon misc-card-icon--cloth" aria-hidden="true">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 11c4 3 7 3 11 0s7-3 11 0 7 3 8 2v22c-1 1-4 1-8-2s-7-3-11 0-7 3-11 0-6-3-9-2V11Z"
+                                fill="#fbbc04" />
+                            <path d="M9 22c4 3 7 3 11 0s7-3 11 0 7 3 8 2" stroke="#ea4335" stroke-width="1.6"
+                                stroke-linecap="round" opacity="0.7" />
+                            <path d="M9 33c4 3 7 3 11 0s7-3 11 0 7 3 8 2" stroke="#ea4335" stroke-width="1.6"
+                                stroke-linecap="round" opacity="0.7" />
+                        </svg>
+                    </span>
+                    <p class="misc-card-title" data-en="Cloth Simulation" data-zh="布料模拟">Cloth Simulation<svg
+                            class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M7 17 17 7M9 7h8v8" />
+                        </svg></p>
                     <p class="misc-card-desc"
                         data-en="Poke it, cut it, blow it — a piece of cloth that will not fight back."
                         data-zh="戳它、割它、对它吹风 —— 一块任你欺负的布。">Poke it, cut it, blow it — a piece of cloth that will not
                         fight back.</p>
                 </a>
-            </div>
-
-            <!-- Visitor Map (ClustrMaps) -->
-            <div class="visitor-map-wrap">
-                <p class="visitor-map-title" data-en="🌍 Visitor Map" data-zh="🌍 访客地图">🌍 Visitor Map</p>
-                <div id="visitor-map-container" class="visitor-map-container">
-                    <a id="visitor-map-static" class="visitor-map-static"
-                        href="https://clustrmaps.com/site/arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"
-                        target="_blank" rel="noopener noreferrer"
-                        data-en-title="Visitor map on ClustrMaps" data-zh-title="在 ClustrMaps 查看访客地图"
-                        title="Visitor map on ClustrMaps">
-                        <img src="https://clustrmaps.com/map_v2.png?cl=ffffff&amp;w=280&amp;d=arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"
-                            alt="Visitor map" width="280" height="140" loading="lazy" decoding="async">
-                    </a>
-                </div>
-                <p id="visitor-map-fallback" class="visitor-map-fallback" role="status">
-                    <span data-en="Interactive map could not load — view the "
-                        data-zh="交互地图无法加载 — 请前往 ">Interactive map could not load — view the </span><a
-                        href="https://clustrmaps.com/site/arcatCn0ugLf9IMRjX9XS0DxrnVI2foDkzLsjoPlEMM"
-                        target="_blank" rel="noopener noreferrer"
-                        data-en="visitor map on ClustrMaps" data-zh="ClustrMaps 访客地图">visitor map on ClustrMaps</a><span
-                        data-en="." data-zh="查看。">.</span>
-                </p>
             </div>
         </section>
 
