@@ -51,6 +51,79 @@
             --radius-pill: 999px;
         }
 
+        /* ── YouTube-style dark theme ── */
+        [data-theme="dark"] {
+            /* YouTube red theme — softer, low-saturation red for links/accents */
+            --google-blue: #e08a83;
+            --google-blue-hover: #ee9f98;
+            --google-blue-light: rgba(224, 138, 131, 0.16);
+
+            --color-bg: #0f0f0f;
+            --color-surface: #181818;
+            --color-surface-variant: #212121;
+            --color-surface-tonal: #272727;
+            --color-text: #f1f1f1;
+            --color-text-secondary: #aaaaaa;
+            --color-text-tertiary: #717171;
+            --color-accent: #e08a83;
+            --color-accent-light: #ee9f98;
+            --color-border: #3f3f3f;
+            --color-border-light: #272727;
+            --color-highlight: rgba(224, 138, 131, 0.16);
+            --color-award: #ffd24d;
+            --color-award-bg: rgba(255, 210, 77, 0.14);
+            --color-card-shadow: rgba(0, 0, 0, 0.6);
+            --color-card-shadow-soft: rgba(0, 0, 0, 0.4);
+        }
+
+        [data-theme="dark"] nav {
+            background: rgba(15, 15, 15, 0.92);
+            border-bottom-color: #272727;
+        }
+
+        /* YouTube red accent bar in place of the Google four-color gradient */
+        [data-theme="dark"] .section-title::before {
+            background: #ff0000;
+        }
+
+        /* YouTube red dot before the first academic group (Teaching Assistant) */
+        [data-theme="dark"] .academic-group:nth-of-type(1) .academic-subtitle::before {
+            background: #ff0000;
+        }
+
+        /* Neutral dark chips behind the colorful illustration icons */
+        [data-theme="dark"] .funfact-icon,
+        [data-theme="dark"] .misc-card-icon {
+            background: #272727;
+        }
+
+        /* Brighten Go-board lines so they read on dark */
+        [data-theme="dark"] .funfact-icon--go svg g {
+            stroke: #909090;
+        }
+
+        /* The Pixel Lab wordmark is black on transparent — flip it to white on dark */
+        [data-theme="dark"] .bio-logo-pixel {
+            filter: brightness(0) invert(1);
+        }
+
+        /* The USTC seal is dim blue on dark — render it as a clean white seal */
+        [data-theme="dark"] .bio-logo-square {
+            filter: brightness(0) invert(1);
+        }
+
+        /* NYU is purple-on-transparent — sit it on a small white background on dark */
+        [data-theme="dark"] .bio-logo-nyu {
+            background: #ffffff;
+            border-radius: 3px;
+            padding: 1px 2px;
+        }
+
+        /* Lift the dark thesis illustration a touch so detail stays readable */
+        [data-theme="dark"] .thesis-visual img {
+            filter: brightness(1.22);
+        }
+
         *,
         *::before,
         *::after {
@@ -71,6 +144,7 @@
             font-size: 15px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* ── Navigation ── */
@@ -145,6 +219,46 @@
             background: var(--color-highlight);
             border-color: var(--color-accent);
             color: var(--color-accent);
+        }
+
+        #theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-secondary);
+            background: transparent;
+            border: 1px solid var(--color-border);
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-left: 8px;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        #theme-toggle:hover {
+            background: var(--color-highlight);
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+
+        #theme-toggle svg {
+            width: 18px;
+            height: 18px;
+            display: block;
+        }
+
+        #theme-toggle .icon-sun {
+            display: none;
+        }
+
+        [data-theme="dark"] #theme-toggle .icon-moon {
+            display: none;
+        }
+
+        [data-theme="dark"] #theme-toggle .icon-sun {
+            display: block;
         }
 
         /* ── Main Container ── */
@@ -1067,9 +1181,46 @@
             setLang((localStorage.getItem('lang') || 'en') === 'en' ? 'zh' : 'en');
         }
 
+        function applyTheme(theme) {
+            var dark = theme === 'dark';
+            document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+            // Swap Google branding for YouTube branding in dark mode
+            document.querySelectorAll('.bio-logo-google').forEach(function (img) {
+                img.src = dark ? './youtube_logo.svg' : './google_logo.png';
+                img.alt = dark ? 'YouTube' : 'Google';
+                var link = img.closest('a.logo-link');
+                if (link) {
+                    link.href = dark ? 'https://www.youtube.com/' : 'https://about.google/';
+                    link.setAttribute('aria-label', dark ? 'YouTube' : 'Google');
+                }
+            });
+            // Swap the thesis illustration for its dark-mode version
+            var thesis = document.getElementById('thesis-img');
+            if (thesis) {
+                thesis.src = dark ? thesis.dataset.dark : thesis.dataset.light;
+                if (dark) {
+                    thesis.setAttribute('width', '1456');
+                    thesis.setAttribute('height', '971');
+                } else {
+                    thesis.setAttribute('width', '1456');
+                    thesis.setAttribute('height', '816');
+                }
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        function toggleTheme() {
+            applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             setLang(localStorage.getItem('lang') || 'en');
+            applyTheme(localStorage.getItem('theme') || 'light');
         });
+    </script>
+    <script>
+        // Apply saved theme before first paint to avoid a flash of the wrong theme
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
     </script>
 </head>
 
@@ -1085,6 +1236,17 @@
                 <a href="#funfacts" data-en="Fun Facts" data-zh="趣事">Fun Facts</a>
                 <a href="#misc" data-en="Misc" data-zh="其他">Misc</a>
                 <button id="lang-toggle" onclick="toggleLang()">中文</button>
+                <button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                    </svg>
+                </button>
             </div>
         </div>
     </nav>
@@ -1177,7 +1339,9 @@
 
             <!-- Thesis Visual -->
             <div class="thesis-visual">
-                <img src="./public_html/respic/thesis-gpt-small.jpg"
+                <img id="thesis-img" src="./public_html/respic/thesis-gpt-small.jpg"
+                    data-light="./public_html/respic/thesis-gpt-small.jpg"
+                    data-dark="./public_html/respic/thesis-gpt-dark-small.jpg"
                     alt="ChatGPT's illustration of Surface Parametrization and Remeshing with Guarantees" width="1456"
                     height="816">
                 <p class="thesis-caption lang-en">
@@ -1509,8 +1673,10 @@
                     </span>
                     <p class="funfact-value">5<span class="funfact-unit" data-en="&nbsp;dan" data-zh="&nbsp;段">&nbsp;dan</span></p>
                     <p class="funfact-label" data-en="Go (围棋)" data-zh="围棋">Go (围棋)</p>
-                    <p class="funfact-desc" data-en="Amateur 5-dan on the board." data-zh="业余 5 段棋力。">Amateur 5-dan on
-                        the board.</p>
+                    <p class="funfact-desc"
+                        data-en="With a nine-stone handicap against AlphaGo, I like my chances. 🐶"
+                        data-zh="AlphaGo 让我九个子，我有信心 🐶">With a nine-stone handicap against AlphaGo, I like my chances.
+                        🐶</p>
                 </div>
 
                 <!-- Erdős number -->
@@ -1548,10 +1714,10 @@
                             <circle cx="20" cy="28" r="1.6" fill="#3c2415" />
                         </svg>
                     </span>
-                    <p class="funfact-value" style="font-size:1.25rem">Molly Tea</p>
+                    <p class="funfact-value" style="font-size:1.25rem" data-en="Shu Shia" data-zh="树夏">Shu Shia</p>
                     <p class="funfact-label" data-en="Favorite Boba" data-zh="最爱奶茶">Favorite Boba</p>
-                    <p class="funfact-desc" data-en="Current go-to milk tea." data-zh="目前的心头好奶茶。">Current go-to milk
-                        tea.</p>
+                    <p class="funfact-desc" data-en="Avocado smoothie is unbeatable." data-zh="牛油果奶昔无敌">Avocado smoothie
+                        is unbeatable.</p>
                 </div>
             </div>
         </section>

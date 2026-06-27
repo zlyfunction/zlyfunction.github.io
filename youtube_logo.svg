@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 20" fill="none">
+  <rect x="0" y="0" width="28" height="20" rx="5" fill="#FF0000"/>
+  <path d="M11 5 L11 15 L20 10 Z" fill="#FFFFFF"/>
+  <text x="32" y="15.4" font-family="Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="-0.4" fill="#FFFFFF">YouTube</text>
+</svg>
