@@ -180,6 +180,88 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            position: relative;
+        }
+
+        .nav-sections {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Hamburger — hidden on desktop, shown when tabs are collapsed */
+        #nav-menu-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-secondary);
+            background: transparent;
+            border: 1px solid var(--color-border);
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-left: 8px;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        #nav-menu-toggle:hover {
+            background: var(--color-highlight);
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+
+        #nav-menu-toggle svg {
+            width: 18px;
+            height: 18px;
+            display: block;
+        }
+
+        #nav-menu-toggle .icon-close {
+            display: none;
+        }
+
+        /* Collapse the section tabs into a dropdown when they no longer fit */
+        @media (max-width: 768px) {
+            #nav-menu-toggle {
+                display: inline-flex;
+            }
+
+            #nav-menu-toggle.open .icon-bars {
+                display: none;
+            }
+
+            #nav-menu-toggle.open .icon-close {
+                display: block;
+            }
+
+            .nav-sections {
+                display: none;
+                position: absolute;
+                top: calc(100% + 10px);
+                right: 0;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 2px;
+                min-width: 168px;
+                background: var(--color-surface);
+                border: 1px solid var(--color-border);
+                border-radius: 14px;
+                padding: 8px;
+                box-shadow: 0 4px 18px var(--color-card-shadow);
+                z-index: 200;
+            }
+
+            .nav-sections.open {
+                display: flex;
+            }
+
+            .nav-links .nav-sections a {
+                padding: 10px 14px;
+                border-radius: 8px;
+                font-size: 0.9rem;
+            }
         }
 
         nav .nav-links a {
@@ -1213,6 +1295,29 @@
             applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         }
 
+        function setNavMenu(open) {
+            var sections = document.getElementById('nav-sections');
+            var btn = document.getElementById('nav-menu-toggle');
+            if (!sections || !btn) return;
+            sections.classList.toggle('open', open);
+            btn.classList.toggle('open', open);
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+
+        function toggleNavMenu() {
+            var sections = document.getElementById('nav-sections');
+            setNavMenu(!(sections && sections.classList.contains('open')));
+        }
+
+        // Close the menu when a tab is chosen or when clicking outside of it
+        document.addEventListener('click', function (e) {
+            var sections = document.getElementById('nav-sections');
+            if (!sections || !sections.classList.contains('open')) return;
+            if (e.target.closest('#nav-menu-toggle')) return;
+            if (e.target.closest('#nav-sections') && !e.target.closest('#nav-sections a')) return;
+            setNavMenu(false);
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             setLang(localStorage.getItem('lang') || 'en');
             applyTheme(localStorage.getItem('theme') || 'light');
@@ -1230,11 +1335,13 @@
         <div class="nav-inner">
             <span class="nav-name" data-en="Leyi Zhu" data-zh="朱乐宜">Leyi Zhu</span>
             <div class="nav-links">
-                <a href="#about" data-en="About" data-zh="关于">About</a>
-                <a href="#publications" data-en="Publications" data-zh="论文">Publications</a>
-                <a href="#academic" data-en="Academic" data-zh="学术">Academic</a>
-                <a href="#funfacts" data-en="Fun Facts" data-zh="趣事">Fun Facts</a>
-                <a href="#misc" data-en="Misc" data-zh="其他">Misc</a>
+                <div class="nav-sections" id="nav-sections">
+                    <a href="#about" data-en="About" data-zh="关于">About</a>
+                    <a href="#publications" data-en="Publications" data-zh="论文">Publications</a>
+                    <a href="#academic" data-en="Academic" data-zh="学术">Academic</a>
+                    <a href="#funfacts" data-en="Fun Facts" data-zh="趣事">Fun Facts</a>
+                    <a href="#misc" data-en="Misc" data-zh="其他">Misc</a>
+                </div>
                 <button id="lang-toggle" onclick="toggleLang()">中文</button>
                 <button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle dark mode">
                     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -1245,6 +1352,17 @@
                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="4" />
                         <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                    </svg>
+                </button>
+                <button id="nav-menu-toggle" onclick="toggleNavMenu()" aria-label="Menu" aria-expanded="false"
+                    title="Menu">
+                    <svg class="icon-bars" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M6 6l12 12M18 6L6 18" />
                     </svg>
                 </button>
             </div>
