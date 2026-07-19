@@ -40,6 +40,10 @@ def bake(npz_path: str, out_dir: str, subsample: int = 2):
                 "static": static,
                 "indices": raw[f"obj{i}_indices"],
                 "frames": frames if static else frames[::subsample],
+                "color": str(raw[f"obj{i}_color"]) if f"obj{i}_color" in raw else None,
+                "opacity": float(raw[f"obj{i}_opacity"]) if f"obj{i}_opacity" in raw else None,
+                "groups": raw[f"obj{i}_groups"].tolist() if f"obj{i}_groups" in raw else None,
+                "gcolors": raw[f"obj{i}_gcolors"].tolist() if f"obj{i}_gcolors" in raw else None,
             }
         )
 
@@ -80,6 +84,9 @@ def bake(npz_path: str, out_dir: str, subsample: int = 2):
                 "numVerts": int(o["frames"].shape[1]),
                 "indices": o["indices"].reshape(-1).tolist(),
                 **({"positions": quantize(o["frames"][0]).reshape(-1).tolist()} if o["static"] else {}),
+                **({"color": o["color"]} if o["color"] else {}),
+                **({"opacity": o["opacity"]} if o["opacity"] is not None else {}),
+                **({"groups": o["groups"], "groupColors": o["gcolors"]} if o["groups"] else {}),
             }
             for o in objects
         ],

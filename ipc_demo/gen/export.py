@@ -18,17 +18,31 @@ class Recorder:
         self.fps = fps
         self.entries = []  # list of dicts: name, slot, kind, indices, frames
 
-    def track(self, name: str, geo_slot, kind: str, static: bool = False):
+    def track(self, name: str, geo_slot, kind: str, static: bool = False,
+              color: str = None, opacity: float = None,
+              groups: list = None, group_colors: list = None):
         """Register a geometry slot to record.
 
         kind: "tri" (tet/shell mesh rendered as surface triangles)
               or "rod" (line mesh rendered as fat lines).
         static: object never moves — record frame 0 only.
+        color: optional "#rrggbb" override for the whole object.
+        groups/group_colors: optional multi-color surface — groups is a list of
+            (Mi,3) triangle index arrays (overrides automatic surface
+            extraction), group_colors the matching "#rrggbb" list.
         """
         assert kind in ("tri", "rod")
+        indices = None
+        counts = None
+        if groups is not None:
+            assert kind == "tri" and group_colors and len(groups) == len(group_colors)
+            indices = np.concatenate([np.asarray(g, dtype=np.int32).reshape(-1, 3) for g in groups])
+            counts = np.array([len(np.asarray(g).reshape(-1, 3)) for g in groups], dtype=np.int32)
         self.entries.append(
             {"name": name, "slot": geo_slot, "kind": kind, "static": static,
-             "indices": None, "frames": []}
+             "color": color, "opacity": opacity,
+             "group_counts": counts, "group_colors": group_colors,
+             "indices": indices, "frames": []}
         )
 
     def _extract_topology(self, entry):
@@ -65,6 +79,13 @@ class Recorder:
             data[f"obj{i}_static"] = np.bool_(entry["static"])
             data[f"obj{i}_indices"] = entry["indices"]
             data[f"obj{i}_frames"] = frames
+            if entry["color"]:
+                data[f"obj{i}_color"] = np.str_(entry["color"])
+            if entry["opacity"] is not None:
+                data[f"obj{i}_opacity"] = np.float32(entry["opacity"])
+            if entry["group_counts"] is not None:
+                data[f"obj{i}_groups"] = entry["group_counts"]
+                data[f"obj{i}_gcolors"] = np.array(entry["group_colors"])
         np.savez_compressed(path, **data)
         total = sum(e["frames"][0].shape[0] for e in self.entries)
         nf = len(self.entries[0]["frames"])

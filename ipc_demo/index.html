@@ -121,6 +121,8 @@
 <div id="controls">
     <button id="btnSceneStack" class="on">soft stack</button>
     <button id="btnSceneRods">rod drape</button>
+    <button id="btnSceneGoogle">google pile</button>
+    <button id="btnSceneTramp">play button</button>
     <hr class="sep">
     <button id="btnSpeed">speed 1x</button>
     <button id="btnWire">wireframe</button>
@@ -149,9 +151,9 @@
         for real-time in a browser. The animations here were <b>precomputed offline</b> with
         <a href="https://github.com/spiriMirror/libuipc" target="_blank" rel="noopener">libuipc</a>,
         a modern GPU (CUDA) unified IPC framework, on an RTX 2070 — then quantized and streamed to
-        this page for playback. The two scenes highlight what makes IPC special: many soft bodies
-        squeezing without a single tunneling artifact, and codimensional 1D rods draping with
-        robust curve-curve contact.</p>
+        this page for playback. The scenes highlight what makes IPC special: soft bodies
+        squeezing without a single tunneling artifact, codimensional 1D rods draping with robust
+        curve-curve contact, and a volumetric jelly body coupled with a thin cloth shell.</p>
         <p>Generation scripts live in this site's repo under <b>ipc_demo/gen</b>.
         See also the original <a href="https://ipc-sim.github.io/" target="_blank" rel="noopener">IPC
         project page</a> and <a href="https://github.com/ipc-sim/IPC" target="_blank"
@@ -294,12 +296,20 @@ async function loadScene(name) {
             const geo = new THREE.BufferGeometry();
             geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(o.numVerts * 3), 3));
             geo.setIndex(o.indices);
-            const mat = new THREE.MeshStandardMaterial({
-                color: triPalette[triIdx++ % triPalette.length],
-                roughness: 0.65, metalness: 0.05, flatShading: true, side: THREE.DoubleSide,
+            const mkMat = c => new THREE.MeshStandardMaterial({
+                color: c, roughness: 0.65, metalness: 0.05, flatShading: true, side: THREE.DoubleSide,
+                ...(o.opacity != null ? { transparent: true, opacity: o.opacity, depthWrite: false } : {}),
             });
+            let mat;
+            if (o.groups) {
+                mat = o.groupColors.map(mkMat);
+                let start = 0;
+                o.groups.forEach((cnt, gi) => { geo.addGroup(start, cnt * 3, gi); start += cnt * 3; });
+            } else {
+                mat = mkMat(o.color ? new THREE.Color(o.color) : triPalette[triIdx++ % triPalette.length]);
+            }
             const mesh = new THREE.Mesh(geo, mat);
-            mesh.castShadow = true;
+            mesh.castShadow = o.opacity == null;
             mesh.receiveShadow = true;
             mesh.frustumCulled = false;
             entry.mesh = mesh;
@@ -310,7 +320,7 @@ async function loadScene(name) {
             entry.segTmp = new Float32Array(o.indices.length * 3); // endpoints xyz
             segGeo.setPositions(entry.segTmp);
             const mat = new LineMaterial({
-                color: rodPalette[rodIdx++ % rodPalette.length],
+                color: o.color ? new THREE.Color(o.color).getHex() : rodPalette[rodIdx++ % rodPalette.length],
                 linewidth: 5, worldUnits: false,
             });
             const line = new Line2(segGeo, mat);
@@ -388,7 +398,10 @@ function showFrame(f) {
 // ------------------------------------------------------------------ ui
 function setWireframe(on) {
     wireframe = on;
-    if (clip) for (const o of clip.objects) if (o.kind === 'tri') o.mesh.material.wireframe = on;
+    if (clip) for (const o of clip.objects) if (o.kind === 'tri') {
+        const mats = Array.isArray(o.mesh.material) ? o.mesh.material : [o.mesh.material];
+        for (const m of mats) m.wireframe = on;
+    }
     document.getElementById('btnWire').classList.toggle('on', on);
 }
 
@@ -420,7 +433,12 @@ document.getElementById('about').addEventListener('click', e => {
     if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
 });
 
-const sceneButtons = { soft_stack: document.getElementById('btnSceneStack'), rod_tangle: document.getElementById('btnSceneRods') };
+const sceneButtons = {
+    soft_stack: document.getElementById('btnSceneStack'),
+    rod_tangle: document.getElementById('btnSceneRods'),
+    google_pile: document.getElementById('btnSceneGoogle'),
+    play_trampoline: document.getElementById('btnSceneTramp'),
+};
 for (const [name, btn] of Object.entries(sceneButtons)) {
     btn.onclick = () => {
         for (const b of Object.values(sceneButtons)) b.classList.remove('on');
@@ -434,6 +452,10 @@ function resize() {
     const w = innerWidth, h = innerHeight;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
+    // portrait phones: widen fov and raise the view center so the pile and
+    // ground are not squeezed against the bottom edge
+    camera.fov = camera.aspect < 0.8 ? 60 : 40;
+    controls.target.y = camera.aspect < 0.8 ? 0.6 : 0.45;
     camera.updateProjectionMatrix();
     if (clip) for (const o of clip.objects) if (o.kind === 'rod') o.mesh.material.resolution.set(w, h);
 }
