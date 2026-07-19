@@ -70,7 +70,10 @@
 
 // ─── Canvas ─────────────────────────────────────────────────────────────────
 const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d', { alpha: false });
+let viewWidth = 1;
+let viewHeight = 1;
+let dpr = 1;
 
 // ─── Resolution levels: [cols, rows] — physical cloth size stays constant ───
 const LEVELS = [
@@ -94,6 +97,9 @@ const CUT_R    = 20;
 const GRAB_R   = 50;
 const PIN_STEP = 4;
 const CLOTH_W  = 0.75;   // fraction of screen width
+const FIXED_DT = 1 / 60;
+const MAX_STEPS = 4;
+const COLOR_BUCKETS = 24;
 
 // ─── State ───────────────────────────────────────────────────────────────────
 let COLS, ROWS, SPACING, ITERS;
@@ -112,17 +118,24 @@ let time      = 0;
 // ─── Mouse / touch ───────────────────────────────────────────────────────────
 const mouse = { x: 0, y: 0, lx: 0, ly: 0, down: false, right: false, shift: false };
 let grabbed = -1;
+let grabPrevX = 0;
+let grabPrevY = 0;
+let activePointer = -1;
+let multiTouch = false;
+const pointers = new Map();
 
 // ─── Build cloth ─────────────────────────────────────────────────────────────
 function buildCloth() {
     [COLS, ROWS] = LEVELS[level];
-    const clothPx = Math.min(canvas.width * CLOTH_W, 820);
+    const maxWidthByHeight = viewHeight * 0.82 * (COLS - 1) / (ROWS - 1);
+    const clothPx = Math.min(viewWidth * CLOTH_W, maxWidthByHeight, 820);
     SPACING = clothPx / (COLS - 1);
-    // Iterations scale with rows so top-pin tension propagates fully
-    ITERS = Math.max(20, ROWS + 4);
+    // Enough passes for tension propagation without overspending on dense meshes.
+    ITERS = Math.max(16, Math.ceil(ROWS * 0.8));
 
-    const startX = (canvas.width  - (COLS - 1) * SPACING) / 2;
-    const startY =  canvas.height * 0.07;
+    const startX = (viewWidth - (COLS - 1) * SPACING) / 2;
+    const startY = Math.max(18, viewHeight * 0.07);
+    const pinStep = Math.max(1, Math.round(PIN_STEP * (COLS - 1) / (LEVELS[2][0] - 1)));
     nP = COLS * ROWS;
 
     px      = new Float32Array(nP);
@@ -136,7 +149,7 @@ function buildCloth() {
             const i = r * COLS + c;
             px[i] = ppx[i] = startX + c * SPACING;
             py[i] = ppy[i] = startY + r * SPACING;
-            pinned[i] = (r === 0 && c % PIN_STEP === 0) ? 1 : 0;
+            pinned[i] = (r === 0 && (c % pinStep === 0 || c === COLS - 1)) ? 1 : 0;
         }
     }
 
@@ -158,58 +171,46 @@ function buildCloth() {
 }
 
 // ─── Physics update ───────────────────────────────────────────────────────────
-function update() {
-    time++;
+function update(dt) {
+    time += dt;
     const mat   = MATERIALS[matIdx];
-    const grav  = gravOn ? mat.grav : 0;
-    const damp  = mat.damp;
-    const stiff = mat.stiff;
+    const stepScale = dt / FIXED_DT;
+    const grav  = gravOn ? mat.grav * stepScale * stepScale : 0;
+    const damp  = Math.pow(mat.damp, stepScale);
+    // Preset stiffness describes one complete solve, not every iteration.
+    const stiff = mat.stiff >= 1 ? 1 : 1 - Math.pow(1 - mat.stiff, 1 / ITERS);
+    const held = grabbed >= 0 && mouse.down && !mouse.right && !mouse.shift ? grabbed : -1;
 
     // Wind
     let wx = 0;
     if (windOn) {
         const W = 1.6;
-        wx = Math.sin(time*0.007)*W + Math.sin(time*0.013)*W*0.4 + Math.sin(time*0.031)*W*0.15;
+        wx = (Math.sin(time*0.42)*W + Math.sin(time*0.78)*W*0.4 +
+              Math.sin(time*1.86)*W*0.15) * stepScale * stepScale;
     }
 
     // 1. Verlet integrate
     for (let i = 0; i < nP; i++) {
-        if (pinned[i]) continue;
+        if (pinned[i] || i === held) continue;
         const vx = (px[i] - ppx[i]) * damp;
         const vy = (py[i] - ppy[i]) * damp;
         ppx[i] = px[i];
         ppy[i] = py[i];
         px[i] += vx + wx;
         py[i] += vy + grav;
-        if (py[i] > canvas.height - 1) { py[i] = canvas.height - 1; ppy[i] = py[i] + vy * 0.3; }
-        if (px[i] < 0)                 { px[i] = 0;                  ppx[i] = px[i] - vx * 0.3; }
-        if (px[i] > canvas.width)      { px[i] = canvas.width;       ppx[i] = px[i] - vx * 0.3; }
     }
 
-    // 2. Satisfy constraints
-    for (let iter = 0; iter < ITERS; iter++) {
-        for (let k = 0; k < nC; k++) {
-            if (!cactive[k]) continue;
-            const a = cp1[k], b = cp2[k];
-            const dx = px[b] - px[a];
-            const dy = py[b] - py[a];
-            const d2 = dx*dx + dy*dy;
-            if (d2 < 1e-8) continue;
-            const d    = Math.sqrt(d2);
-            const diff = (d - clen[k]) / d * 0.5 * stiff;
-            const ox   = dx * diff, oy = dy * diff;
-            if (!pinned[a]) { px[a] += ox; py[a] += oy; }
-            if (!pinned[b]) { px[b] -= ox; py[b] -= oy; }
-        }
+    // 2. Pin the grabbed particle before solving so its pull propagates now.
+    if (held >= 0) {
+        px[held] = mouse.x;
+        py[held] = mouse.y;
+        ppx[held] = grabPrevX;
+        ppy[held] = grabPrevY;
+        grabPrevX = mouse.x;
+        grabPrevY = mouse.y;
     }
 
-    // 3. Apply grab
-    if (grabbed >= 0 && mouse.down && !mouse.right) {
-        px[grabbed]  = mouse.x;  py[grabbed]  = mouse.y;
-        ppx[grabbed] = mouse.lx; ppy[grabbed] = mouse.ly;
-    }
-
-    // 4. Blow burst (shift+drag)
+    // 3. Blow burst (shift+drag)
     if (mouse.down && mouse.shift && !mouse.right) {
         const R = 90;
         for (let i = 0; i < nP; i++) {
@@ -217,36 +218,84 @@ function update() {
             const dx = px[i] - mouse.x, dy = py[i] - mouse.y;
             const d2 = dx*dx + dy*dy;
             if (d2 < R*R && d2 > 0.01) {
-                const d = Math.sqrt(d2), f = (1 - d/R) * 3.5;
+                const d = Math.sqrt(d2), f = (1 - d/R) * 3.5 * stepScale;
                 px[i] += dx/d * f; py[i] += dy/d * f;
             }
         }
     }
 
-    // 5. Knife cut
-    if (mouse.down && mouse.right) {
-        cutAlongPath(mouse.lx, mouse.ly, mouse.x, mouse.y);
+    // 4. Satisfy constraints
+    for (let iter = 0; iter < ITERS; iter++) {
+        for (let k = 0; k < nC; k++) {
+            if (!cactive[k]) continue;
+            const a = cp1[k], b = cp2[k];
+            const wa = pinned[a] || a === held ? 0 : 1;
+            const wb = pinned[b] || b === held ? 0 : 1;
+            const wsum = wa + wb;
+            if (wsum === 0) continue;
+            const dx = px[b] - px[a];
+            const dy = py[b] - py[a];
+            const d2 = dx*dx + dy*dy;
+            if (d2 < 1e-8) continue;
+            const d    = Math.sqrt(d2);
+            const diff = (d - clen[k]) / d * stiff / wsum;
+            const ox   = dx * diff, oy = dy * diff;
+            if (wa) { px[a] += ox; py[a] += oy; }
+            if (wb) { px[b] -= ox; py[b] -= oy; }
+        }
+    }
+
+    // 5. Constraints can push particles outside, so collide after the solve.
+    const maxX = viewWidth;
+    const maxY = viewHeight - 1;
+    for (let i = 0; i < nP; i++) {
+        if (pinned[i] || i === held) continue;
+        const vx = px[i] - ppx[i];
+        const vy = py[i] - ppy[i];
+        if (px[i] < 0)    { px[i] = 0;    ppx[i] = px[i] + vx * 0.3; }
+        if (px[i] > maxX) { px[i] = maxX; ppx[i] = px[i] + vx * 0.3; }
+        if (py[i] < 0)    { py[i] = 0;    ppy[i] = py[i] + vy * 0.3; }
+        if (py[i] > maxY) { py[i] = maxY; ppy[i] = py[i] + vy * 0.3; }
     }
 }
 
+function pointSegmentDist2(px0, py0, ax, ay, bx, by) {
+    const dx = bx - ax, dy = by - ay;
+    const len2 = dx*dx + dy*dy;
+    if (len2 < 1e-8) {
+        const ex = px0 - ax, ey = py0 - ay;
+        return ex*ex + ey*ey;
+    }
+    const t = Math.max(0, Math.min(1, ((px0-ax)*dx + (py0-ay)*dy) / len2));
+    const ex = px0 - (ax + t*dx), ey = py0 - (ay + t*dy);
+    return ex*ex + ey*ey;
+}
+
+function segmentDist2(ax, ay, bx, by, cx, cy, dx, dy) {
+    const rx = bx - ax, ry = by - ay;
+    const sx = dx - cx, sy = dy - cy;
+    const den = rx*sy - ry*sx;
+    if (Math.abs(den) > 1e-8) {
+        const qx = cx - ax, qy = cy - ay;
+        const t = (qx*sy - qy*sx) / den;
+        const u = (qx*ry - qy*rx) / den;
+        if (t >= 0 && t <= 1 && u >= 0 && u <= 1) return 0;
+    }
+    return Math.min(
+        pointSegmentDist2(ax, ay, cx, cy, dx, dy),
+        pointSegmentDist2(bx, by, cx, cy, dx, dy),
+        pointSegmentDist2(cx, cy, ax, ay, bx, by),
+        pointSegmentDist2(dx, dy, ax, ay, bx, by)
+    );
+}
+
 function cutAlongPath(ax, ay, bx, by) {
-    const pdx = bx - ax, pdy = by - ay;
-    const plen2 = pdx*pdx + pdy*pdy;
     for (let k = 0; k < nC; k++) {
         if (!cactive[k]) continue;
         const a = cp1[k], b = cp2[k];
-        const mx = (px[a] + px[b]) * 0.5;
-        const my = (py[a] + py[b]) * 0.5;
-        let dist2;
-        if (plen2 < 1) {
-            const ex = mx-ax, ey = my-ay;
-            dist2 = ex*ex + ey*ey;
-        } else {
-            const t = Math.max(0, Math.min(1, ((mx-ax)*pdx + (my-ay)*pdy) / plen2));
-            const ex = mx-(ax+t*pdx), ey = my-(ay+t*pdy);
-            dist2 = ex*ex + ey*ey;
+        if (segmentDist2(ax, ay, bx, by, px[a], py[a], px[b], py[b]) < CUT_R*CUT_R) {
+            cactive[k] = 0;
         }
-        if (dist2 < CUT_R*CUT_R) cactive[k] = 0;
     }
 }
 
@@ -263,24 +312,17 @@ function findNearest(mx, my) {
 }
 
 // ─── Rendering ────────────────────────────────────────────────────────────────
-function stressColor(k) {
-    const a = cp1[k], b = cp2[k];
-    const dx = px[b]-px[a], dy = py[b]-py[a];
-    const d = Math.sqrt(dx*dx + dy*dy);
-    const s = Math.min(1, Math.max(0, (d - clen[k]) / (clen[k] * 0.6)));
+function stressColor(s) {
     return `rgb(${Math.round(60+s*195)},${Math.round(150-s*130)},${Math.round(220-s*120)})`;
 }
 
-function depthColor(k) {
-    const a = cp1[k], b = cp2[k];
-    const t = ((py[a]+py[b]) * 0.5) / canvas.height;
+function depthColor(t) {
     return `rgb(${Math.round(80+t*160)},${Math.round(60+Math.sin(t*Math.PI)*170)},${Math.round(230-t*130)})`;
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#080810';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, viewWidth, viewHeight);
 
     if (colorMode === 0) {
         ctx.beginPath();
@@ -294,13 +336,26 @@ function draw() {
         ctx.stroke();
     } else {
         ctx.lineWidth = 1;
+        const buckets = Array.from({ length: COLOR_BUCKETS }, () => new Path2D());
         for (let k = 0; k < nC; k++) {
             if (!cactive[k]) continue;
-            ctx.beginPath();
-            ctx.moveTo(px[cp1[k]], py[cp1[k]]);
-            ctx.lineTo(px[cp2[k]], py[cp2[k]]);
-            ctx.strokeStyle = colorMode === 1 ? stressColor(k) : depthColor(k);
-            ctx.stroke();
+            const a = cp1[k], b = cp2[k];
+            let t;
+            if (colorMode === 1) {
+                const dx = px[b]-px[a], dy = py[b]-py[a];
+                const d = Math.sqrt(dx*dx + dy*dy);
+                t = Math.min(1, Math.max(0, (d - clen[k]) / (clen[k] * 0.6)));
+            } else {
+                t = Math.min(1, Math.max(0, ((py[a]+py[b]) * 0.5) / viewHeight));
+            }
+            const bucket = Math.min(COLOR_BUCKETS - 1, Math.floor(t * COLOR_BUCKETS));
+            buckets[bucket].moveTo(px[a], py[a]);
+            buckets[bucket].lineTo(px[b], py[b]);
+        }
+        for (let i = 0; i < COLOR_BUCKETS; i++) {
+            const t = (i + 0.5) / COLOR_BUCKETS;
+            ctx.strokeStyle = colorMode === 1 ? stressColor(t) : depthColor(t);
+            ctx.stroke(buckets[i]);
         }
     }
 
@@ -314,7 +369,7 @@ function draw() {
     }
 
     // Grabbed particle highlight
-    if (grabbed >= 0 && mouse.down && !mouse.right) {
+    if (grabbed >= 0 && mouse.down && !mouse.right && !mouse.shift) {
         ctx.beginPath();
         ctx.arc(px[grabbed], py[grabbed], 6, 0, Math.PI*2);
         ctx.fillStyle = 'rgba(255,255,255,0.9)';
@@ -337,49 +392,139 @@ function draw() {
 }
 
 // ─── Loop ─────────────────────────────────────────────────────────────────────
-function loop() { update(); draw(); requestAnimationFrame(loop); }
+let lastFrame = null;
+let accumulator = 0;
+function loop(now) {
+    if (lastFrame === null) lastFrame = now;
+    const elapsed = Math.min((now - lastFrame) / 1000, FIXED_DT * MAX_STEPS);
+    lastFrame = now;
+    accumulator = Math.min(accumulator + elapsed, FIXED_DT * MAX_STEPS);
+    while (accumulator >= FIXED_DT) {
+        update(FIXED_DT);
+        accumulator -= FIXED_DT;
+    }
+    draw();
+    requestAnimationFrame(loop);
+}
 
 // ─── Resize ───────────────────────────────────────────────────────────────────
-function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; buildCloth(); }
+function resize() {
+    viewWidth = window.innerWidth;
+    viewHeight = window.innerHeight;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.style.width = `${viewWidth}px`;
+    canvas.style.height = `${viewHeight}px`;
+    canvas.width = Math.round(viewWidth * dpr);
+    canvas.height = Math.round(viewHeight * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    buildCloth();
+}
 
 // ─── Input ────────────────────────────────────────────────────────────────────
-function updateMousePos(x, y) { mouse.lx = mouse.x; mouse.ly = mouse.y; mouse.x = x; mouse.y = y; }
+function updateMousePos(x, y) {
+    mouse.lx = mouse.x;
+    mouse.ly = mouse.y;
+    mouse.x = Math.max(0, Math.min(viewWidth, x));
+    mouse.y = Math.max(0, Math.min(viewHeight, y));
+}
 
-canvas.addEventListener('mousemove', e => { updateMousePos(e.clientX, e.clientY); mouse.shift = e.shiftKey; });
-canvas.addEventListener('mousedown', e => {
-    updateMousePos(e.clientX, e.clientY);
-    mouse.down = true; mouse.right = e.button === 2; mouse.shift = e.shiftKey;
-    if (!mouse.right && !mouse.shift) grabbed = findNearest(e.clientX, e.clientY);
-});
-canvas.addEventListener('mouseup',    () => { mouse.down = false; mouse.right = false; grabbed = -1; });
-canvas.addEventListener('mouseleave', () => { mouse.down = false; mouse.right = false; grabbed = -1; });
-canvas.addEventListener('contextmenu', e => e.preventDefault());
+function resetPointerState() {
+    pointers.clear();
+    activePointer = -1;
+    multiTouch = false;
+    mouse.down = false;
+    mouse.right = false;
+    mouse.shift = false;
+    grabbed = -1;
+}
 
-// Touch
-canvas.addEventListener('touchstart', e => {
+function touchCentroid() {
+    const touches = [...pointers.values()].filter(p => p.type === 'touch').slice(0, 2);
+    if (touches.length < 2) return null;
+    return {
+        x: (touches[0].x + touches[1].x) * 0.5,
+        y: (touches[0].y + touches[1].y) * 0.5,
+    };
+}
+
+canvas.addEventListener('pointerdown', e => {
     e.preventDefault();
-    const tc = e.touches;
-    if (tc.length === 1) {
-        updateMousePos(tc[0].clientX, tc[0].clientY);
-        mouse.down = true; mouse.shift = false; mouse.right = (touchMode === 1);
-        if (touchMode === 0) grabbed = findNearest(tc[0].clientX, tc[0].clientY);
-    } else if (tc.length >= 2) {
+    canvas.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, type: e.pointerType });
+
+    const center = touchCentroid();
+    if (center) {
+        multiTouch = true;
         grabbed = -1;
-        const cx = (tc[0].clientX+tc[1].clientX)*0.5, cy = (tc[0].clientY+tc[1].clientY)*0.5;
-        updateMousePos(cx, cy);
-        mouse.down = true; mouse.right = false; mouse.shift = true;
+        updateMousePos(center.x, center.y);
+        mouse.down = true;
+        mouse.right = false;
+        mouse.shift = true;
+        return;
     }
-}, { passive: false });
-canvas.addEventListener('touchmove', e => {
-    e.preventDefault();
-    const tc = e.touches;
-    if (tc.length === 1) updateMousePos(tc[0].clientX, tc[0].clientY);
-    else if (tc.length >= 2) updateMousePos((tc[0].clientX+tc[1].clientX)*0.5, (tc[0].clientY+tc[1].clientY)*0.5);
-}, { passive: false });
-canvas.addEventListener('touchend', e => {
-    if (e.touches.length === 0) { mouse.down = false; mouse.right = false; mouse.shift = false; grabbed = -1; }
+
+    if (activePointer !== -1 || multiTouch) return;
+    activePointer = e.pointerId;
+    updateMousePos(e.clientX, e.clientY);
+    mouse.down = true;
+    mouse.right = e.pointerType === 'touch' ? touchMode === 1 : e.button === 2;
+    mouse.shift = !mouse.right && e.shiftKey;
+    if (!mouse.right && !mouse.shift) {
+        grabbed = findNearest(mouse.x, mouse.y);
+        grabPrevX = mouse.x;
+        grabPrevY = mouse.y;
+    }
+    if (mouse.right) cutAlongPath(mouse.x, mouse.y, mouse.x, mouse.y);
 });
-canvas.addEventListener('touchcancel', () => { mouse.down = false; mouse.right = false; mouse.shift = false; grabbed = -1; });
+
+canvas.addEventListener('pointermove', e => {
+    if (pointers.has(e.pointerId)) {
+        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, type: e.pointerType });
+    }
+    const center = touchCentroid();
+    if (center) {
+        updateMousePos(center.x, center.y);
+        return;
+    }
+    if (e.pointerId !== activePointer) {
+        if (!mouse.down && e.pointerType !== 'touch') {
+            updateMousePos(e.clientX, e.clientY);
+            mouse.shift = e.shiftKey;
+        }
+        return;
+    }
+    updateMousePos(e.clientX, e.clientY);
+    mouse.shift = !mouse.right && e.shiftKey;
+    if (mouse.down && mouse.right) cutAlongPath(mouse.lx, mouse.ly, mouse.x, mouse.y);
+});
+
+function endPointer(e) {
+    pointers.delete(e.pointerId);
+    if (multiTouch) {
+        const center = touchCentroid();
+        if (center) {
+            updateMousePos(center.x, center.y);
+            mouse.down = true;
+            mouse.right = false;
+            mouse.shift = true;
+            return;
+        }
+        // Do not unexpectedly switch from a two-finger burst to a one-finger grab.
+        if (pointers.size === 0) resetPointerState();
+        else {
+            mouse.down = false;
+            mouse.shift = false;
+            grabbed = -1;
+        }
+        return;
+    }
+    if (e.pointerId === activePointer) resetPointerState();
+}
+
+canvas.addEventListener('pointerup', endPointer);
+canvas.addEventListener('pointercancel', endPointer);
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+window.addEventListener('blur', resetPointerState);
 
 // ─── Buttons ──────────────────────────────────────────────────────────────────
 document.getElementById('btnReset').addEventListener('click', buildCloth);
@@ -425,7 +570,7 @@ document.getElementById('btnTouchMode').addEventListener('click', function() {
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 window.addEventListener('resize', resize);
 resize();
-loop();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
