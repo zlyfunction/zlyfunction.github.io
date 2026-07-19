@@ -1,0 +1,12 @@
+# pyuipc from PyPI only ships sm_89 (RTX 40xx) CUDA kernels.
+# On other GPUs (e.g. RTX 2070 = sm_75), build libuipc from source with
+# -DUIPC_BUILD_PYBIND=1 -DUIPC_CUDA_ARCHITECTURES=<your arch> and install
+# the resulting wheel into this venv instead. See ../PLAN.md progress log.
+pyuipc==0.0.25
+numpy
+# CUDA 12 runtime libraries for the prebuilt wheel (put their lib dirs on
+# LD_LIBRARY_PATH — see env.sh):
+nvidia-cublas-cu12
+nvidia-cusparse-cu12
+nvidia-cusolver-cu12
+nvidia-cuda-runtime-cu12

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPC Simulation Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #080810;
+            --fg-dim: rgba(255,255,255,0.4);
+            --fg: rgba(255,255,255,0.8);
+            --panel-bg: rgba(255,255,255,0.06);
+            --panel-border: rgba(255,255,255,0.12);
+            --btn-fg: rgba(255,255,255,0.6);
+            --btn-hover-bg: rgba(255,255,255,0.11);
+            --btn-hover-fg: rgba(255,255,255,0.9);
+            --accent-bg: rgba(100,160,255,0.13);
+            --accent-border: rgba(100,160,255,0.35);
+            --accent-fg: rgba(130,185,255,0.9);
+            --track: rgba(255,255,255,0.15);
+        }
+        html[data-theme="light"] {
+            --bg: #f2f3f7;
+            --fg-dim: rgba(20,25,40,0.5);
+            --fg: rgba(20,25,40,0.85);
+            --panel-bg: rgba(20,25,40,0.05);
+            --panel-border: rgba(20,25,40,0.15);
+            --btn-fg: rgba(20,25,40,0.6);
+            --btn-hover-bg: rgba(20,25,40,0.1);
+            --btn-hover-fg: rgba(20,25,40,0.9);
+            --accent-bg: rgba(40,110,235,0.12);
+            --accent-border: rgba(40,110,235,0.4);
+            --accent-fg: rgba(30,95,215,0.95);
+            --track: rgba(20,25,40,0.2);
+        }
+        body { background: var(--bg); overflow: hidden; font-family: 'SF Mono', 'Fira Code', monospace; }
+        canvas { display: block; touch-action: none; }
+        #ui {
+            position: fixed; top: 20px; left: 20px;
+            color: var(--fg-dim); font-size: 11px; line-height: 2;
+            pointer-events: none; user-select: none; max-width: 300px;
+        }
+        #ui b { color: var(--fg); font-weight: normal; }
+        #controls {
+            position: fixed; top: 20px; right: 20px;
+            display: flex; flex-direction: column; gap: 7px;
+        }
+        button {
+            background: var(--panel-bg); border: 1px solid var(--panel-border);
+            color: var(--btn-fg); padding: 6px 13px; font-size: 11px;
+            font-family: inherit; cursor: pointer; border-radius: 5px; transition: all 0.12s;
+            letter-spacing: 0.04em; min-width: 118px; text-align: left;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:hover { background: var(--btn-hover-bg); color: var(--btn-hover-fg); border-color: var(--panel-border); }
+        button.on { background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent-fg); }
+        hr.sep { border: none; border-top: 1px solid var(--panel-border); margin: 2px 0; }
+        #playbar {
+            position: fixed; bottom: 46px; left: 50%; transform: translateX(-50%);
+            display: flex; align-items: center; gap: 12px;
+            width: min(640px, calc(100vw - 40px));
+        }
+        #btnPlay { min-width: 64px; text-align: center; flex-shrink: 0; }
+        #scrub {
+            flex: 1; -webkit-appearance: none; appearance: none; height: 3px;
+            background: var(--track); border-radius: 2px; outline: none; cursor: pointer;
+        }
+        #scrub::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 13px; height: 13px;
+            border-radius: 50%; background: var(--accent-fg); cursor: pointer;
+        }
+        #scrub::-moz-range-thumb {
+            width: 13px; height: 13px; border: none;
+            border-radius: 50%; background: var(--accent-fg); cursor: pointer;
+        }
+        #frameinfo { color: var(--fg-dim); font-size: 10px; min-width: 68px; text-align: right; flex-shrink: 0; }
+        #footer {
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+            color: var(--fg-dim); opacity: 0.5; font-size: 10px; letter-spacing: 0.22em;
+            text-transform: uppercase; pointer-events: none; white-space: nowrap;
+        }
+        #about {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            display: none; align-items: center; justify-content: center; z-index: 10;
+        }
+        #about.show { display: flex; }
+        #aboutCard {
+            background: var(--bg); border: 1px solid var(--panel-border); border-radius: 10px;
+            max-width: 560px; width: calc(100vw - 48px); max-height: 80vh; overflow-y: auto;
+            padding: 26px 30px; color: var(--fg); font-size: 12.5px; line-height: 1.75;
+        }
+        #aboutCard h2 { font-size: 14px; margin-bottom: 12px; letter-spacing: 0.05em; }
+        #aboutCard p { margin-bottom: 10px; color: var(--fg-dim); }
+        #aboutCard p b { color: var(--fg); font-weight: normal; }
+        #aboutCard a { color: var(--accent-fg); text-decoration: none; }
+        #aboutCard a:hover { text-decoration: underline; }
+        #loading {
+            position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+            color: var(--fg-dim); font-size: 12px; letter-spacing: 0.15em; pointer-events: none;
+        }
+        @media (max-width: 768px) {
+            #ui { display: none; }
+            button { min-width: 104px; padding: 9px 11px; font-size: 12px; }
+            #playbar { bottom: 56px; }
+            #footer { font-size: 9px; }
+        }
+    </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="loading">loading simulation data…</div>
+
+<div id="ui">
+    <div><b>drag</b> — orbit camera</div>
+    <div><b>scroll / pinch</b> — zoom</div>
+    <div><b>right-drag</b> — pan</div>
+    <div><b>space</b> — play / pause</div>
+</div>
+
+<div id="controls">
+    <button id="btnSceneStack" class="on">soft stack</button>
+    <button id="btnSceneRods">rod drape</button>
+    <hr class="sep">
+    <button id="btnSpeed">speed 1x</button>
+    <button id="btnWire">wireframe</button>
+    <button id="btnTheme">light</button>
+    <hr class="sep">
+    <button id="btnAbout">about ipc</button>
+</div>
+
+<div id="playbar">
+    <button id="btnPlay">pause</button>
+    <input type="range" id="scrub" min="0" max="1000" value="0">
+    <div id="frameinfo">0 / 0</div>
+</div>
+
+<div id="footer">incremental potential contact — precomputed on gpu, played back in browser</div>
+
+<div id="about">
+    <div id="aboutCard">
+        <h2>WHAT IS IPC?</h2>
+        <p><b>Incremental Potential Contact</b> (Li et al., SIGGRAPH 2020) simulates deformable
+        bodies with contact that is <b>guaranteed intersection-free</b>: contact is modeled as a
+        smooth log-barrier energy that grows to infinity as surfaces approach, and every implicit
+        time step is solved as one Newton optimization with continuous-collision-detection-filtered
+        line search. No penetration, ever — regardless of time step, stiffness, or impact speed.</p>
+        <p>That robustness is expensive: each frame is a full nonlinear optimization, far too slow
+        for real-time in a browser. The animations here were <b>precomputed offline</b> with
+        <a href="https://github.com/spiriMirror/libuipc" target="_blank" rel="noopener">libuipc</a>,
+        a modern GPU (CUDA) unified IPC framework, on an RTX 2070 — then quantized and streamed to
+        this page for playback. The two scenes highlight what makes IPC special: many soft bodies
+        squeezing without a single tunneling artifact, and codimensional 1D rods draping with
+        robust curve-curve contact.</p>
+        <p>Generation scripts live in this site's repo under <b>ipc_demo/gen</b>.
+        See also the original <a href="https://ipc-sim.github.io/" target="_blank" rel="noopener">IPC
+        project page</a> and <a href="https://github.com/ipc-sim/IPC" target="_blank"
+        rel="noopener">reference code</a>.</p>
+        <p style="text-align:right"><a href="#" id="btnCloseAbout">close ×</a></p>
+    </div>
+</div>
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
+
+// ------------------------------------------------------------------ theme
+const themes = {
+    dark:  { bg: 0x080810, ground: 0x0d0d18, grid: 0x2a2a3a, hemi: 0.55 },
+    light: { bg: 0xf2f3f7, ground: 0xe4e6ee, grid: 0xc0c4d2, hemi: 0.85 },
+};
+let theme = localStorage.getItem('ipc-theme')
+    || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+
+// ------------------------------------------------------------------ renderer / scene
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 100);
+camera.position.set(1.9, 1.35, 2.5);
+const controls = new OrbitControls(camera, canvas);
+controls.target.set(0, 0.45, 0);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.maxPolarAngle = Math.PI * 0.52;
+controls.minDistance = 0.8;
+controls.maxDistance = 12;
+
+const hemi = new THREE.HemisphereLight(0xffffff, 0x445566, 0.55);
+scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+sun.position.set(3, 6, 2.5);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.left = sun.shadow.camera.bottom = -3;
+sun.shadow.camera.right = sun.shadow.camera.top = 3;
+sun.shadow.camera.far = 15;
+sun.shadow.bias = -0.0005;
+scene.add(sun);
+
+const groundMat = new THREE.MeshStandardMaterial({ roughness: 0.95, metalness: 0 });
+const groundMesh = new THREE.Mesh(new THREE.CircleGeometry(6, 64), groundMat);
+groundMesh.rotation.x = -Math.PI / 2;
+groundMesh.receiveShadow = true;
+scene.add(groundMesh);
+const grid = new THREE.GridHelper(12, 48);
+grid.material.transparent = true;
+grid.material.opacity = 0.35;
+grid.position.y = 0.001;
+scene.add(grid);
+
+function applyTheme() {
+    const t = themes[theme];
+    document.documentElement.dataset.theme = theme;
+    scene.background = new THREE.Color(t.bg);
+    scene.fog = new THREE.Fog(t.bg, 8, 16);
+    groundMat.color.set(t.ground);
+    grid.material.color.set(t.grid);
+    hemi.intensity = t.hemi;
+    document.getElementById('btnTheme').textContent = theme === 'dark' ? 'light' : 'dark';
+}
+applyTheme();
+
+// ------------------------------------------------------------------ palettes
+const triPalette = [0x5b8def, 0xe8734a, 0x53b87d, 0xd6a641, 0xb06fd4, 0x4fb8c9, 0xdb6a8f, 0x8a9155];
+const rodPalette = [0xef8354, 0x53b87d, 0x5b8def, 0xd6a641, 0xb06fd4, 0x4fb8c9, 0xdb6a8f, 0xc9c95a];
+
+// ------------------------------------------------------------------ playback state
+let clip = null;        // { meta, frames(Int16Array), frameStride, objects:[{mesh, kind, numVerts, offset, segTmp}] }
+let playing = true;
+let speed = 1;
+const speeds = [0.25, 0.5, 1, 2];
+let simTime = 0;
+let wireframe = false;
+const clipCache = {};
+
+const clipGroup = new THREE.Group();
+scene.add(clipGroup);
+
+async function loadScene(name) {
+    document.getElementById('loading').style.display = 'flex';
+    document.getElementById('loading').textContent = 'loading simulation data…';
+    // dispose current
+    clip = null;
+    clipGroup.clear();
+
+    let data = clipCache[name];
+    try {
+        if (!data) {
+            const [meta, buf] = await Promise.all([
+                fetch(`data/${name}/mesh.json`).then(r => { if (!r.ok) throw new Error(`mesh.json ${r.status}`); return r.json(); }),
+                fetch(`data/${name}/frames.bin.gz`).then(r => {
+                    if (!r.ok) throw new Error(`frames.bin.gz ${r.status}`);
+                    return new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+                }),
+            ]);
+            const frames = new Int16Array(buf);
+            // integrate per-frame deltas back into absolute quantized values
+            const stride = meta.objects.reduce((s, o) => s + (o.static ? 0 : o.numVerts * 3), 0);
+            for (let i = stride; i < frames.length; i++) frames[i] += frames[i - stride];
+            data = { meta, frames };
+            clipCache[name] = data;
+        }
+    } catch (err) {
+        document.getElementById('loading').textContent = `failed to load "${name}" — data not baked yet (${err.message})`;
+        return;
+    }
+
+    const { meta, frames } = data;
+    const mins = meta.bounds.min, maxs = meta.bounds.max;
+    const scale = [0, 1, 2].map(a => (maxs[a] - mins[a]) / 32767);
+
+    const objects = [];
+    let offset = 0; // int16 units within one frame block (moving objects only)
+    let rodIdx = 0, triIdx = 0;
+    for (const o of meta.objects) {
+        const entry = { kind: o.kind, numVerts: o.numVerts, offset, static: !!o.static, staticPos: o.positions || null };
+        if (o.kind === 'tri') {
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(o.numVerts * 3), 3));
+            geo.setIndex(o.indices);
+            const mat = new THREE.MeshStandardMaterial({
+                color: triPalette[triIdx++ % triPalette.length],
+                roughness: 0.65, metalness: 0.05, flatShading: true, side: THREE.DoubleSide,
+            });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            mesh.frustumCulled = false;
+            entry.mesh = mesh;
+            clipGroup.add(mesh);
+        } else {
+            const segGeo = new LineSegmentsGeometry();
+            entry.edges = o.indices;                          // flat [a0,b0,a1,b1,...]
+            entry.segTmp = new Float32Array(o.indices.length * 3); // endpoints xyz
+            segGeo.setPositions(entry.segTmp);
+            const mat = new LineMaterial({
+                color: rodPalette[rodIdx++ % rodPalette.length],
+                linewidth: 5, worldUnits: false,
+            });
+            const line = new Line2(segGeo, mat);
+            line.frustumCulled = false;
+            entry.mesh = line;
+            clipGroup.add(line);
+        }
+        objects.push(entry);
+        if (!entry.static) offset += o.numVerts * 3;
+    }
+
+    // static objects: write their positions once
+    for (const obj of objects) {
+        if (!obj.static) continue;
+        const n = obj.numVerts * 3;
+        const out = new Float32Array(n);
+        for (let i = 0; i < n; i++) out[i] = mins[i % 3] + obj.staticPos[i] * scale[i % 3];
+        if (obj.kind === 'tri') {
+            obj.mesh.geometry.attributes.position.array.set(out);
+            obj.mesh.geometry.attributes.position.needsUpdate = true;
+        } else {
+            const edges = obj.edges, seg = obj.segTmp;
+            for (let e = 0; e < edges.length; e++) {
+                const v = edges[e] * 3;
+                seg[e * 3] = out[v]; seg[e * 3 + 1] = out[v + 1]; seg[e * 3 + 2] = out[v + 2];
+            }
+            obj.mesh.geometry.setPositions(seg);
+        }
+    }
+
+    clip = { meta, frames, frameStride: offset, objects, mins, scale };
+    simTime = 0;
+    document.getElementById('scrub').max = meta.numFrames - 1;
+    document.getElementById('loading').style.display = 'none';
+    setWireframe(wireframe);
+}
+
+// deposit lerped frame f (fractional) into all geometries
+const _pTmp = [];
+function showFrame(f) {
+    if (!clip) return;
+    const { meta, frames, frameStride, objects, mins, scale } = clip;
+    const f0 = Math.floor(f) % meta.numFrames;
+    const f1 = (f0 + 1) % meta.numFrames;
+    const a = f - Math.floor(f);
+    const base0 = f0 * frameStride, base1 = f1 * frameStride;
+
+    for (const obj of objects) {
+        if (obj.static) continue;
+        const n = obj.numVerts * 3;
+        if (_pTmp.length < n) _pTmp.length = n;
+        const o0 = base0 + obj.offset, o1 = base1 + obj.offset;
+        for (let i = 0; i < n; i++) {
+            const axis = i % 3;
+            const q = frames[o0 + i] * (1 - a) + frames[o1 + i] * a;
+            _pTmp[i] = mins[axis] + q * scale[axis];
+        }
+        if (obj.kind === 'tri') {
+            const attr = obj.mesh.geometry.attributes.position;
+            attr.array.set(_pTmp.slice(0, n));
+            attr.needsUpdate = true;
+        } else {
+            const edges = obj.edges, seg = obj.segTmp;
+            for (let e = 0; e < edges.length; e++) {
+                const v = edges[e] * 3;
+                seg[e * 3] = _pTmp[v]; seg[e * 3 + 1] = _pTmp[v + 1]; seg[e * 3 + 2] = _pTmp[v + 2];
+            }
+            obj.mesh.geometry.setPositions(seg);
+        }
+    }
+    document.getElementById('scrub').value = f0;
+    document.getElementById('frameinfo').textContent = `${f0} / ${meta.numFrames}`;
+}
+
+// ------------------------------------------------------------------ ui
+function setWireframe(on) {
+    wireframe = on;
+    if (clip) for (const o of clip.objects) if (o.kind === 'tri') o.mesh.material.wireframe = on;
+    document.getElementById('btnWire').classList.toggle('on', on);
+}
+
+const btnPlay = document.getElementById('btnPlay');
+btnPlay.onclick = () => { playing = !playing; btnPlay.textContent = playing ? 'pause' : 'play'; };
+addEventListener('keydown', e => {
+    if (e.code === 'Space' && !e.target.closest('input')) { e.preventDefault(); btnPlay.onclick(); }
+});
+
+document.getElementById('scrub').addEventListener('input', e => {
+    if (!clip) return;
+    simTime = Number(e.target.value) / clip.meta.fps;
+    showFrame(Number(e.target.value));
+});
+
+document.getElementById('btnSpeed').onclick = e => {
+    speed = speeds[(speeds.indexOf(speed) + 1) % speeds.length];
+    e.target.textContent = `speed ${speed}x`;
+};
+document.getElementById('btnWire').onclick = () => setWireframe(!wireframe);
+document.getElementById('btnTheme').onclick = () => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('ipc-theme', theme);
+    applyTheme();
+};
+document.getElementById('btnAbout').onclick = () => document.getElementById('about').classList.add('show');
+document.getElementById('btnCloseAbout').onclick = e => { e.preventDefault(); document.getElementById('about').classList.remove('show'); };
+document.getElementById('about').addEventListener('click', e => {
+    if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+});
+
+const sceneButtons = { soft_stack: document.getElementById('btnSceneStack'), rod_tangle: document.getElementById('btnSceneRods') };
+for (const [name, btn] of Object.entries(sceneButtons)) {
+    btn.onclick = () => {
+        for (const b of Object.values(sceneButtons)) b.classList.remove('on');
+        btn.classList.add('on');
+        loadScene(name);
+    };
+}
+
+// ------------------------------------------------------------------ loop
+function resize() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    if (clip) for (const o of clip.objects) if (o.kind === 'rod') o.mesh.material.resolution.set(w, h);
+}
+addEventListener('resize', resize);
+
+let last = performance.now();
+function tick(now) {
+    requestAnimationFrame(tick);
+    const dt = Math.min((now - last) / 1000, 0.1);
+    last = now;
+    if (clip) {
+        if (playing) {
+            simTime += dt * speed;
+            const total = clip.meta.numFrames / clip.meta.fps;
+            simTime %= total;
+        }
+        showFrame(simTime * clip.meta.fps);
+        for (const o of clip.objects) if (o.kind === 'rod') o.mesh.material.resolution.set(innerWidth, innerHeight);
+    }
+    controls.update();
+    renderer.render(scene, camera);
+}
+
+resize();
+loadScene('soft_stack');
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
