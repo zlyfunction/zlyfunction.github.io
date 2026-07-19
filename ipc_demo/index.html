@@ -188,8 +188,7 @@ const themes = {
     dark:  { bg: 0x080810, ground: 0x0d0d18, grid: 0x2a2a3a, hemi: 0.55 },
     light: { bg: 0xf2f3f7, ground: 0xe4e6ee, grid: 0xc0c4d2, hemi: 0.85 },
 };
-let theme = localStorage.getItem('ipc-theme')
-    || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+let theme = localStorage.getItem('ipc-theme') || 'dark';
 
 // ------------------------------------------------------------------ renderer / scene
 const canvas = document.getElementById('c');
