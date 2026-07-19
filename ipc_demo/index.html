@@ -80,6 +80,8 @@
             color: var(--fg-dim); opacity: 0.5; font-size: 10px; letter-spacing: 0.22em;
             text-transform: uppercase; pointer-events: none; white-space: nowrap;
         }
+        #footer a { color: inherit; pointer-events: auto; }
+        #footer a:hover { color: var(--accent-fg); }
         #about {
             position: fixed; inset: 0; background: rgba(0,0,0,0.55);
             display: none; align-items: center; justify-content: center; z-index: 10;
@@ -119,10 +121,10 @@
 </div>
 
 <div id="controls">
-    <button id="btnSceneStack" class="on">soft stack</button>
-    <button id="btnSceneRods">rod drape</button>
-    <button id="btnSceneGoogle">google pile</button>
+    <button id="btnSceneGoogle" class="on">google pile</button>
     <button id="btnSceneTramp">play button</button>
+    <button id="btnSceneStack">soft stack</button>
+    <button id="btnSceneRods">rod drape</button>
     <hr class="sep">
     <button id="btnSpeed">speed 1x</button>
     <button id="btnWire">wireframe</button>
@@ -137,7 +139,7 @@
     <div id="frameinfo">0 / 0</div>
 </div>
 
-<div id="footer">incremental potential contact — precomputed on gpu, played back in browser</div>
+<div id="footer">incremental potential contact — simulated with <a href="https://github.com/spiriMirror/libuipc" target="_blank" rel="noopener">libuipc</a>, played back in browser</div>
 
 <div id="about">
     <div id="aboutCard">
@@ -158,6 +160,10 @@
         See also the original <a href="https://ipc-sim.github.io/" target="_blank" rel="noopener">IPC
         project page</a> and <a href="https://github.com/ipc-sim/IPC" target="_blank"
         rel="noopener">reference code</a>.</p>
+        <p>Huge thanks to the authors of
+        <a href="https://github.com/spiriMirror/libuipc" target="_blank" rel="noopener">libuipc</a>
+        for open-sourcing such a powerful and well-engineered unified IPC framework —
+        this page would not exist without it.</p>
         <p style="text-align:right"><a href="#" id="btnCloseAbout">close ×</a></p>
     </div>
 </div>
@@ -480,7 +486,7 @@ function tick(now) {
 }
 
 resize();
-loadScene('soft_stack');
+loadScene('google_pile');
 requestAnimationFrame(tick);
 </script>
 </body>

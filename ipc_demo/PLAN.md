@@ -44,6 +44,7 @@ ipc_demo/
 - [x] **11. google_pile 场景**：GOOGLE 六个字母（5x7 像素字体 → 体素 → Kuhn 六四面体剖分，`gen/voxmesh.py`）软体下落成排互靠，Google 品牌配色（per-object `color`）。调参 3 轮：字母从 depth2/30kPa/高空带旋转落（全摔平）→ depth4/70kPa/低空零倾角/摩擦 0.6（成排斜靠、字形可读）。
 - [x] **12. play_trampoline 场景**（用户选定的 YouTube demo）：果冻红播放按钮（白三角形为第二材质组 `groups`/`groupColors`）落到四边固定布料弹床。调参 3 轮：布 60kPa 陷太深吞按钮 → 250kPa 太弹按钮飞出 → 150kPa+倾角 -6°（负角让白面朝上落）刚好：弹跳后稳窝在弹床里、白三角朝上清晰可见。布料半透明（`opacity` 字段）且不投影。
 - [x] **13. 手机端取景优化**：竖屏 aspect<0.8 时 FOV 40→60、视角中心抬高——手机截图确认主体完整居中。
+- [x] **15. 顺序调整 + 主页预览 + 致谢**：场景顺序改为 google → play button → soft stack → rod drape（默认 google）；GOOGLE 场景动画 WebP 预览（headless 截图 60 帧 → Pillow 合成，233KB，`ipc_demo/preview_google.webp`）放进主页卡片；demo 页脚 + about 弹窗 + 主页卡片三处致谢 libuipc。
 - [x] **14. viewer 四 tab + 多颜色支持**：场景按钮 ×4、per-object color/opacity、双色组（material 数组 + addGroup）、线框开关兼容材质数组。全部无控制台错误。
 
 ## 收尾备注（2026-07-18）
