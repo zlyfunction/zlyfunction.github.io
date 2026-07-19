@@ -1,347 +1,1186 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>摸鱼🐟 - Moyu Workspace</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#06161d">
+  <title>摸鱼办 · Moyu Break Room</title>
   <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
     body {
+      width: 100%;
+      height: 100%;
       margin: 0;
       overflow: hidden;
-      background: radial-gradient(circle at center, #1a3a4a 0%, #051015 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      color: white;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 50% 20%, rgba(41, 118, 133, 0.38), transparent 42%),
+        linear-gradient(180deg, #0d3540 0%, #08242e 42%, #041319 100%);
+      color: rgba(238, 252, 252, 0.9);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -18%;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 25% 10%, rgba(157, 239, 226, 0.09), transparent 24%),
+        radial-gradient(ellipse at 72% 6%, rgba(133, 215, 221, 0.07), transparent 22%);
+      transform: translate3d(-2%, 0, 0);
+      animation: water-light 22s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      box-shadow:
+        inset 0 0 160px rgba(0, 5, 9, 0.48),
+        inset 0 -100px 120px rgba(0, 5, 8, 0.25);
+    }
+
+    @keyframes water-light {
+      to {
+        transform: translate3d(4%, 2%, 0) scale(1.04);
+      }
     }
 
     canvas {
+      position: fixed;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
       cursor: pointer;
-      filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.2));
+    }
+
+    .brand {
+      position: fixed;
+      top: max(22px, env(safe-area-inset-top));
+      left: max(24px, env(safe-area-inset-left));
+      z-index: 2;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .brand-name {
+      margin: 0;
+      font-family: "Songti SC", "STSong", serif;
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: 0.32em;
+      color: rgba(231, 250, 248, 0.68);
+    }
+
+    .brand-note {
+      margin-top: 7px;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: rgba(213, 240, 239, 0.3);
+    }
+
+    .brand-status {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 11px;
+      color: rgba(220, 248, 245, 0.5);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+    }
+
+    .brand-status::before {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #7ee8a2;
+      box-shadow: 0 0 12px rgba(126, 232, 162, 0.72);
+      content: "";
+      animation: status-pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes status-pulse {
+      50% {
+        opacity: 0.45;
+        transform: scale(0.72);
+      }
     }
 
     .ui {
-      position: absolute;
-      bottom: 30px;
-      text-align: center;
-      pointer-events: none;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      position: fixed;
+      z-index: 3;
+      left: 50%;
+      bottom: max(22px, env(safe-area-inset-bottom));
+      width: min(92vw, 440px);
+      padding: 12px 14px 11px;
+      border: 1px solid rgba(203, 244, 241, 0.12);
+      border-radius: 22px;
+      background: rgba(3, 21, 27, 0.44);
+      box-shadow: 0 18px 50px rgba(0, 5, 8, 0.22);
+      backdrop-filter: blur(14px);
+      transform: translateX(-50%);
+      transition: opacity 300ms ease, background 300ms ease;
     }
 
-    .hint {
-      font-size: 14px;
-      opacity: 0.7;
-      margin-top: 10px;
+    .ui:hover,
+    .ui:focus-within {
+      background: rgba(3, 21, 27, 0.62);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     button {
-      pointer-events: auto;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(0, 255, 255, 0.5);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 20px;
+      min-height: 36px;
+      padding: 7px 13px;
+      border: 1px solid transparent;
+      border-radius: 14px;
+      background: transparent;
+      color: rgba(229, 249, 247, 0.58);
+      font: inherit;
+      font-size: 12px;
+      letter-spacing: 0.04em;
       cursor: pointer;
-      backdrop-filter: blur(5px);
-      transition: 0.3s;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        color 180ms ease,
+        background 180ms ease,
+        border-color 180ms ease,
+        transform 180ms ease;
     }
 
     button:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: scale(1.05);
+      color: rgba(239, 255, 253, 0.9);
+      background: rgba(207, 250, 246, 0.07);
     }
 
-    .tools {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      pointer-events: auto;
+    button:active {
+      transform: scale(0.97);
     }
 
-    .tool-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      padding: 8px 18px;
-      border-radius: 15px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: 0.2s;
-      backdrop-filter: blur(5px);
+    button:focus-visible {
+      outline: 2px solid rgba(128, 226, 219, 0.65);
+      outline-offset: 2px;
     }
 
-    .tool-btn.active {
-      background: rgba(0, 255, 255, 0.3);
-      border-color: #00ffff;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+    button.active {
+      border-color: rgba(143, 231, 223, 0.2);
+      background: rgba(130, 222, 215, 0.12);
+      color: rgba(236, 255, 253, 0.92);
+    }
+
+    .add-button {
+      border-color: rgba(143, 231, 223, 0.18);
+      color: rgba(236, 255, 253, 0.82);
+    }
+
+    .divider {
+      width: 1px;
+      height: 20px;
+      margin: 0 2px;
+      background: rgba(218, 250, 247, 0.1);
+    }
+
+    .hint {
+      min-height: 16px;
+      margin-top: 6px;
+      overflow: hidden;
+      color: rgba(215, 242, 240, 0.38);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 520px) {
+      .brand {
+        top: max(17px, env(safe-area-inset-top));
+        left: 18px;
+      }
+
+      .ui {
+        bottom: max(14px, env(safe-area-inset-bottom));
+        padding-inline: 9px;
+      }
+
+      button {
+        padding-inline: 10px;
+      }
+
+      .hint {
+        letter-spacing: 0.02em;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body::before,
+      .brand-status::before {
+        animation: none;
+      }
+
+      button,
+      .ui {
+        transition: none;
+      }
+    }
+
+    html.preview-mode .brand,
+    html.preview-mode .ui {
+      display: none;
     }
   </style>
 </head>
-
 <body>
+  <canvas id="fishCanvas" aria-label="摸鱼模拟器：可以摸鱼，也可以用捞网捞鱼">
+    你的浏览器暂不支持 Canvas。
+  </canvas>
 
-  <canvas id="fishCanvas"></canvas>
+  <header class="brand" aria-hidden="true">
+    <h1 class="brand-name">摸鱼办</h1>
+    <div class="brand-note">NO FISH STAYS BORED</div>
+    <div class="brand-status"><span id="moyu-count">今日摸鱼 0 次</span><span>·</span><span id="catch-count">捞走 0 尾</span></div>
+  </header>
 
-  <div class="ui">
-    <button onclick="addFish()">增加一只鱼 🐟</button>
-    <div class="tools">
-      <div id="hand-tool" class="tool-btn active" onclick="setTool('hand')">🖐️ 摸鱼</div>
-      <div id="net-tool" class="tool-btn" onclick="setTool('net')">🕸️ 捞鱼</div>
+  <section class="ui" aria-label="摸鱼控制">
+    <div class="controls">
+      <button id="add-fish" class="add-button" type="button">＋ 放鱼</button>
+      <span class="divider" aria-hidden="true"></span>
+      <button id="hand-tool" class="active" type="button" aria-pressed="true">🫳 摸鱼</button>
+      <button id="net-tool" type="button" aria-pressed="false">🕸 捞鱼</button>
     </div>
-    <div class="hint" id="tool-hint">摸一摸鱼儿，打发时间</div>
-  </div>
+    <div class="hint" id="tool-hint" aria-live="polite">点一条鱼，看看它怎么演</div>
+  </section>
 
   <script>
+    'use strict';
+
+    const previewMode = new URLSearchParams(window.location.search).has('preview');
+    document.documentElement.classList.toggle('preview-mode', previewMode);
+
     const canvas = document.getElementById('fishCanvas');
     const ctx = canvas.getContext('2d');
+    const addButton = document.getElementById('add-fish');
+    const handButton = document.getElementById('hand-tool');
+    const netButton = document.getElementById('net-tool');
+    const hint = document.getElementById('tool-hint');
+    const moyuCount = document.getElementById('moyu-count');
+    const catchCount = document.getElementById('catch-count');
+
+    const TAU = Math.PI * 2;
+    const FIXED_DT = 1 / 60;
+    const MAX_FRAME_STEPS = 4;
+    const MAX_DPR = 2;
+    const MAX_FISH = 36;
+    const MAX_BUBBLES = 160;
+    const BODY_TYPES = ['ellipse', 'diamond', 'round', 'long'];
+    const TOUCH_LINES = [
+      '摸到了！它反手一个甩尾',
+      '这条鱼：谁碰我工位？',
+      '摸鱼成功，精神状态 +1',
+      '它假装没看见，又悄悄加速了',
+      '手感不错，就是有点滑',
+      '鱼：我正在忙，请稍后再摸',
+    ];
+    const TOUCH_POPUPS = ['摸到了！', '溜了溜了', '尾气警告', '工位被占', '+1 摸鱼'];
+    const MISS_LINES = ['只摸到一圈水花', '鱼呢？刚刚还在这儿', '扑了个空，再瞄准一点'];
+    const CATCH_LINES = [
+      '一网兜住！它还在里面扑腾',
+      '捞到了——今日最佳员工离场',
+      '好网法！这条鱼一脸震惊',
+      '鱼：不是说好只摸不捞吗？',
+    ];
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let viewWidth = 1;
+    let viewHeight = 1;
+    let dpr = 1;
     let fishes = [];
     let bubbles = [];
-    const bodyTypes = ['ellipse', 'diamond', 'round', 'long'];
+    let motes = [];
+    let plants = [];
+    let ripples = [];
+    let splashes = [];
+    let popups = [];
+    let netCasts = [];
     let currentTool = 'hand';
-
-    function init() {
-      window.addEventListener('resize', resize);
-      resize();
-
-      // 初始召唤三只鱼
-      for (let i = 0; i < 3; i++) addFish();
-
-      canvas.addEventListener('mousedown', handleInteraction);
-      animate();
-    }
-
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-
-    function setTool(tool) {
-      currentTool = tool;
-      document.getElementById('hand-tool').classList.toggle('active', tool === 'hand');
-      document.getElementById('net-tool').classList.toggle('active', tool === 'net');
-
-      const hint = document.getElementById('tool-hint');
-      if (tool === 'hand') {
-        hint.innerText = "摸一摸鱼儿，打发时间，或者点击空白处召唤新鱼";
-        canvas.style.cursor = "pointer";
-      } else {
-        hint.innerText = "点击鱼儿把它们捞走";
-        canvas.style.cursor = "crosshair";
-      }
-    }
-
-    function handleInteraction(e) {
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
-
-      let clickedFishIndex = -1;
-      // 从上往下检查（数组末尾的鱼在最上层）
-      for (let i = fishes.length - 1; i >= 0; i--) {
-        const f = fishes[i];
-        const dx = mx - f.x;
-        const dy = my - f.y;
-        // 简单的碰撞检测：根据缩放后的鱼身大小判断
-        const hitW = (f.bodyW / 2) * f.scale;
-        const hitH = (f.bodyH / 2) * f.scale;
-
-        if (Math.abs(dx) < hitW && Math.abs(dy) < hitH) {
-          clickedFishIndex = i;
-          break;
-        }
-      }
-
-      if (clickedFishIndex !== -1) {
-        if (currentTool === 'hand') {
-          const f = fishes[clickedFishIndex];
-          // 物理反馈：计算点击点到鱼心的角度，并施加反向冲力
-          const angle = Math.atan2(f.y - my, f.x - mx);
-          const force = 12;
-          f.vx = Math.cos(angle) * force;
-          f.vy = Math.sin(angle) * force;
-        } else {
-          // 捞鱼：从数组中移除
-          fishes.splice(clickedFishIndex, 1);
-        }
-      } else if (currentTool === 'hand') {
-        addFish(mx, my);
-      }
-    }
+    let lastFrame = null;
+    let accumulator = 0;
+    let touchTotal = 0;
+    let catchTotal = 0;
+    let touchStreak = 0;
+    let lastTouchAt = 0;
+    const pointer = { x: 0, y: 0, visible: false };
 
     function randomRange(min, max) {
       return Math.random() * (max - min) + min;
     }
 
-    function addFish(x, y) {
-      const hue = Math.floor(Math.random() * 360);
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function angleDelta(from, to) {
+      let delta = (to - from + Math.PI) % TAU;
+      if (delta < 0) delta += TAU;
+      return delta - Math.PI;
+    }
+
+    function makeBodyPath(fish) {
+      const path = new Path2D();
+      const w = fish.bodyW;
+      const h = fish.bodyH;
+
+      if (fish.bodyType === 'ellipse') {
+        path.ellipse(0, 0, w / 2, h / 2, 0, 0, TAU);
+      } else if (fish.bodyType === 'diamond') {
+        path.moveTo(-w / 2, 0);
+        path.quadraticCurveTo(-w * 0.12, -h * 0.62, w / 2, 0);
+        path.quadraticCurveTo(-w * 0.12, h * 0.62, -w / 2, 0);
+        path.closePath();
+      } else if (fish.bodyType === 'round') {
+        path.ellipse(0, 0, h * 0.72, h * 0.62, 0, 0, TAU);
+      } else {
+        const radius = h * 0.24;
+        path.roundRect(-w / 2, -h * 0.28, w, h * 0.56, radius);
+      }
+
+      return path;
+    }
+
+    function createFish(x, y) {
+      const hue = Math.floor(randomRange(155, 225));
+      const heading = Math.random() < 0.5
+        ? randomRange(-0.45, 0.45)
+        : randomRange(Math.PI - 0.45, Math.PI + 0.45);
+      const bodyW = randomRange(115, 220);
+      const bodyH = randomRange(55, 105);
+      const cruiseSpeed = randomRange(34, 62) * (reducedMotion ? 0.58 : 1);
       const fish = {
-        x: x || Math.random() * canvas.width,
-        y: y || Math.random() * canvas.height,
-        vx: randomRange(-2, 2),
-        vy: randomRange(-1, 1),
-        bodyW: randomRange(120, 300),
-        bodyH: randomRange(60, 150),
-        bodyType: bodyTypes[Math.floor(Math.random() * bodyTypes.length)],
-        hue: hue,
-        tailW: randomRange(40, 80),
-        tailH: randomRange(60, 120),
-        eyeSize: randomRange(8, 18),
-        finSize: randomRange(20, 50),
-        hasStripes: Math.random() > 0.5,
-        stripeCount: Math.floor(randomRange(2, 6)),
-        scale: randomRange(0.4, 0.8),
-        turnSpeed: randomRange(0.02, 0.05)
+        x: x ?? randomRange(viewWidth * 0.16, viewWidth * 0.84),
+        y: y ?? randomRange(viewHeight * 0.16, viewHeight * 0.76),
+        heading,
+        targetHeading: heading,
+        facing: Math.cos(heading) >= 0 ? 1 : -1,
+        speed: cruiseSpeed,
+        cruiseSpeed,
+        turnSpeed: randomRange(0.48, 0.9),
+        wanderTimer: randomRange(0.8, 2.8),
+        phase: randomRange(0, TAU),
+        phaseSpeed: randomRange(3.1, 5.2),
+        bubbleTimer: randomRange(3, 10),
+        mischiefTimer: randomRange(2.5, 7.5),
+        blinkTimer: randomRange(1.5, 5),
+        blink: 0,
+        boop: 0,
+        touches: 0,
+        bodyW,
+        bodyH,
+        bodyType: BODY_TYPES[Math.floor(Math.random() * BODY_TYPES.length)],
+        hue,
+        tailW: randomRange(34, 65),
+        tailH: randomRange(50, 92),
+        eyeSize: randomRange(6, 11),
+        finSize: randomRange(17, 34),
+        hasStripes: Math.random() > 0.58,
+        stripeCount: Math.floor(randomRange(2, 5)),
+        scale: randomRange(0.48, 0.76),
+        alpha: 0,
+        removing: false,
+        caught: false,
+        bodyPath: null,
       };
+      fish.bodyPath = makeBodyPath(fish);
+      return fish;
+    }
+
+    function addFish(x, y) {
+      if (fishes.length >= MAX_FISH) {
+        setHint('摸鱼办已经鱼满为患，先摸两下再说');
+        return;
+      }
+
+      const margin = 90;
+      const px = x == null ? undefined : clamp(x, margin, Math.max(margin, viewWidth - margin));
+      const py = y == null ? undefined : clamp(y, margin, Math.max(margin, viewHeight - margin));
+      const fish = createFish(px, py);
       fishes.push(fish);
+      createPopup(fish.x, fish.y - 36, '新同事入水', '#c9fff3');
+      setHint(`第 ${fishes.length} 尾鱼已到岗，看起来不太安分`);
     }
 
-    function createBubble(x, y, size) {
+    function createBubble(x, y, sourceScale = 1) {
+      if (bubbles.length >= MAX_BUBBLES) return;
       bubbles.push({
-        x: x,
-        y: y,
-        r: randomRange(2, 8),
-        speed: randomRange(1, 3),
-        opacity: randomRange(0.3, 0.6)
+        x,
+        y,
+        r: randomRange(1.8, 5.8) * clamp(sourceScale, 0.65, 1.3),
+        riseSpeed: randomRange(13, 28),
+        drift: randomRange(3, 9),
+        phase: randomRange(0, TAU),
+        age: 0,
+        life: randomRange(5, 10),
+        opacity: randomRange(0.18, 0.42),
       });
     }
 
-    function update() {
-      // 更新鱼的位置
-      fishes.forEach(f => {
-        f.x += f.vx;
-        f.y += f.vy;
-
-        // 随机改变方向 (游走感)
-        f.vx += (Math.random() - 0.5) * 0.1;
-        f.vy += (Math.random() - 0.5) * 0.1;
-
-        // 限制速度 (平滑减速回正常范围，允许瞬间爆发)
-        const maxSpeed = 2.5;
-        const speed = Math.sqrt(f.vx * f.vx + f.vy * f.vy);
-        if (speed > maxSpeed) {
-          f.vx *= 0.92;
-          f.vy *= 0.92;
-        }
-
-        // 边界检查
-        const margin = 100;
-        if (f.x < -margin) f.x = canvas.width + margin;
-        if (f.x > canvas.width + margin) f.x = -margin;
-        if (f.y < -margin) f.y = canvas.height + margin;
-        if (f.y > canvas.height + margin) f.y = -margin;
-
-        // 随机吐泡泡
-        if (Math.random() < 0.01) {
-          const dir = f.vx > 0 ? 1 : -1;
-          createBubble(f.x + (f.bodyW / 2 * f.scale * dir), f.y, f.r);
-        }
+    function createRipple(x, y, kind = 'touch') {
+      ripples.push({
+        x,
+        y,
+        radius: kind === 'lift' ? 16 : 8,
+        speed: kind === 'lift' ? 58 : 38,
+        age: 0,
+        life: kind === 'lift' ? 0.9 : 1.25,
+        opacity: kind === 'lift' ? 0.38 : 0.24,
       });
+      if (ripples.length > 20) ripples.shift();
+    }
 
-      // 更新泡泡
-      for (let i = bubbles.length - 1; i >= 0; i--) {
-        bubbles[i].y -= bubbles[i].speed;
-        bubbles[i].x += Math.sin(bubbles[i].y / 20) * 0.5;
-        if (bubbles[i].y < -20) bubbles.splice(i, 1);
+    function createSplash(x, y, amount = 9) {
+      if (reducedMotion) amount = Math.ceil(amount * 0.45);
+      for (let i = 0; i < amount; i++) {
+        const angle = randomRange(-Math.PI + 0.2, -0.2);
+        const speed = randomRange(38, 112);
+        splashes.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          gravity: randomRange(95, 150),
+          r: randomRange(1.4, 3.8),
+          age: 0,
+          life: randomRange(0.45, 0.9),
+        });
+      }
+      if (splashes.length > 90) splashes.splice(0, splashes.length - 90);
+    }
+
+    function createPopup(x, y, text, color = '#eafffb') {
+      popups.push({
+        x,
+        y,
+        text,
+        color,
+        age: 0,
+        life: reducedMotion ? 0.8 : 1.25,
+      });
+      if (popups.length > 12) popups.shift();
+    }
+
+    function refreshStats() {
+      moyuCount.textContent = `今日摸鱼 ${touchTotal} 次`;
+      catchCount.textContent = `捞走 ${catchTotal} 尾`;
+    }
+
+    function castNet(target, x, y) {
+      if (target?.caught) return;
+      const net = {
+        x,
+        y,
+        startY: Math.max(-110, y - 180),
+        drawX: x,
+        drawY: y - 180,
+        age: 0,
+        life: reducedMotion ? 0.85 : 1.45,
+        target,
+      };
+      if (target) {
+        target.caught = true;
+        target.boop = 0;
+      }
+      netCasts.push(net);
+      createRipple(x, y, 'lift');
+      createSplash(x, y + 8, target ? 14 : 7);
+      if (target) {
+        createPopup(x, y - 52, '一网兜住！', '#ffe9a8');
+        catchTotal += 1;
+        refreshStats();
+        setHint(CATCH_LINES[Math.floor(Math.random() * CATCH_LINES.length)]);
+      } else {
+        createPopup(x, y - 40, '空网！', '#c7e8e5');
+        setHint('网倒是很帅，可惜鱼跑了');
       }
     }
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // 画泡泡
-      bubbles.forEach(b => {
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(255, 255, 255, ${b.opacity})`;
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.stroke();
-      });
-
-      // 画鱼
-      fishes.forEach(f => {
-        const { x, y, bodyW, bodyH, hue, tailW, tailH, eyeSize, finSize, scale, vx, bodyType } = f;
-        const flip = vx > 0 ? 1 : -1;
-
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.scale(scale * flip, scale);
-
-        // 1. 尾巴
-        ctx.fillStyle = `hsl(${hue}, 60%, 40%)`;
-        ctx.beginPath();
-        ctx.moveTo(-bodyW / 2 + 20, 0);
-        ctx.lineTo(-bodyW / 2 - tailW, -tailH / 2);
-        ctx.lineTo(-bodyW / 2 - tailW / 2, 0);
-        ctx.lineTo(-bodyW / 2 - tailW, tailH / 2);
-        ctx.fill();
-
-        // 2. 鱼身
-        const grad = ctx.createLinearGradient(-bodyW / 2, 0, bodyW / 2, 0);
-        grad.addColorStop(0, `hsl(${hue}, 70%, 50%)`);
-        grad.addColorStop(1, `hsl(${hue}, 80%, 65%)`);
-        ctx.fillStyle = grad;
-
-        ctx.beginPath();
-        if (bodyType === 'ellipse') {
-          ctx.ellipse(0, 0, bodyW / 2, bodyH / 2, 0, 0, Math.PI * 2);
-        } else if (bodyType === 'diamond') {
-          ctx.moveTo(-bodyW / 2, 0);
-          ctx.lineTo(0, -bodyH / 2);
-          ctx.lineTo(bodyW / 2, 0);
-          ctx.lineTo(0, bodyH / 2);
-        } else if (bodyType === 'round') {
-          ctx.arc(0, 0, bodyH / 1.2, 0, Math.PI * 2);
-        } else if (bodyType === 'long') {
-          ctx.roundRect(-bodyW / 2, -bodyH / 4, bodyW, bodyH / 2, 20);
-        }
-        ctx.fill();
-
-        // 3. 花纹
-        if (f.hasStripes) {
-          ctx.strokeStyle = `rgba(255, 255, 255, 0.2)`;
-          ctx.lineWidth = 6;
-          for (let i = 0; i < f.stripeCount; i++) {
-            const sx = -bodyW / 4 + (i * bodyW / 2 / f.stripeCount);
-            ctx.beginPath();
-            ctx.moveTo(sx, -bodyH / 3);
-            ctx.lineTo(sx + 5, bodyH / 3);
-            ctx.stroke();
-          }
-        }
-
-        // 4. 眼睛
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.arc(bodyW / 3, -bodyH / 6, eyeSize, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#051015";
-        ctx.beginPath();
-        ctx.arc(bodyW / 3 + eyeSize / 3, -bodyH / 6, eyeSize / 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 5. 侧鳍
-        ctx.fillStyle = `rgba(255, 255, 255, 0.3)`;
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(-finSize, finSize / 2);
-        ctx.lineTo(0, finSize);
-        ctx.fill();
-
-        ctx.restore();
-      });
+    function rebuildMotes() {
+      const count = reducedMotion
+        ? Math.round(clamp(viewWidth * viewHeight / 36000, 14, 32))
+        : Math.round(clamp(viewWidth * viewHeight / 22000, 24, 72));
+      motes = Array.from({ length: count }, () => ({
+        x: Math.random() * viewWidth,
+        y: Math.random() * viewHeight,
+        r: randomRange(0.5, 1.7),
+        vx: randomRange(-1.8, 1.8),
+        vy: randomRange(-3.5, -0.8),
+        alpha: randomRange(0.04, 0.18),
+        phase: randomRange(0, TAU),
+      }));
     }
 
-    function animate() {
-      update();
+    function rebuildPlants() {
+      const count = Math.round(clamp(viewWidth / 105, 7, 16));
+      plants = Array.from({ length: count }, (_, index) => ({
+        x: (index + randomRange(0.15, 0.85)) / count * viewWidth,
+        height: randomRange(65, Math.min(190, viewHeight * 0.26)),
+        width: randomRange(2, 5),
+        sway: randomRange(8, 24),
+        phase: randomRange(0, TAU),
+        speed: randomRange(0.09, 0.18),
+        alpha: randomRange(0.08, 0.16),
+      }));
+    }
+
+    function setHint(message) {
+      hint.textContent = message;
+    }
+
+    function setTool(tool) {
+      currentTool = tool;
+      const isHand = tool === 'hand';
+      handButton.classList.toggle('active', isHand);
+      netButton.classList.toggle('active', !isHand);
+      handButton.setAttribute('aria-pressed', String(isHand));
+      netButton.setAttribute('aria-pressed', String(!isHand));
+      canvas.style.cursor = isHand ? 'pointer' : 'none';
+      setHint(isHand ? '点一条鱼，看看它怎么演' : '移动捞网，瞄准一条不安分的鱼');
+    }
+
+    function hitTestFish(fish, x, y) {
+      const dx = (x - fish.x) / fish.scale;
+      const dy = (y - fish.y) / fish.scale;
+      const radiusX = fish.bodyType === 'round' ? fish.bodyH * 0.78 : fish.bodyW * 0.56;
+      const radiusY = fish.bodyType === 'long' ? fish.bodyH * 0.38 : fish.bodyH * 0.62;
+      return (dx * dx) / (radiusX * radiusX) + (dy * dy) / (radiusY * radiusY) <= 1;
+    }
+
+    function handleInteraction(event) {
+      event.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const x = (event.clientX - rect.left) * viewWidth / rect.width;
+      const y = (event.clientY - rect.top) * viewHeight / rect.height;
+      let target = null;
+
+      for (let i = fishes.length - 1; i >= 0; i--) {
+        if (!fishes[i].removing && !fishes[i].caught && hitTestFish(fishes[i], x, y)) {
+          target = fishes[i];
+          break;
+        }
+      }
+
+      if (!target) {
+        createRipple(x, y);
+        if (currentTool === 'net') {
+          castNet(null, x, y);
+          return;
+        }
+        createSplash(x, y, 4);
+        createPopup(x, y - 18, '扑空', '#c7e8e5');
+        setHint(MISS_LINES[Math.floor(Math.random() * MISS_LINES.length)]);
+        return;
+      }
+
+      if (currentTool === 'hand') {
+        const now = performance.now();
+        touchStreak = now - lastTouchAt < 1800 ? touchStreak + 1 : 1;
+        lastTouchAt = now;
+        touchTotal += 1;
+        target.touches += 1;
+        target.boop = 1;
+        const dx = target.x - x;
+        const dy = target.y - y;
+        target.targetHeading = Math.abs(dx) + Math.abs(dy) < 0.01
+          ? target.heading + randomRange(-1.2, 1.2)
+          : Math.atan2(dy, dx);
+        target.speed = Math.max(target.speed, target.cruiseSpeed * 3.6);
+        target.wanderTimer = randomRange(0.7, 1.6);
+        target.mischiefTimer = randomRange(3, 7);
+        for (const fish of fishes) {
+          if (fish === target || fish.caught) continue;
+          const awayX = fish.x - x;
+          const awayY = fish.y - y;
+          const distance = Math.hypot(awayX, awayY);
+          if (distance < 190) {
+            fish.targetHeading = Math.atan2(awayY, awayX) + randomRange(-0.25, 0.25);
+            fish.speed = Math.max(fish.speed, fish.cruiseSpeed * (2.1 - distance / 190));
+          }
+        }
+        for (let i = 0; i < 6; i++) {
+          createBubble(target.x + randomRange(-18, 18), target.y + randomRange(-9, 9), target.scale);
+        }
+        createRipple(x, y);
+        createSplash(x, y, 6);
+        const popup = touchStreak >= 3
+          ? `连摸 ×${touchStreak}`
+          : TOUCH_POPUPS[Math.floor(Math.random() * TOUCH_POPUPS.length)];
+        createPopup(target.x, target.y - target.bodyH * target.scale * 0.65, popup, '#b9fff1');
+        refreshStats();
+        setHint(TOUCH_LINES[Math.floor(Math.random() * TOUCH_LINES.length)]);
+      } else {
+        castNet(target, target.x, target.y);
+      }
+    }
+
+    function updateFish(fish, dt) {
+      fish.phase += fish.phaseSpeed * dt * (0.65 + fish.speed / Math.max(1, fish.cruiseSpeed) * 0.35);
+      fish.boop = Math.max(0, fish.boop - dt * 2.8);
+      fish.blink = Math.max(0, fish.blink - dt * 4.5);
+
+      if (fish.caught) return;
+
+      if (fish.removing) {
+        fish.alpha -= dt * 1.35;
+        fish.speed *= Math.exp(-2.8 * dt);
+        fish.y -= 9 * dt;
+        return;
+      }
+
+      fish.alpha = clamp(fish.alpha + dt * 0.75, 0, 1);
+      fish.wanderTimer -= dt;
+      if (fish.wanderTimer <= 0) {
+        fish.targetHeading += randomRange(-0.82, 0.82);
+        fish.wanderTimer = randomRange(1.2, 3.8);
+      }
+
+      fish.mischiefTimer -= dt;
+      if (fish.mischiefTimer <= 0) {
+        fish.targetHeading += randomRange(-1.15, 1.15);
+        fish.speed = Math.max(fish.speed, fish.cruiseSpeed * randomRange(1.7, 2.45));
+        fish.mischiefTimer = randomRange(4, 10);
+        if (Math.random() > 0.55) {
+          createBubble(fish.x, fish.y, fish.scale);
+          createBubble(fish.x - fish.facing * 10, fish.y + 5, fish.scale);
+        }
+      }
+
+      fish.blinkTimer -= dt;
+      if (fish.blinkTimer <= 0) {
+        fish.blink = 1;
+        fish.blinkTimer = randomRange(2.2, 6.5);
+      }
+
+      const edgeX = Math.min(170, viewWidth * 0.2);
+      const edgeY = Math.min(130, viewHeight * 0.2);
+      let desiredX = Math.cos(fish.targetHeading);
+      let desiredY = Math.sin(fish.targetHeading);
+
+      if (fish.x < edgeX) desiredX += (edgeX - fish.x) / edgeX * 2.8;
+      if (fish.x > viewWidth - edgeX) desiredX -= (fish.x - (viewWidth - edgeX)) / edgeX * 2.8;
+      if (fish.y < edgeY) desiredY += (edgeY - fish.y) / edgeY * 2.5;
+      if (fish.y > viewHeight - edgeY) desiredY -= (fish.y - (viewHeight - edgeY)) / edgeY * 2.5;
+
+      const desiredHeading = Math.atan2(desiredY, desiredX);
+      const edgeUrgency = Math.max(
+        fish.x < edgeX ? (edgeX - fish.x) / edgeX : 0,
+        fish.x > viewWidth - edgeX ? (fish.x - (viewWidth - edgeX)) / edgeX : 0,
+        fish.y < edgeY ? (edgeY - fish.y) / edgeY : 0,
+        fish.y > viewHeight - edgeY ? (fish.y - (viewHeight - edgeY)) / edgeY : 0
+      );
+      const maxTurn = fish.turnSpeed * (1 + edgeUrgency * 3.2) * dt;
+      const turn = clamp(
+        angleDelta(fish.heading, desiredHeading),
+        -maxTurn,
+        maxTurn
+      );
+      fish.heading += turn;
+      fish.speed += (fish.cruiseSpeed - fish.speed) * (1 - Math.exp(-1.15 * dt));
+
+      const vx = Math.cos(fish.heading) * fish.speed;
+      const vy = Math.sin(fish.heading) * fish.speed;
+      fish.x += vx * dt;
+      fish.y += vy * dt;
+
+      const horizontal = Math.cos(fish.heading);
+      if (horizontal > 0.16) fish.facing = 1;
+      else if (horizontal < -0.16) fish.facing = -1;
+
+      fish.bubbleTimer -= dt;
+      if (fish.bubbleTimer <= 0) {
+        const mouthX = fish.x + fish.facing * fish.bodyW * fish.scale * 0.42;
+        const mouthY = fish.y - fish.bodyH * fish.scale * 0.12;
+        createBubble(mouthX, mouthY, fish.scale);
+        fish.bubbleTimer = randomRange(4, 12);
+      }
+    }
+
+    function update(dt) {
+      for (let i = fishes.length - 1; i >= 0; i--) {
+        updateFish(fishes[i], dt);
+        if (fishes[i].alpha <= 0 && fishes[i].removing) fishes.splice(i, 1);
+      }
+
+      for (let i = bubbles.length - 1; i >= 0; i--) {
+        const bubble = bubbles[i];
+        bubble.age += dt;
+        bubble.phase += dt * 1.5;
+        bubble.y -= bubble.riseSpeed * dt;
+        bubble.x += Math.sin(bubble.phase) * bubble.drift * dt;
+        if (bubble.age >= bubble.life || bubble.y < -20) bubbles.splice(i, 1);
+      }
+
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const ripple = ripples[i];
+        ripple.age += dt;
+        ripple.radius += ripple.speed * dt;
+        if (ripple.age >= ripple.life) ripples.splice(i, 1);
+      }
+
+      for (let i = splashes.length - 1; i >= 0; i--) {
+        const drop = splashes[i];
+        drop.age += dt;
+        drop.vy += drop.gravity * dt;
+        drop.x += drop.vx * dt;
+        drop.y += drop.vy * dt;
+        if (drop.age >= drop.life) splashes.splice(i, 1);
+      }
+
+      for (let i = popups.length - 1; i >= 0; i--) {
+        const popup = popups[i];
+        popup.age += dt;
+        popup.y -= 20 * dt;
+        if (popup.age >= popup.life) popups.splice(i, 1);
+      }
+
+      for (let i = netCasts.length - 1; i >= 0; i--) {
+        const net = netCasts[i];
+        net.age += dt;
+        const progress = clamp(net.age / net.life, 0, 1);
+        const plunge = 1 - Math.pow(1 - clamp(progress / 0.22, 0, 1), 3);
+        const lift = clamp((progress - 0.38) / 0.62, 0, 1);
+        const smoothLift = lift * lift * (3 - 2 * lift);
+        net.drawX = net.x + smoothLift * 84;
+        net.drawY = net.startY + (net.y - net.startY) * plunge - smoothLift * (net.y + 125);
+
+        if (net.target && progress >= 0.18) {
+          net.target.x = net.drawX + Math.sin(progress * 34) * (1 - lift) * 5;
+          net.target.y = net.drawY + 8 + Math.sin(progress * 46) * 4;
+          net.target.heading = Math.sin(progress * 42) * 0.22;
+          net.target.facing = Math.sin(progress * 35) > 0 ? 1 : -1;
+          net.target.phase += dt * 11;
+          net.target.alpha = 1 - clamp((progress - 0.88) / 0.12, 0, 1);
+        }
+
+        if (progress >= 1) {
+          if (net.target) {
+            const fishIndex = fishes.indexOf(net.target);
+            if (fishIndex !== -1) fishes.splice(fishIndex, 1);
+          }
+          netCasts.splice(i, 1);
+        }
+      }
+
+      for (const mote of motes) {
+        mote.phase += dt * 0.35;
+        mote.x += (mote.vx + Math.sin(mote.phase) * 1.2) * dt;
+        mote.y += mote.vy * dt;
+        if (mote.y < -5) {
+          mote.y = viewHeight + 5;
+          mote.x = Math.random() * viewWidth;
+        }
+        if (mote.x < -5) mote.x = viewWidth + 5;
+        if (mote.x > viewWidth + 5) mote.x = -5;
+      }
+
+      for (const plant of plants) {
+        plant.phase += plant.speed * dt * (reducedMotion ? 0.25 : 1);
+      }
+    }
+
+    function drawPlants() {
+      ctx.save();
+      ctx.lineCap = 'round';
+      for (const plant of plants) {
+        const sway = Math.sin(plant.phase) * plant.sway;
+        const topX = plant.x + sway;
+        const topY = viewHeight - plant.height;
+        ctx.beginPath();
+        ctx.moveTo(plant.x, viewHeight + 8);
+        ctx.bezierCurveTo(
+          plant.x - sway * 0.25,
+          viewHeight - plant.height * 0.35,
+          topX - sway * 0.2,
+          viewHeight - plant.height * 0.72,
+          topX,
+          topY
+        );
+        ctx.strokeStyle = `rgba(77, 139, 126, ${plant.alpha})`;
+        ctx.lineWidth = plant.width;
+        ctx.stroke();
+
+        ctx.lineWidth = Math.max(1, plant.width * 0.55);
+        ctx.beginPath();
+        ctx.moveTo(plant.x + sway * 0.18, viewHeight - plant.height * 0.42);
+        ctx.quadraticCurveTo(
+          plant.x + sway * 0.18 - 22,
+          viewHeight - plant.height * 0.52,
+          plant.x + sway * 0.18 - 29,
+          viewHeight - plant.height * 0.48
+        );
+        ctx.moveTo(plant.x + sway * 0.52, viewHeight - plant.height * 0.68);
+        ctx.quadraticCurveTo(
+          plant.x + sway * 0.52 + 20,
+          viewHeight - plant.height * 0.78,
+          plant.x + sway * 0.52 + 26,
+          viewHeight - plant.height * 0.74
+        );
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawMotes() {
+      for (const mote of motes) {
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(211, 250, 245, ${mote.alpha})`;
+        ctx.arc(mote.x, mote.y, mote.r, 0, TAU);
+        ctx.fill();
+      }
+    }
+
+    function drawBubbles() {
+      ctx.lineWidth = 1;
+      for (const bubble of bubbles) {
+        const fade = Math.min(1, bubble.age * 2) * Math.min(1, (bubble.life - bubble.age) * 1.5);
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(211, 250, 248, ${bubble.opacity * fade})`;
+        ctx.arc(bubble.x, bubble.y, bubble.r, 0, TAU);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(240, 255, 254, ${bubble.opacity * fade * 0.65})`;
+        ctx.arc(bubble.x - bubble.r * 0.28, bubble.y - bubble.r * 0.3, Math.max(0.5, bubble.r * 0.16), 0, TAU);
+        ctx.fill();
+      }
+    }
+
+    function drawRipples() {
+      for (const ripple of ripples) {
+        const progress = ripple.age / ripple.life;
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(178, 239, 233, ${ripple.opacity * (1 - progress)})`;
+        ctx.lineWidth = 1.25;
+        ctx.ellipse(ripple.x, ripple.y, ripple.radius, ripple.radius * 0.42, 0, 0, TAU);
+        ctx.stroke();
+      }
+    }
+
+    function drawSplashes() {
+      for (const drop of splashes) {
+        const fade = 1 - drop.age / drop.life;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(194, 250, 244, ${fade * 0.72})`;
+        ctx.ellipse(drop.x, drop.y, drop.r * 0.72, drop.r * 1.35, 0, 0, TAU);
+        ctx.fill();
+      }
+    }
+
+    function drawPopups() {
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = '600 12px Inter, "PingFang SC", system-ui, sans-serif';
+      for (const popup of popups) {
+        const progress = popup.age / popup.life;
+        const alpha = Math.min(1, popup.age * 8) * (1 - progress);
+        const width = ctx.measureText(popup.text).width + 20;
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = 'rgba(3, 24, 30, 0.72)';
+        ctx.beginPath();
+        ctx.roundRect(popup.x - width / 2, popup.y - 13, width, 26, 13);
+        ctx.fill();
+        ctx.fillStyle = popup.color;
+        ctx.fillText(popup.text, popup.x, popup.y + 0.5);
+      }
+      ctx.restore();
+    }
+
+    function drawNetShape(x, y, alpha = 1, tilt = -0.12, scale = 1) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(x, y);
+      ctx.rotate(tilt);
+      ctx.scale(scale, scale);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const bag = new Path2D();
+      bag.moveTo(-58, 4);
+      bag.bezierCurveTo(-50, 42, -28, 79, 0, 92);
+      bag.bezierCurveTo(28, 79, 50, 42, 58, 4);
+      bag.quadraticCurveTo(0, 20, -58, 4);
+      bag.closePath();
+
+      ctx.fillStyle = 'rgba(153, 224, 213, 0.1)';
+      ctx.fill(bag);
+      ctx.save();
+      ctx.clip(bag);
+      ctx.strokeStyle = 'rgba(197, 242, 233, 0.4)';
+      ctx.lineWidth = 1.15;
+      for (let offset = -120; offset <= 120; offset += 18) {
+        ctx.beginPath();
+        ctx.moveTo(offset, -8);
+        ctx.lineTo(offset + 82, 104);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(offset, 104);
+        ctx.lineTo(offset + 82, -8);
+        ctx.stroke();
+      }
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(206, 246, 237, 0.62)';
+      ctx.lineWidth = 2;
+      ctx.stroke(bag);
+
+      ctx.strokeStyle = 'rgba(167, 210, 199, 0.92)';
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(48, -19);
+      ctx.lineTo(154, -128);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(232, 255, 248, 0.88)';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 61, 31, 0, 0, TAU);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(5, 38, 43, 0.42)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.ellipse(0, 2, 55, 25, 0, 0, TAU);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawNets() {
+      for (const net of netCasts) {
+        const progress = clamp(net.age / net.life, 0, 1);
+        const alpha = Math.min(1, progress * 10) * (1 - clamp((progress - 0.92) / 0.08, 0, 1));
+        const tilt = -0.12 + Math.sin(progress * Math.PI) * 0.16;
+        drawNetShape(net.drawX, net.drawY, alpha, tilt, 1 + Math.sin(progress * Math.PI) * 0.05);
+      }
+      if (currentTool === 'net' && pointer.visible && netCasts.length === 0) {
+        const bob = reducedMotion ? 0 : Math.sin(performance.now() / 180) * 2.5;
+        drawNetShape(pointer.x, pointer.y + bob, 0.56, -0.12, 0.82);
+      }
+    }
+
+    function drawFish(fish) {
+      const speedRatio = clamp(fish.speed / Math.max(1, fish.cruiseSpeed), 0.5, 2.5);
+      const tailSwing = Math.sin(fish.phase) * fish.tailH * 0.12 * Math.min(1.5, speedRatio);
+      const finSwing = Math.sin(fish.phase - 0.8) * fish.finSize * 0.12;
+      const tilt = Math.atan2(Math.sin(fish.heading), Math.abs(Math.cos(fish.heading))) * 0.22;
+      const boopWiggle = fish.boop * Math.sin((1 - fish.boop) * 22) * 0.12;
+      const eyeOpen = fish.blink > 0 ? Math.max(0.14, 1 - Math.sin(fish.blink * Math.PI) * 0.9) : 1;
+
+      ctx.save();
+      ctx.globalAlpha = fish.alpha;
+      ctx.translate(fish.x, fish.y + Math.sin(fish.phase * 0.48) * 1.4);
+      ctx.rotate(fish.facing * tilt + boopWiggle);
+      ctx.scale(
+        fish.scale * fish.facing * (1 + fish.boop * 0.12),
+        fish.scale * (1 - fish.boop * 0.1)
+      );
+
+      ctx.fillStyle = `hsla(${fish.hue - 8}, 46%, 43%, 0.94)`;
+      ctx.beginPath();
+      ctx.moveTo(-fish.bodyW / 2 + 14, 0);
+      ctx.quadraticCurveTo(
+        -fish.bodyW / 2 - fish.tailW * 0.58,
+        -fish.tailH * 0.36 + tailSwing,
+        -fish.bodyW / 2 - fish.tailW,
+        -fish.tailH * 0.5 + tailSwing
+      );
+      ctx.quadraticCurveTo(
+        -fish.bodyW / 2 - fish.tailW * 0.65,
+        tailSwing,
+        -fish.bodyW / 2 - fish.tailW,
+        fish.tailH * 0.5 + tailSwing
+      );
+      ctx.quadraticCurveTo(
+        -fish.bodyW / 2 - fish.tailW * 0.58,
+        fish.tailH * 0.36 + tailSwing,
+        -fish.bodyW / 2 + 14,
+        0
+      );
+      ctx.fill();
+
+      const gradient = ctx.createLinearGradient(-fish.bodyW / 2, -fish.bodyH / 3, fish.bodyW / 2, fish.bodyH / 3);
+      gradient.addColorStop(0, `hsl(${fish.hue - 6}, 48%, 46%)`);
+      gradient.addColorStop(0.56, `hsl(${fish.hue}, 55%, 59%)`);
+      gradient.addColorStop(1, `hsl(${fish.hue + 8}, 61%, 70%)`);
+      ctx.fillStyle = gradient;
+      ctx.fill(fish.bodyPath);
+
+      ctx.save();
+      ctx.clip(fish.bodyPath);
+      const sheen = ctx.createRadialGradient(
+        fish.bodyW * 0.14, -fish.bodyH * 0.32, 0,
+        fish.bodyW * 0.08, -fish.bodyH * 0.22, fish.bodyW * 0.62
+      );
+      sheen.addColorStop(0, 'rgba(230, 255, 251, 0.22)');
+      sheen.addColorStop(1, 'rgba(230, 255, 251, 0)');
+      ctx.fillStyle = sheen;
+      ctx.fillRect(-fish.bodyW, -fish.bodyH, fish.bodyW * 2, fish.bodyH * 2);
+
+      if (fish.hasStripes) {
+        ctx.strokeStyle = 'rgba(231, 255, 251, 0.12)';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        for (let i = 0; i < fish.stripeCount; i++) {
+          const stripeX = -fish.bodyW * 0.24 + i * fish.bodyW * 0.42 / Math.max(1, fish.stripeCount - 1);
+          ctx.moveTo(stripeX, -fish.bodyH * 0.48);
+          ctx.quadraticCurveTo(stripeX + 7, 0, stripeX + 2, fish.bodyH * 0.48);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      ctx.fillStyle = 'rgba(220, 250, 246, 0.2)';
+      ctx.beginPath();
+      ctx.moveTo(-fish.bodyW * 0.04, fish.bodyH * 0.06);
+      ctx.quadraticCurveTo(
+        -fish.finSize * 0.7,
+        fish.finSize * 0.45 + finSwing,
+        -fish.finSize * 0.1,
+        fish.finSize + finSwing
+      );
+      ctx.quadraticCurveTo(fish.finSize * 0.25, fish.finSize * 0.45, -fish.bodyW * 0.04, fish.bodyH * 0.06);
+      ctx.fill();
+
+      const eyeX = fish.bodyType === 'round' ? fish.bodyH * 0.42 : fish.bodyW * 0.32;
+      const eyeY = -fish.bodyH * 0.15;
+      ctx.fillStyle = 'rgba(242, 255, 252, 0.92)';
+      ctx.beginPath();
+      ctx.ellipse(eyeX, eyeY, fish.eyeSize, fish.eyeSize * eyeOpen, 0, 0, TAU);
+      ctx.fill();
+      ctx.fillStyle = '#082026';
+      ctx.beginPath();
+      ctx.ellipse(
+        eyeX + fish.eyeSize * 0.28,
+        eyeY,
+        fish.eyeSize * 0.48,
+        fish.eyeSize * 0.48 * eyeOpen,
+        0,
+        0,
+        TAU
+      );
+      ctx.fill();
+      if (eyeOpen > 0.5) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
+        ctx.beginPath();
+        ctx.arc(eyeX + fish.eyeSize * 0.42, eyeY - fish.eyeSize * 0.2, Math.max(0.8, fish.eyeSize * 0.12), 0, TAU);
+        ctx.fill();
+      }
+
+      ctx.strokeStyle = 'rgba(5, 30, 35, 0.58)';
+      ctx.lineWidth = 2.2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      if (fish.boop > 0.15) {
+        ctx.arc(fish.bodyW * 0.47, fish.bodyH * 0.08, fish.eyeSize * 0.42, 0, TAU);
+      } else {
+        ctx.arc(fish.bodyW * 0.47, fish.bodyH * 0.02, fish.eyeSize * 0.52, 0.2, 1.55);
+      }
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, viewWidth, viewHeight);
+      drawPlants();
+      drawMotes();
+      drawBubbles();
+      for (const fish of fishes) drawFish(fish);
+      drawRipples();
+      drawSplashes();
+      drawNets();
+      drawPopups();
+    }
+
+    function animate(timestamp) {
+      if (lastFrame === null) lastFrame = timestamp;
+      const elapsed = Math.min((timestamp - lastFrame) / 1000, FIXED_DT * MAX_FRAME_STEPS);
+      lastFrame = timestamp;
+
+      accumulator = Math.min(accumulator + elapsed, FIXED_DT * MAX_FRAME_STEPS);
+      while (accumulator >= FIXED_DT) {
+        update(FIXED_DT);
+        accumulator -= FIXED_DT;
+      }
+
       draw();
       requestAnimationFrame(animate);
     }
 
-    init();
+    function resize() {
+      const previousWidth = viewWidth;
+      const previousHeight = viewHeight;
+      viewWidth = window.innerWidth;
+      viewHeight = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+
+      canvas.style.width = `${viewWidth}px`;
+      canvas.style.height = `${viewHeight}px`;
+      canvas.width = Math.round(viewWidth * dpr);
+      canvas.height = Math.round(viewHeight * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      if (previousWidth > 1 && previousHeight > 1) {
+        for (const fish of fishes) {
+          fish.x = fish.x / previousWidth * viewWidth;
+          fish.y = fish.y / previousHeight * viewHeight;
+        }
+      }
+      rebuildMotes();
+      rebuildPlants();
+    }
+
+    addButton.addEventListener('click', () => addFish());
+    handButton.addEventListener('click', () => setTool('hand'));
+    netButton.addEventListener('click', () => setTool('net'));
+    canvas.addEventListener('pointerdown', handleInteraction);
+    canvas.addEventListener('pointermove', (event) => {
+      const rect = canvas.getBoundingClientRect();
+      pointer.x = (event.clientX - rect.left) * viewWidth / rect.width;
+      pointer.y = (event.clientY - rect.top) * viewHeight / rect.height;
+      pointer.visible = event.pointerType !== 'touch';
+    });
+    canvas.addEventListener('pointerleave', () => {
+      pointer.visible = false;
+    });
+    window.addEventListener('resize', resize);
+    window.addEventListener('blur', () => {
+      lastFrame = null;
+      accumulator = 0;
+    });
+
+    resize();
+    for (let i = 0; i < 5; i++) {
+      const fish = createFish();
+      fish.alpha = 1;
+      fishes.push(fish);
+    }
+    refreshStats();
+    setHint('点一条鱼，看看它怎么演');
+    requestAnimationFrame(animate);
   </script>
 </body>
-
 </html>

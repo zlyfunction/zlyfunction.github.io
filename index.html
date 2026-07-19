@@ -974,8 +974,16 @@
         .misc-card-preview {
             display: block;
             width: 100%;
+            aspect-ratio: 560 / 333;
+            object-fit: cover;
             border-radius: 12px;
             margin-bottom: 16px;
+            border: 1px solid var(--color-border-light);
+            background: #081318;
+        }
+
+        .misc-card picture {
+            display: block;
         }
 
         .misc-card-title {
@@ -1856,6 +1864,12 @@
             <h2 class="section-title" data-en="Miscellaneous" data-zh="其他">Miscellaneous</h2>
             <div class="misc-grid">
                 <a class="misc-card" href="./fish.html">
+                    <picture>
+                        <source media="(prefers-reduced-motion: reduce)" srcset="./preview_fish.webp">
+                        <img class="misc-card-preview" src="./preview_fish.gif"
+                            alt="Fish swimming before one is caught and lifted in a net" width="560" height="333"
+                            loading="lazy" decoding="async">
+                    </picture>
                     <span class="misc-card-icon misc-card-icon--fish" aria-hidden="true">
                         <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M8 24c5-8 14-12 22-12 4 0 7 1.4 9.5 3.4L44 12l-1.6 8L44 28l-4.5-3.4C37 26.6 34 28 30 28c-8 0-17-4-22-4Z"
@@ -1864,15 +1878,21 @@
                             <circle cx="16" cy="20" r="1.8" fill="#ffffff" />
                         </svg>
                     </span>
-                    <p class="misc-card-title" data-en="Touch Fish (摸鱼)" data-zh="摸鱼">Touch Fish (摸鱼)<svg
+                    <p class="misc-card-title" data-en="Moyu Break Room" data-zh="摸鱼办">Moyu Break Room<svg
                             class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M7 17 17 7M9 7h8v8" />
                         </svg></p>
-                    <p class="misc-card-desc" data-en="Fish procedurally generated with randomized geometric shapes."
-                        data-zh="用随机几何形状程序化生成的鱼。">Fish procedurally generated with randomized geometric shapes.</p>
+                    <p class="misc-card-desc" data-en="Poke mischievous fish, build a streak, or scoop one up in a very dramatic net."
+                        data-zh="摸摸不安分的鱼，刷个连摸，或者用一张很有戏的网把它捞走。">Poke mischievous fish, build a streak, or scoop one up in a very dramatic net.</p>
                 </a>
                 <a class="misc-card" href="./xmas.html">
+                    <picture>
+                        <source media="(prefers-reduced-motion: reduce)" srcset="./preview_tree.webp">
+                        <img class="misc-card-preview" src="./preview_tree.gif"
+                            alt="A glowing particle Christmas tree rotating in falling snow" width="560" height="333"
+                            loading="lazy" decoding="async">
+                    </picture>
                     <span class="misc-card-icon misc-card-icon--tree" aria-hidden="true">
                         <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M24 6 33 19H15L24 6Z" fill="#34a853" />
@@ -1897,6 +1917,12 @@
                         小红书 @summer.</p>
                 </a>
                 <a class="misc-card" href="./cloth.html">
+                    <picture>
+                        <source media="(prefers-reduced-motion: reduce)" srcset="./preview_cloth.webp">
+                        <img class="misc-card-preview" src="./preview_cloth.gif"
+                            alt="A simulated hanging cloth bending and fluttering in the wind" width="560" height="333"
+                            loading="lazy" decoding="async">
+                    </picture>
                     <span class="misc-card-icon misc-card-icon--cloth" aria-hidden="true">
                         <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M9 11c4 3 7 3 11 0s7-3 11 0 7 3 8 2v22c-1 1-4 1-8-2s-7-3-11 0-7 3-11 0-6-3-9-2V11Z"
@@ -1919,7 +1945,8 @@
                 </a>
                 <a class="misc-card" href="./ipc_demo/index.html">
                     <img class="misc-card-preview" src="./ipc_demo/preview_google.webp"
-                        alt="Soft-body GOOGLE letters falling and piling up" loading="lazy">
+                        alt="Soft-body GOOGLE letters falling and piling up" width="560" height="333"
+                        loading="lazy" decoding="async">
                     <span class="misc-card-icon misc-card-icon--ipc" aria-hidden="true">
                         <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="10" y="26" width="15" height="15" rx="4" fill="#5b8def" transform="rotate(-6 10 26)" />
