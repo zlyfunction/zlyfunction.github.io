@@ -53,6 +53,7 @@
     <button id="btnReset">reset</button>
     <button id="btnGravity" class="on">gravity</button>
     <button id="btnWind">wind</button>
+    <button id="btnGyro">gyro</button>
     <button id="btnColor">mono</button>
     <hr class="sep">
     <button id="btnMat">linen</button>
@@ -114,6 +115,23 @@ let windOn    = false;
 let colorMode = 0;
 let touchMode = 0;     // 0=grab, 1=cut
 let time      = 0;
+
+// ─── Gyroscope / motion (mobile tilt-to-tip, shake-to-gust) ──────────────────
+let gyroOn       = false;
+let gyroBaseline = null;   // { beta, gamma } captured when gyro is enabled
+let gravDirX     = 0;      // smoothed gravity direction, unit-ish vector
+let gravDirY     = 1;      // default: straight down
+let gravTargetX  = 0;
+let gravTargetY  = 1;
+let lastAccel    = null;
+let shakeImpulseX = 0;
+let shakeImpulseY = 0;
+const GYRO_MAX_TILT   = 40;   // degrees of tilt for full gravity redirect
+const GYRO_SMOOTH     = 0.12; // per-frame lerp toward target (damps sensor jitter)
+const SHAKE_THRESHOLD = 12;   // m/s^2 of jerk that counts as a shake
+const SHAKE_GAIN      = 2.2;  // px of impulse per m/s^2 of jerk
+const SHAKE_MAX       = 40;   // px, impulse cap
+const SHAKE_DECAY     = 0.85; // per physics step
 
 // ─── Mouse / touch ───────────────────────────────────────────────────────────
 const mouse = { x: 0, y: 0, lx: 0, ly: 0, down: false, right: false, shift: false };
@@ -189,6 +207,16 @@ function update(dt) {
               Math.sin(time*1.86)*W*0.15) * stepScale * stepScale;
     }
 
+    // Smooth the sensor-driven gravity direction to damp raw sensor jitter.
+    gravDirX += (gravTargetX - gravDirX) * GYRO_SMOOTH;
+    gravDirY += (gravTargetY - gravDirY) * GYRO_SMOOTH;
+
+    // Shake impulse (devicemotion) decays each physics step after a spike.
+    const shakeX = shakeImpulseX * stepScale;
+    const shakeY = shakeImpulseY * stepScale;
+    shakeImpulseX *= SHAKE_DECAY;
+    shakeImpulseY *= SHAKE_DECAY;
+
     // 1. Verlet integrate
     for (let i = 0; i < nP; i++) {
         if (pinned[i] || i === held) continue;
@@ -196,8 +224,8 @@ function update(dt) {
         const vy = (py[i] - ppy[i]) * damp;
         ppx[i] = px[i];
         ppy[i] = py[i];
-        px[i] += vx + wx;
-        py[i] += vy + grav;
+        px[i] += vx + wx + grav * gravDirX + shakeX;
+        py[i] += vy + grav * gravDirY + shakeY;
     }
 
     // 2. Pin the grabbed particle before solving so its pull propagates now.
@@ -566,6 +594,79 @@ document.getElementById('btnTouchMode').addEventListener('click', function() {
     this.classList.toggle('warn', touchMode === 1);
     mouse.down = false; grabbed = -1;
 });
+
+// ─── Gyroscope / motion ───────────────────────────────────────────────────────
+function flashWarn(el) {
+    el.classList.add('warn');
+    setTimeout(() => el.classList.remove('warn'), 300);
+}
+
+function onDeviceOrientation(e) {
+    if (e.beta === null || e.gamma === null) return;
+    if (!gyroBaseline) gyroBaseline = { beta: e.beta, gamma: e.gamma };
+    const dGamma = e.gamma - gyroBaseline.gamma;
+    const dBeta  = e.beta  - gyroBaseline.beta;
+    const gx = dGamma / GYRO_MAX_TILT;
+    const gy = 1 - dBeta / GYRO_MAX_TILT;
+    const len = Math.sqrt(gx*gx + gy*gy) || 1;
+    gravTargetX = gx / len;
+    gravTargetY = gy / len;
+}
+
+function onDeviceMotion(e) {
+    const acc = e.accelerationIncludingGravity;
+    if (!acc || acc.x === null) return;
+    if (lastAccel) {
+        const dx = acc.x - lastAccel.x;
+        const dy = acc.y - lastAccel.y;
+        const dz = acc.z - lastAccel.z;
+        const jerk = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        if (jerk > SHAKE_THRESHOLD) {
+            shakeImpulseX = Math.max(-SHAKE_MAX, Math.min(SHAKE_MAX, shakeImpulseX - dx * SHAKE_GAIN));
+            shakeImpulseY = Math.max(-SHAKE_MAX, Math.min(SHAKE_MAX, shakeImpulseY + dy * SHAKE_GAIN));
+        }
+    }
+    lastAccel = { x: acc.x, y: acc.y, z: acc.z };
+}
+
+const btnGyro = document.getElementById('btnGyro');
+
+async function enableGyro() {
+    const hasOrientation = typeof DeviceOrientationEvent !== 'undefined';
+    const hasMotion = typeof DeviceMotionEvent !== 'undefined';
+    if (!hasOrientation && !hasMotion) { flashWarn(btnGyro); return; }
+    try {
+        if (hasOrientation && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            if (await DeviceOrientationEvent.requestPermission() !== 'granted') { flashWarn(btnGyro); return; }
+        }
+        if (hasMotion && typeof DeviceMotionEvent.requestPermission === 'function') {
+            if (await DeviceMotionEvent.requestPermission() !== 'granted') { flashWarn(btnGyro); return; }
+        }
+    } catch (err) {
+        flashWarn(btnGyro);
+        return;
+    }
+    gyroOn = true;
+    gyroBaseline = null;
+    lastAccel = null;
+    shakeImpulseX = 0; shakeImpulseY = 0;
+    window.addEventListener('deviceorientation', onDeviceOrientation);
+    window.addEventListener('devicemotion', onDeviceMotion);
+    btnGyro.classList.add('on');
+    btnGyro.textContent = 'gyro on';
+}
+
+function disableGyro() {
+    gyroOn = false;
+    gravTargetX = 0; gravTargetY = 1;
+    shakeImpulseX = 0; shakeImpulseY = 0;
+    window.removeEventListener('deviceorientation', onDeviceOrientation);
+    window.removeEventListener('devicemotion', onDeviceMotion);
+    btnGyro.classList.remove('on');
+    btnGyro.textContent = 'gyro';
+}
+
+btnGyro.addEventListener('click', () => { gyroOn ? disableGyro() : enableGyro(); });
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 window.addEventListener('resize', resize);
