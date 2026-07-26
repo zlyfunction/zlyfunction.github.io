@@ -357,8 +357,8 @@
 
         .profile {
             display: flex;
-            align-items: flex-start;
-            gap: 40px;
+            align-items: center;
+            gap: 32px;
         }
 
         .profile-photo-wrap {
@@ -384,6 +384,11 @@
         .profile-photo-wrap:hover .profile-photo {
             transform: scale(1.03);
             box-shadow: 0 2px 6px 0 rgba(60, 64, 67, 0.15), 0 6px 14px 4px rgba(60, 64, 67, 0.1);
+        }
+
+        .profile-info {
+            flex: 1 1 auto;
+            min-width: 220px;
         }
 
         .photo-hint {
@@ -459,6 +464,110 @@
             border-color: var(--color-accent);
             color: var(--google-blue-hover);
             box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.08);
+        }
+
+        /* ── Pigeon of the Day ── */
+        .pigeon-daily-card {
+            position: relative;
+            flex: 0 0 190px;
+            width: 190px;
+            min-height: 222px;
+            overflow: hidden;
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--radius-card-lg);
+            background: linear-gradient(145deg, var(--color-surface) 20%, var(--color-highlight) 100%);
+            box-shadow: 0 1px 2px rgba(60, 64, 67, 0.08);
+            transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+        }
+
+        .pigeon-daily-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--color-accent);
+            box-shadow: 0 4px 12px var(--color-card-shadow);
+        }
+
+        .pigeon-daily-link {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            border-radius: inherit;
+        }
+
+        .pigeon-daily-link:focus-visible {
+            outline: 3px solid var(--color-accent);
+            outline-offset: -4px;
+        }
+
+        .pigeon-daily-header,
+        .pigeon-daily-footer {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 12px 14px 0;
+            font-family: var(--font-display);
+        }
+
+        .pigeon-daily-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--color-text);
+            letter-spacing: 0.01em;
+        }
+
+        .pigeon-daily-dot {
+            width: 8px;
+            height: 8px;
+            flex: 0 0 8px;
+            border-radius: 50%;
+            background: var(--google-green);
+            box-shadow: 0 0 0 4px rgba(52, 168, 83, 0.12);
+        }
+
+        .pigeon-daily-preview {
+            position: relative;
+            z-index: 1;
+            height: 154px;
+            margin: -2px 8px -4px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .pigeon-daily-preview iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            pointer-events: none;
+        }
+
+        .pigeon-daily-footer {
+            padding: 0 14px 12px;
+            font-size: 0.7rem;
+            color: var(--color-text-secondary);
+            white-space: nowrap;
+        }
+
+        .pigeon-daily-open {
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        @media (max-width: 780px) and (min-width: 641px) {
+            .profile {
+                gap: 22px;
+            }
+
+            .profile-info {
+                min-width: 190px;
+            }
+
+            .pigeon-daily-card {
+                flex-basis: 170px;
+                width: 170px;
+            }
         }
 
         /* ── Bio / About ── */
@@ -1188,6 +1297,15 @@
                 font-size: 2rem;
             }
 
+            .profile-info {
+                min-width: 0;
+            }
+
+            .pigeon-daily-card {
+                flex-basis: auto;
+                width: min(100%, 260px);
+            }
+
             .profile-links {
                 justify-content: center;
             }
@@ -1253,6 +1371,24 @@
             var curLang = document.getElementById('lang-toggle') && document.getElementById('lang-toggle').textContent === 'English' ? 'zh' : 'en';
             var key = isCartoon ? (curLang + '-back') : curLang;
             hint.textContent = hint.getAttribute('data-' + key);
+        }
+
+        function initDailyPigeon() {
+            var now = new Date();
+            var pad = function (value) { return String(value).padStart(2, '0'); };
+            var localDate = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+            var seed = 'PIGEON-OF-THE-DAY-' + localDate;
+            var encodedSeed = encodeURIComponent(seed);
+            var cardLink = document.getElementById('pigeon-daily-link');
+            var preview = document.getElementById('pigeon-daily-preview-frame');
+            var date = document.getElementById('pigeon-daily-date');
+            if (cardLink) cardLink.href = './pegeongen.html#seed=' + encodedSeed;
+            if (preview) preview.src = './pegeongen.html?embed=1#seed=' + encodedSeed;
+            if (date) {
+                date.setAttribute('data-en', now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                date.setAttribute('data-zh', now.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }));
+                date.textContent = date.getAttribute('data-en');
+            }
         }
 
         function setLang(lang) {
@@ -1342,6 +1478,7 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
+            initDailyPigeon();
             setLang(localStorage.getItem('lang') || 'en');
             applyTheme(localStorage.getItem('theme') || 'light');
         });
@@ -1418,6 +1555,23 @@
                         <a href="mailto:leyi@nyu.edu" data-en="Email" data-zh="邮件">Email</a>
                     </div>
                 </div>
+                <aside class="pigeon-daily-card" aria-labelledby="pigeon-daily-title">
+                    <a id="pigeon-daily-link" class="pigeon-daily-link" href="./pegeongen.html"
+                        aria-label="Open Pigeon of the Day generator"></a>
+                    <div class="pigeon-daily-header">
+                        <span id="pigeon-daily-title" class="pigeon-daily-title" data-en="Pigeon of the Day"
+                            data-zh="今日鸽子">Pigeon of the Day</span>
+                        <span class="pigeon-daily-dot" aria-hidden="true"></span>
+                    </div>
+                    <div class="pigeon-daily-preview" aria-hidden="true">
+                        <iframe id="pigeon-daily-preview-frame" title="Daily procedural pigeon preview"
+                            tabindex="-1" scrolling="no"></iframe>
+                    </div>
+                    <div class="pigeon-daily-footer">
+                        <span id="pigeon-daily-date">today</span>
+                        <span class="pigeon-daily-open" data-en="Open generator ↗" data-zh="打开生成器 ↗">Open generator ↗</span>
+                    </div>
+                </aside>
             </div>
         </section>
 
