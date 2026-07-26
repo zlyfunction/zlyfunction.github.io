@@ -408,10 +408,18 @@
         }
 
         /* ── Pigeon of the Day ── */
-        .daily-pigeon {
+        /* The wrapper owns the placement so the link itself stays shrink-wrapped;
+           putting flex-basis on the link would stretch its hover background into
+           a full-width band once it drops onto its own row. */
+        .daily-pigeon-wrap {
             margin-left: auto;
-            flex-shrink: 0;
             align-self: center;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .daily-pigeon {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -447,10 +455,25 @@
             white-space: nowrap;
         }
 
-        /* Below this width the profile row gets tight, then stacks at 640px. */
+        /* Too narrow to sit beside the photo without squeezing the name and
+           links: drop it onto its own centred row underneath instead. */
         @media (max-width: 900px) {
-            .daily-pigeon {
-                display: none;
+            .profile {
+                flex-wrap: wrap;
+            }
+
+            .daily-pigeon-wrap {
+                flex-basis: 100%;
+                margin-left: 0;
+            }
+        }
+
+        /* At this width .profile is already a column, where flex-basis would be
+           sizing the height rather than the width. */
+        @media (max-width: 640px) {
+            .daily-pigeon-wrap {
+                flex-basis: auto;
+                width: 100%;
             }
         }
 
@@ -1468,12 +1491,14 @@
                 <!-- Procedurally generated pigeon, reseeded each day. The
                      data-en/data-zh pair sits on the label span only: setLang()
                      rewrites textContent, which would wipe out the SVG. -->
-                <a class="daily-pigeon" href="./pegeongen.html" data-daily-pigeon data-pigeon-size="150"
-                    aria-label="Pigeon of the day — open the pigeon generator">
-                    <span class="daily-pigeon-slot" data-pigeon-slot></span>
-                    <span class="daily-pigeon-label" data-en="pigeon of the day"
-                        data-zh="每日鸽子">pigeon of the day</span>
-                </a>
+                <div class="daily-pigeon-wrap">
+                    <a class="daily-pigeon" href="./pegeongen.html" data-daily-pigeon data-pigeon-size="150"
+                        aria-label="Pigeon of the day — open the pigeon generator">
+                        <span class="daily-pigeon-slot" data-pigeon-slot></span>
+                        <span class="daily-pigeon-label" data-en="pigeon of the day"
+                            data-zh="每日鸽子">pigeon of the day</span>
+                    </a>
+                </div>
             </div>
         </section>
 
