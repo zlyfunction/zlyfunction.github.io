@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPM Snow Demos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #080810;
+            --fg-dim: rgba(255,255,255,0.4);
+            --fg: rgba(255,255,255,0.8);
+            --panel-bg: rgba(255,255,255,0.06);
+            --panel-border: rgba(255,255,255,0.12);
+            --btn-fg: rgba(255,255,255,0.6);
+            --btn-hover-bg: rgba(255,255,255,0.11);
+            --btn-hover-fg: rgba(255,255,255,0.9);
+            --accent-bg: rgba(100,160,255,0.13);
+            --accent-border: rgba(100,160,255,0.35);
+            --accent-fg: rgba(130,185,255,0.9);
+            --track: rgba(255,255,255,0.15);
+        }
+        html[data-theme="light"] {
+            --bg: #eef1f7;
+            --fg-dim: rgba(20,25,40,0.5);
+            --fg: rgba(20,25,40,0.85);
+            --panel-bg: rgba(20,25,40,0.05);
+            --panel-border: rgba(20,25,40,0.15);
+            --btn-fg: rgba(20,25,40,0.6);
+            --btn-hover-bg: rgba(20,25,40,0.1);
+            --btn-hover-fg: rgba(20,25,40,0.9);
+            --accent-bg: rgba(40,110,235,0.12);
+            --accent-border: rgba(40,110,235,0.4);
+            --accent-fg: rgba(30,95,215,0.95);
+            --track: rgba(20,25,40,0.2);
+        }
+        body { background: var(--bg); overflow: hidden; font-family: 'SF Mono', 'Fira Code', monospace; }
+        canvas { display: block; touch-action: none; }
+        #ui {
+            position: fixed; top: 20px; left: 20px;
+            color: var(--fg-dim); font-size: 11px; line-height: 2;
+            pointer-events: none; user-select: none; max-width: 300px;
+        }
+        #ui b { color: var(--fg); font-weight: normal; }
+        #controls {
+            position: fixed; top: 20px; right: 20px;
+            display: flex; flex-direction: column; gap: 7px;
+        }
+        button {
+            background: var(--panel-bg); border: 1px solid var(--panel-border);
+            color: var(--btn-fg); padding: 6px 13px; font-size: 11px;
+            font-family: inherit; cursor: pointer; border-radius: 5px; transition: all 0.12s;
+            letter-spacing: 0.04em; min-width: 118px; text-align: left;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:hover { background: var(--btn-hover-bg); color: var(--btn-hover-fg); border-color: var(--panel-border); }
+        button.on { background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent-fg); }
+        hr.sep { border: none; border-top: 1px solid var(--panel-border); margin: 2px 0; }
+        #playbar {
+            position: fixed; bottom: 46px; left: 50%; transform: translateX(-50%);
+            display: flex; align-items: center; gap: 12px;
+            width: min(640px, calc(100vw - 40px));
+        }
+        #btnPlay { min-width: 64px; text-align: center; flex-shrink: 0; }
+        #scrub {
+            flex: 1; -webkit-appearance: none; appearance: none; height: 3px;
+            background: var(--track); border-radius: 2px; outline: none; cursor: pointer;
+        }
+        #scrub::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 13px; height: 13px;
+            border-radius: 50%; background: var(--accent-fg); cursor: pointer;
+        }
+        #scrub::-moz-range-thumb {
+            width: 13px; height: 13px; border: none;
+            border-radius: 50%; background: var(--accent-fg); cursor: pointer;
+        }
+        #frameinfo { color: var(--fg-dim); font-size: 10px; min-width: 68px; text-align: right; flex-shrink: 0; }
+        #footer {
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+            color: var(--fg-dim); opacity: 0.5; font-size: 10px; letter-spacing: 0.22em;
+            text-transform: uppercase; pointer-events: none; white-space: nowrap;
+        }
+        #footer a { color: inherit; pointer-events: auto; }
+        #footer a:hover { color: var(--accent-fg); }
+        #about {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            display: none; align-items: center; justify-content: center; z-index: 10;
+        }
+        #about.show { display: flex; }
+        #aboutCard {
+            background: var(--bg); border: 1px solid var(--panel-border); border-radius: 10px;
+            max-width: 560px; width: calc(100vw - 48px); max-height: 80vh; overflow-y: auto;
+            padding: 26px 30px; color: var(--fg); font-size: 12.5px; line-height: 1.75;
+        }
+        #aboutCard h2 { font-size: 14px; margin-bottom: 12px; letter-spacing: 0.05em; }
+        #aboutCard p { margin-bottom: 10px; color: var(--fg-dim); }
+        #aboutCard p b { color: var(--fg); font-weight: normal; }
+        #aboutCard a { color: var(--accent-fg); text-decoration: none; }
+        #aboutCard a:hover { text-decoration: underline; }
+        #loading {
+            position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+            color: var(--fg-dim); font-size: 12px; letter-spacing: 0.15em; pointer-events: none;
+        }
+        @media (max-width: 768px) {
+            #ui { display: none; }
+            button { min-width: 104px; padding: 9px 11px; font-size: 12px; }
+            #playbar { bottom: 56px; }
+            #footer {
+                font-size: 9px; white-space: normal; text-align: center;
+                letter-spacing: 0.08em; width: calc(100vw - 32px); left: 16px;
+                right: 16px; transform: none; bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="loading">loading simulation data…</div>
+
+<div id="ui">
+    <div><b>drag</b> — orbit camera</div>
+    <div><b>scroll / pinch</b> — zoom</div>
+    <div><b>right-drag</b> — pan</div>
+    <div><b>space</b> — play / pause</div>
+</div>
+
+<div id="controls">
+    <button id="btnRenderMode">render: surface</button>
+    <button id="btnSpeed">speed 0.5x</button>
+    <button id="btnTheme">light</button>
+    <hr class="sep">
+    <button id="btnAbout">about mpm</button>
+</div>
+
+<div id="playbar">
+    <button id="btnPlay">pause</button>
+    <input type="range" id="scrub" min="0" max="1000" value="0">
+    <div id="frameinfo">0 / 0</div>
+</div>
+
+<div id="footer">material point method snow, simulated with <a href="https://github.com/taichi-dev/taichi" target="_blank" rel="noopener">taichi</a>, played back in browser</div>
+
+<div id="about">
+    <div id="aboutCard">
+        <h2>WHAT IS THIS?</h2>
+        <p>The <b>Material Point Method</b> (MPM) represents deformable material as a cloud of
+        Lagrangian particles that carry mass, velocity and deformation, transferred through a
+        background Eulerian grid each timestep (particle→grid→particle). It handles large
+        deformation, splitting and merging for free — no remeshing, no explicit contact
+        handling between particles of the same body.</p>
+        <p>The snow itself follows <b>Stomakhin et al. 2013, "A Material Point Method for Snow
+        Simulation"</b> (Disney) — fixed-corotated elasticity plus a hardening plasticity model:
+        the elastic part of the deformation gradient is clamped to a critical
+        compression/stretch range, and the Lamé parameters harden exponentially with
+        accumulated plastic compaction. That single rule is what gives packed snow its
+        characteristic mix of springy give and permanent crunch.</p>
+        <p>The transfer scheme is <b>MLS-MPM</b> (Hu et al., SIGGRAPH 2018), simulated in 3D on
+        an RTX 2070 with <a href="https://github.com/taichi-dev/taichi" target="_blank"
+        rel="noopener">taichi</a>. Precomputed offline, then quantized and streamed to this page
+        for playback. The letters are solid snow blocks, extruded from a real typeface and
+        dropped onto a rigid floor. What makes them <i>shatter</i> rather than splat is the
+        tensile side of the plasticity: the critical stretch is set very low, so material pulled
+        apart yields almost immediately and loses nearly all strength, letting cracks open and
+        whole chunks separate — while the bulk, still under compression, stays stiff enough to
+        keep its shape on the way down.</p>
+        <p>Generation script lives in this repo under <b>gen/sim.py</b>. There is a full
+        <a href="https://github.com/zlyfunction/zlyfunction.github.io/blob/main/mpm_demo/REPORT.md"
+        target="_blank" rel="noopener"><b>technical report</b></a> covering the solver, the
+        surface-reconstruction pipeline, and the three bugs that made fracture impossible at
+        first. See also the
+        <a href="https://disneyanimation.com/publications/a-material-point-method-for-snow-simulation/"
+        target="_blank" rel="noopener">original paper</a> and
+        <a href="https://github.com/yuanming-hu/taichi_mpm" target="_blank" rel="noopener">the
+        authors' reference MPM code</a>.</p>
+        <p style="text-align:right"><a href="#" id="btnCloseAbout">close ×</a></p>
+    </div>
+</div>
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+// ------------------------------------------------------------------ theme
+const themes = {
+    dark:  { bg: 0x0a0c14, hemi: 0.6, sun: 2.4, fogNear: 5, fogFar: 12 },
+    light: { bg: 0xeef1f7, hemi: 0.95, sun: 2.0, fogNear: 6, fogFar: 14 },
+};
+let theme = localStorage.getItem('mpm-theme') || 'dark';
+
+// ------------------------------------------------------------------ renderer / scene
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 100);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.maxPolarAngle = Math.PI * 0.5;
+controls.minDistance = 0.3;
+controls.maxDistance = 12;
+
+const hemi = new THREE.HemisphereLight(0xffffff, 0x445566, 0.6);
+scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffffff, 2.4);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.bias = -0.0006;
+scene.add(sun);
+scene.add(sun.target);
+
+// soft image-based ambient lighting so PBR materials (sheen/clearcoat on the
+// snow) pick up gentle specular highlights instead of looking flat/matte
+// under just the two direct lights — generic interior-room env, subtle
+// intensity, works regardless of the outdoor setting since it's only ambient
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+pmrem.dispose();
+
+// ambient occlusion so grains sitting in a pile actually contact-shadow each
+// other (the single biggest cue that reads as "granular material" instead
+// of "a bunch of separately floating dots") — composited via a post pass
+// since it needs the depth buffer of the whole rendered scene
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const ssaoPass = new SSAOPass(scene, camera, innerWidth, innerHeight);
+ssaoPass.kernelRadius = 0.008;
+ssaoPass.minDistance = 0.00003;
+ssaoPass.maxDistance = 0.003;
+composer.addPass(ssaoPass);
+composer.addPass(new OutputPass());
+
+function applyTheme() {
+    const t = themes[theme];
+    document.documentElement.dataset.theme = theme;
+    scene.background = new THREE.Color(t.bg);
+    hemi.intensity = t.hemi;
+    sun.intensity = t.sun;
+    document.getElementById('btnTheme').textContent = theme === 'dark' ? 'light' : 'dark';
+}
+applyTheme();
+
+// ------------------------------------------------------------------ soft round sprite for snow points
+function makeDotTexture() {
+    const s = 64;
+    const cnv = document.createElement('canvas');
+    cnv.width = cnv.height = s;
+    const ctx = cnv.getContext('2d');
+    const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.7, 'rgba(255,255,255,0.85)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, s, s);
+    const tex = new THREE.CanvasTexture(cnv);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+}
+const dotTex = makeDotTexture();
+
+// subtle procedural grain so PBR surfaces (ground, grains) aren't a perfectly
+// smooth billiard-ball gradient — real packed snow has fine sparkling texture
+function makeNoiseTexture(size = 256) {
+    const cnv = document.createElement('canvas');
+    cnv.width = cnv.height = size;
+    const ctx = cnv.getContext('2d');
+    const img = ctx.createImageData(size, size);
+    for (let i = 0; i < size * size; i++) {
+        const v = 190 + Math.random() * 65;
+        img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = v;
+        img.data[i * 4 + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    const tex = new THREE.CanvasTexture(cnv);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(48, 48);
+    return tex;
+}
+const noiseTex = makeNoiseTexture();
+
+function makeShadowTexture() {
+    const s = 128;
+    const cnv = document.createElement('canvas');
+    cnv.width = cnv.height = s;
+    const ctx = cnv.getContext('2d');
+    const g = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s/2);
+    g.addColorStop(0, 'rgba(0,0,0,0.9)');
+    g.addColorStop(0.6, 'rgba(0,0,0,0.5)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, s, s);
+    return new THREE.CanvasTexture(cnv);
+}
+
+// ------------------------------------------------------------------ decorative background snowfall
+const flakeCount = 400;
+const flakeGeo = new THREE.BufferGeometry();
+const flakePos = new Float32Array(flakeCount * 3);
+const flakeSpeed = new Float32Array(flakeCount);
+for (let i = 0; i < flakeCount; i++) {
+    flakePos[i*3] = (Math.random() - 0.5) * 10;
+    flakePos[i*3+1] = Math.random() * 6;
+    flakePos[i*3+2] = (Math.random() - 0.5) * 10;
+    flakeSpeed[i] = 0.15 + Math.random() * 0.25;
+}
+flakeGeo.setAttribute('position', new THREE.BufferAttribute(flakePos, 3));
+const flakeMat = new THREE.PointsMaterial({
+    size: 0.035, map: dotTex, transparent: true, opacity: 0.55,
+    depthWrite: false, sizeAttenuation: true, color: 0xffffff,
+});
+const flakes = new THREE.Points(flakeGeo, flakeMat);
+scene.add(flakes);
+
+// ------------------------------------------------------------------ playback state
+let clip = null;
+let playing = true;
+// default to half speed: the clip is baked at 60fps and the whole
+// drop-and-shatter is over in ~1.5s of sim time -- real-time playback reads
+// as a blink, and the reference footage this reproduces is itself slow-mo
+let speed = 0.5;
+const speeds = [0.25, 0.5, 1, 2];
+let simTime = 0;
+let baseCamOffset = null;
+// 'surface' = per-frame marching-cubes snow mesh (best; only for scenes with
+// baked surface data), 'grains' = instanced lit spheres, 'points' = flat sprites
+let renderMode = localStorage.getItem('mpm-render-mode') || 'surface';
+document.getElementById('btnRenderMode').textContent = `render: ${renderMode}`;
+
+const clipGroup = new THREE.Group();
+scene.add(clipGroup);
+
+// The letters stand upright and burst on impact, so the shot wants a nearly
+// eye-level 3/4 view: high enough to read the debris spreading across the
+// floor, low enough that the standing letters still read as letters while
+// they fall. Framing is built around the *initial* (tallest) pose, since the
+// clip's overall bounds are dominated by the wide post-impact splatter.
+const SCENES = {
+    google_drop: {
+        dir: 'data/google_drop',
+        pointSize: 0.0075,
+        hasSurface: true,
+        frame(center, size, diag, mins, maxs, gmaxs) {
+            // 3/4 angle rather than straight-on: the word is ~8:1 wide once it
+            // has spread across the floor, so a perpendicular view leaves the
+            // frame mostly empty above and below. Swinging round foreshortens
+            // it and fills the frame.
+            // low and close, like the reference footage: camera just above the
+            // rubble line looking gently down, so the pile reads as a 3D heap
+            // against the horizon rather than a flat strip seen from above
+            camera.position.set(center[0] - diag * 0.16, mins[1] + size[1] * 0.42, center[2] + diag * 0.74);
+            controls.target.set(center[0], mins[1] + size[1] * 0.26, center[2]);
+            sun.position.set(center[0] + size[0] * 0.3, gmaxs[1] + diag * 2.0, center[2] + diag * 1.0);
+        },
+    },
+};
+let currentScene = 'google_drop';
+
+async function loadScene(name) {
+    currentScene = name;
+    const cfg = SCENES[name];
+    document.getElementById('loading').style.display = 'flex';
+    document.getElementById('loading').textContent = 'loading simulation data…';
+    clip = null;
+    clipGroup.clear();
+
+    let meta, frames, surfMeta = null, surfBuf = null;
+    try {
+        [meta, frames, [surfMeta, surfBuf]] = await Promise.all([
+            fetch(`${cfg.dir}/mesh.json`).then(r => { if (!r.ok) throw new Error(`mesh.json ${r.status}`); return r.json(); }),
+            fetch(`${cfg.dir}/frames.bin.gz`).then(r => {
+                if (!r.ok) throw new Error(`frames.bin.gz ${r.status}`);
+                return new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+            }).then(buf => new Int16Array(buf)),
+            !cfg.hasSurface ? [null, null] : Promise.all([
+                fetch(`${cfg.dir}/surface.json`).then(r => { if (!r.ok) throw new Error(`surface.json ${r.status}`); return r.json(); }),
+                fetch(`${cfg.dir}/surface.bin.gz`).then(r => {
+                    if (!r.ok) throw new Error(`surface.bin.gz ${r.status}`);
+                    return new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+                }),
+            ]),
+        ]);
+    } catch (err) {
+        document.getElementById('loading').textContent = `failed to load data — not baked yet (${err.message})`;
+        return;
+    }
+
+    // integrate per-frame deltas back into absolute quantized values
+    const stride = meta.numParticles * 3;
+    for (let i = stride; i < frames.length; i++) frames[i] += frames[i - stride];
+
+    const mins = meta.bounds.min, maxs = meta.bounds.max;
+    const scale = [0, 1, 2].map(a => (maxs[a] - mins[a]) / 32767);
+
+    // ---- ground (static tri mesh) ----
+    const g = meta.ground;
+    const gmins = g.bounds.min, gmaxs = g.bounds.max;
+    const gscale = [0, 1, 2].map(a => (gmaxs[a] - gmins[a]) / 32767);
+    const gpos = new Float32Array(g.positions.length);
+    for (let i = 0; i < g.positions.length; i++) {
+        const axis = i % 3;
+        gpos[i] = gmins[axis] + g.positions[i] * gscale[axis];
+    }
+    const groundGeo = new THREE.BufferGeometry();
+    groundGeo.setAttribute('position', new THREE.BufferAttribute(gpos, 3));
+    groundGeo.setIndex(g.indices);
+    groundGeo.computeVertexNormals();
+    const groundMat = new THREE.MeshPhysicalMaterial({
+        color: 0xc7d2e0, roughness: 0.9, metalness: 0.0, side: THREE.DoubleSide,
+        sheen: 1.0, sheenRoughness: 0.75, sheenColor: 0xffffff,
+        bumpMap: noiseTex, bumpScale: 0.0015,
+        envMapIntensity: 0.3,
+    });
+    const groundMesh = new THREE.Mesh(groundGeo, groundMat);
+    groundMesh.receiveShadow = true;
+    groundMesh.frustumCulled = false;
+    clipGroup.add(groundMesh);
+
+    // ---- snowball (points cloud) ----
+    const n = meta.numParticles;
+    const ptGeo = new THREE.BufferGeometry();
+    ptGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+    const colArr = new Float32Array(n * 3);
+    for (let i = 0; i < n * 3; i++) colArr[i] = meta.colors[i] / 255;
+    ptGeo.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
+    const ptMat = new THREE.PointsMaterial({
+        size: cfg.pointSize, map: dotTex, vertexColors: true, transparent: true,
+        alphaTest: 0.25, depthWrite: true, sizeAttenuation: true,
+    });
+    const points = new THREE.Points(ptGeo, ptMat);
+    points.frustumCulled = false;
+    clipGroup.add(points);
+
+    // ---- snow grains: middle render mode between flat sprites and the
+    // reconstructed surface below. Each particle is a real lit sphere
+    // (InstancedMesh), so it picks up an actual highlight/shadow gradient
+    // from the sun light instead of being a flat, uniformly-colored dot.
+    // Kept because it works for scenes without baked surface data and
+    // shows the actual particle structure of the sim.
+    const grainGeo = new THREE.IcosahedronGeometry(1, 1);
+    // NOTE: no `vertexColors: true` here — that flag makes the shader also
+    // read the geometry's per-vertex `color` attribute (USE_COLOR), which
+    // this geometry doesn't have; an unbound attribute reads as zero and
+    // multiplies everything to black. Per-instance tint comes entirely from
+    // `instanceColor` (set below via setColorAt), which three.js wires up
+    // automatically whenever `object.instanceColor` exists — independent of
+    // this flag.
+    const grainMat = new THREE.MeshPhysicalMaterial({
+        color: 0xffffff, roughness: 0.7, metalness: 0.0,
+        sheen: 0.7, sheenRoughness: 0.55, sheenColor: 0xffffff,
+        clearcoat: 0.2, clearcoatRoughness: 0.55,
+        envMapIntensity: 0.4,
+    });
+    const grains = new THREE.InstancedMesh(grainGeo, grainMat, n);
+    const _m4 = new THREE.Matrix4();
+    const _col = new THREE.Color();
+    const _pos0 = new THREE.Vector3(0, 0, 0);
+    const _scaleV = new THREE.Vector3();
+    const _quat = new THREE.Quaternion();
+    const _euler = new THREE.Euler();
+    for (let i = 0; i < n; i++) {
+        const s = cfg.pointSize * 0.55 * (0.75 + Math.random() * 0.5);
+        _scaleV.setScalar(s);
+        // random facet orientation per grain: an icosahedron's flat faces
+        // then catch the sun light at different angles, glinting like real
+        // ice-crystal-faceted snow instead of every grain lighting identically
+        _euler.set(Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2);
+        _quat.setFromEuler(_euler);
+        _m4.compose(_pos0, _quat, _scaleV);
+        grains.setMatrixAt(i, _m4);
+        _col.setRGB(meta.colors[i * 3] / 255, meta.colors[i * 3 + 1] / 255, meta.colors[i * 3 + 2] / 255);
+        grains.setColorAt(i, _col);
+    }
+    grains.instanceMatrix.needsUpdate = true;
+    if (grains.instanceColor) grains.instanceColor.needsUpdate = true;
+    grains.castShadow = false;   // thousands of shadow casters would be expensive for little gain
+    grains.receiveShadow = false;
+    grains.frustumCulled = false;
+    clipGroup.add(grains);
+
+    // ---- reconstructed snow surface: the closest this page gets to the
+    // Disney-paper renders. bake_surface.py splats each frame's particles
+    // into a density grid, extracts the isosurface with marching cubes,
+    // decimates it, and colors vertices from the nearest particles — so the
+    // browser just plays back one smooth, continuous, vertex-colored snow
+    // mesh per frame. A single mesh can also cast/receive real shadow-map
+    // shadows, which 25k point sprites can't.
+    let surf = null;
+    if (surfMeta && surfBuf) {
+        // walk the packed frame blocks once, recording where each unique
+        // mesh's sections live inside the decompressed buffer
+        const surfFrames = [];   // per unique mesh: section offsets into the buffer
+        const frameToMesh = new Int32Array(surfMeta.numFrames);
+        let off = 0;
+        const align2 = x => x + (x & 1);
+        for (let f = 0; f < surfMeta.numFrames; f++) {
+            const e = surfMeta.frames[f];
+            if (e.same) { frameToMesh[f] = surfFrames.length - 1; continue; }
+            const posOff = off;
+            const colOff = align2(posOff + e.v * 6);
+            const idxOff = align2(colOff + e.v * 3);
+            const sprayPosOff = align2(idxOff + e.t * 6);
+            const sprayColOff = align2(sprayPosOff + (e.s || 0) * 6);
+            const spraySizeOff = align2(sprayColOff + (e.s || 0) * 3);
+            off = align2(spraySizeOff + (e.s || 0));
+            frameToMesh[f] = surfFrames.length;
+            surfFrames.push({ v: e.v, t: e.t, s: e.s || 0, posOff, colOff, idxOff, sprayPosOff, sprayColOff, spraySizeOff });
+        }
+        const surfGeo = new THREE.BufferGeometry();
+        surfGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(surfMeta.maxVerts * 3), 3));
+        surfGeo.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(surfMeta.maxVerts * 3), 3));
+        surfGeo.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(surfMeta.maxVerts * 3), 3, true));
+        surfGeo.setIndex(new THREE.BufferAttribute(new Uint16Array(surfMeta.maxTris * 3), 1));
+        const surfMat = new THREE.MeshPhysicalMaterial({
+            vertexColors: true,   // geometry really has a `color` attribute here
+            color: 0xffffff, roughness: 0.8, metalness: 0.0,
+            // sheen kept moderate: a full white sheen layer washes the
+            // letter colors out to pastel
+            sheen: 0.55, sheenRoughness: 0.5, sheenColor: 0xffffff,
+            clearcoat: 0.1, clearcoatRoughness: 0.6,
+            bumpMap: noiseTex, bumpScale: 0.0014,
+            envMapIntensity: 0.3,
+        });
+        const surfMesh = new THREE.Mesh(surfGeo, surfMat);
+        surfMesh.castShadow = true;
+        surfMesh.receiveShadow = true;
+        surfMesh.frustumCulled = false;
+        clipGroup.add(surfMesh);
+
+        // ---- spray pass: loose powder the isosurface can't represent
+        // (~30% of the mass after the burst is isolated grains — without
+        // this layer the scattered snow simply vanishes from surface mode).
+        // Tiny instanced spheres, repositioned per frame from the baked
+        // spray section of each block.
+        const maxSpray = surfMeta.maxSpray || 0;
+        let spray = null;
+        if (maxSpray > 0) {
+            const sprayGeo = new THREE.IcosahedronGeometry(1, 0);
+            const sprayMat = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff, roughness: 0.85, metalness: 0.0,
+                sheen: 0.6, sheenRoughness: 0.6, sheenColor: 0xffffff,
+                envMapIntensity: 0.3,
+            });
+            const sprayMesh = new THREE.InstancedMesh(sprayGeo, sprayMat, maxSpray);
+            // grain sizes are baked per particle id (spray size byte), so the
+            // same physical grain keeps its size from frame to frame; the
+            // matrix scale is written alongside the translation each upload
+            const _sm = new THREE.Matrix4();
+            for (let i = 0; i < maxSpray; i++) {
+                sprayMesh.setMatrixAt(i, _sm);
+                sprayMesh.setColorAt(i, new THREE.Color(1, 1, 1));
+            }
+            sprayMesh.castShadow = false;
+            sprayMesh.receiveShadow = false;
+            sprayMesh.frustumCulled = false;
+            clipGroup.add(sprayMesh);
+            spray = { mesh: sprayMesh, r0: surfMeta.sprayRadius || 0.003 };
+        }
+
+        const smins = surfMeta.bounds.min;
+        const sscale = [0, 1, 2].map(a => (surfMeta.bounds.max[a] - smins[a]) / 32767);
+        surf = { mesh: surfMesh, geo: surfGeo, buf: surfBuf, frames: surfFrames, frameToMesh, smins, sscale, current: -1, spray };
+    }
+
+    // ---- soft fake contact shadow under the ball (Points don't cast usable
+    // shadow-map shadows) — a decal plane, repositioned/rescaled every frame
+    // from the point cloud's current footprint ----
+    const shadowTex = makeShadowTexture();
+    const shadowMat = new THREE.MeshBasicMaterial({
+        map: shadowTex, transparent: true, opacity: 0.3, depthWrite: false,
+    });
+    const shadowMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat);
+    shadowMesh.rotation.x = -Math.PI / 2;
+    shadowMesh.renderOrder = -1;
+    // a single "footprint" contact shadow only makes sense for the one-ball
+    // scene; the google lettering is six separate low reliefs already
+    // sitting flush on the ground, so skip it there.
+    // a single "footprint" blob shadow only makes sense for one compact body;
+    // this scene is six letters bursting into scattered debris, and the real
+    // shadow-map shadow from the surface mesh covers it properly
+    shadowMesh.visible = false;
+    clipGroup.add(shadowMesh);
+
+    // frame camera / lights on the region the sim actually occupies (the
+    // full ground footprint is much bigger than the region of interest)
+    const center = [0, 1, 2].map(a => (mins[a] + maxs[a]) / 2);
+    const size = [0, 1, 2].map(a => Math.max(maxs[a] - mins[a], 0.2));
+    const diag = Math.hypot(size[0], size[1], size[2]);
+    cfg.frame(center, size, diag, mins, maxs, gmaxs);
+    sun.target.position.set(center[0], mins[1], center[2]);
+    sun.shadow.camera.left = -diag * 1.1; sun.shadow.camera.right = diag * 1.1;
+    sun.shadow.camera.top = diag * 1.1; sun.shadow.camera.bottom = -diag * 1.1;
+    sun.shadow.camera.near = 0.1; sun.shadow.camera.far = diag * 6;
+    sun.shadow.camera.updateProjectionMatrix();
+    controls.minDistance = diag * 0.08;
+    controls.maxDistance = diag * 6;
+    flakes.position.set(center[0], maxs[1] + size[1] * 2, center[2]);
+    flakes.scale.setScalar(Math.max(diag * 0.8, 0.6));
+
+    baseCamOffset = camera.position.clone().sub(controls.target);
+    resize();
+
+    clip = { meta, frames, mins, scale, points, ptGeo, shadowMesh, grains, surf };
+    applyRenderMode();
+    simTime = 0;
+    document.getElementById('scrub').max = meta.numFrames - 1;
+    document.getElementById('loading').style.display = 'none';
+}
+
+// the mode actually in effect for the loaded scene ('surface' falls back to
+// 'grains' for scenes without baked surface data)
+function activeMode() {
+    return (renderMode === 'surface' && !(clip && clip.surf)) ? 'grains' : renderMode;
+}
+
+function applyRenderMode() {
+    if (!clip) return;
+    const mode = activeMode();
+    clip.points.visible = mode === 'points';
+    clip.grains.visible = mode === 'grains';
+    if (clip.surf) {
+        clip.surf.mesh.visible = mode === 'surface';
+        if (clip.surf.spray) clip.surf.spray.mesh.visible = mode === 'surface';
+    }
+    document.getElementById('btnRenderMode').textContent = `render: ${mode}`;
+}
+
+function uploadSurfaceFrame(surf, f0) {
+    const mi = surf.frameToMesh[Math.min(f0, surf.frameToMesh.length - 1)];
+    if (mi === surf.current) return;
+    surf.current = mi;
+    const { v, t, posOff, colOff, idxOff } = surf.frames[mi];
+    const q = new Int16Array(surf.buf, posOff, v * 3);
+    const pos = surf.geo.attributes.position;
+    for (let i = 0; i < v * 3; i++) pos.array[i] = surf.smins[i % 3] + q[i] * surf.sscale[i % 3];
+    pos.needsUpdate = true;
+    const col = surf.geo.attributes.color;
+    col.array.set(new Uint8Array(surf.buf, colOff, v * 3));
+    col.needsUpdate = true;
+    const idxAttr = surf.geo.index;
+    idxAttr.array.set(new Uint16Array(surf.buf, idxOff, t * 3));
+    idxAttr.array.fill(0, t * 3);   // degenerate tail tris contribute nothing
+    idxAttr.needsUpdate = true;
+    surf.geo.setDrawRange(0, t * 3);
+    surf.geo.computeVertexNormals();
+
+    if (surf.spray) {
+        const { s, sprayPosOff, sprayColOff, spraySizeOff } = surf.frames[mi];
+        const sq = new Int16Array(surf.buf, sprayPosOff, s * 3);
+        const sc = new Uint8Array(surf.buf, sprayColOff, s * 3);
+        const sz = new Uint8Array(surf.buf, spraySizeOff, s);
+        const sm = surf.spray.mesh;
+        const r0 = surf.spray.r0;
+        const marr = sm.instanceMatrix.array;
+        const carr = sm.instanceColor.array;
+        for (let i = 0; i < s; i++) {
+            const b = i * 16;
+            const r = r0 * (0.7 + 0.9 * sz[i] / 255);
+            marr[b] = r; marr[b + 5] = r; marr[b + 10] = r;
+            marr[b + 12] = surf.smins[0] + sq[i * 3] * surf.sscale[0];
+            marr[b + 13] = surf.smins[1] + sq[i * 3 + 1] * surf.sscale[1];
+            marr[b + 14] = surf.smins[2] + sq[i * 3 + 2] * surf.sscale[2];
+            carr[i * 3] = sc[i * 3] / 255;
+            carr[i * 3 + 1] = sc[i * 3 + 1] / 255;
+            carr[i * 3 + 2] = sc[i * 3 + 2] / 255;
+        }
+        sm.count = s;
+        sm.instanceMatrix.needsUpdate = true;
+        sm.instanceColor.needsUpdate = true;
+    }
+}
+
+function showFrame(f) {
+    if (!clip) return;
+    const { meta, frames, mins, scale, ptGeo, shadowMesh, grains } = clip;
+    const n = meta.numParticles;
+    const stride = n * 3;
+    const f0 = Math.floor(f) % meta.numFrames;
+    const f1 = (f0 + 1) % meta.numFrames;
+    const a = f - Math.floor(f);
+    const base0 = f0 * stride, base1 = f1 * stride;
+    const attr = ptGeo.attributes.position;
+    const arr = attr.array;
+    const mode = activeMode();
+    if (clip.surf && mode === 'surface') uploadSurfaceFrame(clip.surf, f0);
+    const grainsActive = mode === 'grains';
+    const marr = grainsActive ? grains.instanceMatrix.array : null;
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, minZ = Infinity, maxZ = -Infinity;
+    for (let i = 0, p = 0; i < stride; i += 3, p++) {
+        for (let k = 0; k < 3; k++) {
+            const axis = k;
+            const q = frames[base0 + i + k] * (1 - a) + frames[base1 + i + k] * a;
+            arr[i + k] = mins[axis] + q * scale[axis];
+        }
+        const x = arr[i], y = arr[i + 1], z = arr[i + 2];
+        if (x < minX) minX = x; if (x > maxX) maxX = x;
+        if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
+        if (y < minY) minY = y;
+        if (marr) {
+            const base16 = p * 16;
+            marr[base16 + 12] = x; marr[base16 + 13] = y; marr[base16 + 14] = z;
+        }
+    }
+    attr.needsUpdate = true;
+    if (grainsActive) grains.instanceMatrix.needsUpdate = true;
+
+    const cx = (minX + maxX) / 2, cz = (minZ + maxZ) / 2;
+    const footprint = Math.max(maxX - minX, maxZ - minZ);
+    shadowMesh.position.set(cx, minY + 0.004, cz);
+    shadowMesh.scale.setScalar(footprint * 0.6);
+
+    document.getElementById('scrub').value = f0;
+    document.getElementById('frameinfo').textContent = `${f0} / ${meta.numFrames}`;
+}
+
+// ------------------------------------------------------------------ ui
+const btnPlay = document.getElementById('btnPlay');
+btnPlay.onclick = () => { playing = !playing; btnPlay.textContent = playing ? 'pause' : 'play'; };
+addEventListener('keydown', e => {
+    if (e.code === 'Space' && !e.target.closest('input')) { e.preventDefault(); btnPlay.onclick(); }
+});
+
+document.getElementById('scrub').addEventListener('input', e => {
+    if (!clip) return;
+    simTime = Number(e.target.value) / clip.meta.fps;
+    showFrame(Number(e.target.value));
+});
+
+document.getElementById('btnSpeed').onclick = e => {
+    speed = speeds[(speeds.indexOf(speed) + 1) % speeds.length];
+    e.target.textContent = `speed ${speed}x`;
+};
+document.getElementById('btnTheme').onclick = () => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('mpm-theme', theme);
+    applyTheme();
+};
+document.getElementById('btnRenderMode').onclick = () => {
+    const modes = (clip && clip.surf) ? ['surface', 'grains', 'points'] : ['grains', 'points'];
+    renderMode = modes[(modes.indexOf(activeMode()) + 1) % modes.length];
+    localStorage.setItem('mpm-render-mode', renderMode);
+    applyRenderMode();
+    if (clip && clip.surf) showFrame(simTime * clip.meta.fps);
+};
+document.getElementById('btnAbout').onclick = () => document.getElementById('about').classList.add('show');
+document.getElementById('btnCloseAbout').onclick = e => { e.preventDefault(); document.getElementById('about').classList.remove('show'); };
+document.getElementById('about').addEventListener('click', e => {
+    if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+});
+
+// ------------------------------------------------------------------ loop
+function resize() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    composer.setSize(w, h);
+    ssaoPass.setSize(w, h);
+    camera.aspect = w / h;
+    const portrait = camera.aspect < 0.8;
+    camera.fov = portrait ? 58 : 42;
+    camera.updateProjectionMatrix();
+    if (baseCamOffset) {
+        const scale = portrait ? 1.5 : 1.0;
+        camera.position.copy(controls.target).add(baseCamOffset.clone().multiplyScalar(scale));
+    }
+}
+addEventListener('resize', resize);
+
+let last = performance.now();
+function tick(now) {
+    requestAnimationFrame(tick);
+    const dt = Math.min((now - last) / 1000, 0.1);
+    last = now;
+    if (clip) {
+        if (playing) {
+            simTime += dt * speed;
+            const total = clip.meta.numFrames / clip.meta.fps;
+            simTime %= total;
+        }
+        showFrame(simTime * clip.meta.fps);
+    }
+    const fpos = flakes.geometry.attributes.position;
+    for (let i = 0; i < flakeCount; i++) {
+        fpos.array[i*3+1] -= flakeSpeed[i] * dt;
+        if (fpos.array[i*3+1] < -0.5) fpos.array[i*3+1] = 1.0;
+    }
+    fpos.needsUpdate = true;
+    controls.update();
+    composer.render();
+}
+
+resize();
+loadScene('google_drop');
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>

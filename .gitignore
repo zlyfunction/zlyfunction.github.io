@@ -1,0 +1,4 @@
+mpm_demo/gen/.venv/
+mpm_demo/gen/raw/
+mpm_demo/gen/__pycache__/
+mpm_demo/**/*.pyc

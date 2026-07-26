@@ -1,0 +1,5 @@
+gen/.venv/
+gen/raw/
+gen/__pycache__/
+gen/_smoke.py
+*.pyc
