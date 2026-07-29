@@ -61,7 +61,9 @@ literature, though that novelty claim is the one thing here I could not check
 (`docs/VERIFY.md`, item 3).  Independent confirmation: an exhaustive enumeration
 of all 1 889 667 gluings of up to four unit squares realizes 67 signatures, and
 neither of these is among them, while every other surveyed signature of comparable
-size is realized.
+size is realized.  A dedicated search with a much larger budget -- up to six extra
+regular vertices, 200 000 annealing steps, six restarts per size -- also fails on
+all four unrealizable signatures (`results/negative_search.json`).
 
 **Finding 3 -- genus 0 and genus 1 are completely settled.**  Genus 0: every
 Gauss-Bonnet-admissible signature is realizable (Troyanov; on the sphere the

@@ -1,0 +1,72 @@
+{
+ "budget": {
+  "iters": 200000,
+  "restarts": 6,
+  "extra_regular": 6
+ },
+ "results": [
+  {
+   "target": [
+    1,
+    [
+     -1,
+     1
+    ],
+    1
+   ],
+   "name": "torus, cones 3pi/2 and 5pi/2 (no 3,5-quadrangulation)",
+   "known": "Izmestiev-Kusner-Rote-Springborn-Sullivan 2013; Shen et al. 2022 exception",
+   "min_faces": 2,
+   "max_faces_searched": 8,
+   "found": null,
+   "seconds": 302.0
+  },
+  {
+   "target": [
+    1,
+    [
+     -2,
+     2
+    ],
+    2
+   ],
+   "name": "torus, cones pi and 3pi, holonomy in {0, pi}",
+   "known": "Masur-Smillie 1993: Q(1,-1) is empty",
+   "min_faces": 2,
+   "max_faces_searched": 8,
+   "found": null,
+   "seconds": 295.7
+  },
+  {
+   "target": [
+    2,
+    [
+     8
+    ],
+    2
+   ],
+   "name": "genus 2, one cone of angle 6pi, holonomy in {0, pi}",
+   "known": "Masur-Smillie 1993: Q(4) is empty -- apparently new in the graphics setting",
+   "min_faces": 3,
+   "max_faces_searched": 9,
+   "found": null,
+   "seconds": 331.9
+  },
+  {
+   "target": [
+    2,
+    [
+     2,
+     6
+    ],
+    2
+   ],
+   "name": "genus 2, cones 3pi and 5pi, holonomy in {0, pi}",
+   "known": "Masur-Smillie 1993: Q(1,3) is empty -- apparently new in the graphics setting",
+   "min_faces": 4,
+   "max_faces_searched": 10,
+   "found": null,
+   "seconds": 371.2
+  }
+ ]
+}
