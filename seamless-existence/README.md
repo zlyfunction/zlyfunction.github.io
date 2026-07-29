@@ -38,8 +38,10 @@ rotations along homology loops are equivalent: point-pushing a cone of odd order
 around a handle shifts the holonomy by an odd amount, so it can reach anything.
 That is a first-principles explanation of the *shape* of the gcd condition of
 Shen et al. 2022 -- their hypothesis is exactly the regime where the holonomy
-cannot obstruct anything.  Verified by brute force for `g = 1, 2, 3` and all
-cases (`tests/test_reduction.py`).
+cannot obstruct anything.  The conclusion is checked by brute force (BFS over all
+`4^{2g}` holonomy vectors under point pushing and symplectic transvections) in
+`tests/test_reduction.py` for `g = 1, 2`, and asserted for every case in the
+survey, which covers `g <= 3`.
 
 **Finding 2 -- there are more obstructions than the torus one, and they are
 classical.**  Masur-Smillie's empty strata `Q(4)` and `Q(1,3)` translate into two
@@ -86,6 +88,10 @@ The four empty ones are exactly the four classical exceptions.  Notably all 120
 surveyed genus-`>= 2` strata of primitive 4-differentials got certificates, so in
 this range the answer to the open problem is: **realizable unless the reduced
 stratum is one of the four classical empty ones.**
+
+[`results/answers.md`](results/answers.md) states this per genus in graphics
+language -- cone angles as multiples of `pi`, holonomy described in cross-field
+terms -- so it can be checked against an implementation directly.
 
 ## Main Conjecture
 

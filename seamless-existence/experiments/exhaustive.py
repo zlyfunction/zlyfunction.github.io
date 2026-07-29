@@ -24,8 +24,28 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from seamless_existence.predict import EMPTY, classify_orders, predict  # noqa: E402
 from seamless_existence.search import collect_certificates, enumerate_meshes  # noqa: E402
 from seamless_existence.signature import SUBGROUP_NAMES  # noqa: E402
+
+
+def verify_against_theory(table: dict) -> list[str]:
+    """Every realized signature must be one the theory does not call empty.
+
+    This is the strongest consistency check available: the meshes and the quoted
+    literature are completely independent of each other.
+    """
+    problems = []
+    for genus, orders, d in table:
+        nonzero = tuple(m for m in orders if m != 0)
+        match = [s for s, _ in classify_orders(genus, nonzero) if s.rho_subgroup() == d]
+        if not match:
+            problems.append(f"no orbit with image(rho)=<{d}> for g={genus} m={list(orders)}")
+            continue
+        verdict = predict(match[0])
+        if verdict.status == EMPTY:
+            problems.append(f"realized but predicted empty: {match[0]} -- {verdict}")
+    return problems
 
 
 def main() -> None:
@@ -47,6 +67,14 @@ def main() -> None:
         print(f"N={n}: {seen} connected gluings, {len(table)} invariants so far, "
               f"{time.time() - t0:.1f}s")
 
+    problems = verify_against_theory(table)
+    if problems:
+        print("THEORY MISMATCH:")
+        for p in problems:
+            print("  " + p)
+    else:
+        print(f"all {len(table)} realized signatures are consistent with predict.py")
+
     rows = []
     for (genus, orders, d), cert in sorted(table.items()):
         rows.append(
@@ -65,6 +93,7 @@ def main() -> None:
         "max_faces": args.max_faces,
         "connected_gluings": counts,
         "n_invariants": len(rows),
+        "theory_mismatches": problems,
         "realized": rows,
     }
     (out / "exhaustive.json").write_text(json.dumps(payload, indent=1))

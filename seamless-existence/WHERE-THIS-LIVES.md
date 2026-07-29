@@ -8,7 +8,7 @@ website, and this branch should not be merged into `main` -- the contents would 
 published as part of the site.
 
 To lift it out into its own repository, preserving the full history of the
-standalone project, use the bundle produced alongside it, or simply:
+standalone project, use the git bundle produced alongside it, or simply:
 
     git init seamless-existence && cd seamless-existence
     # copy the files from this directory, then
