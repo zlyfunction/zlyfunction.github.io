@@ -1,0 +1,2211 @@
+{
+ "max_faces": 4,
+ "connected_gluings": {
+  "1": 3,
+  "2": 96,
+  "3": 9504,
+  "4": 1880064
+ },
+ "n_invariants": 67,
+ "realized": [
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -3,
+    -3,
+    1,
+    3
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    1,
+    1,
+    5,
+    7
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    8,
+    2,
+    6,
+    5,
+    12,
+    3,
+    10,
+    9,
+    15,
+    7,
+    14,
+    13,
+    11
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -3,
+    -3,
+    2,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    1,
+    1,
+    6,
+    6
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    8,
+    2,
+    6,
+    5,
+    12,
+    3,
+    10,
+    9,
+    13,
+    7,
+    11,
+    15,
+    14
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -3,
+    -3,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    1,
+    1,
+    8
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    8,
+    2,
+    6,
+    5,
+    12,
+    3,
+    15,
+    11,
+    10,
+    7,
+    14,
+    13,
+    9
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -3,
+    -2,
+    -1,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    1,
+    2,
+    3,
+    8
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    7,
+    2,
+    8,
+    12,
+    3,
+    5,
+    10,
+    9,
+    13,
+    6,
+    11,
+    15,
+    14
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -3,
+    -2,
+    1,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    1,
+    2,
+    5,
+    6
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    7,
+    2,
+    8,
+    12,
+    3,
+    5,
+    15,
+    11,
+    10,
+    6,
+    14,
+    13,
+    9
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -3,
+    -2,
+    3
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    1,
+    2,
+    7
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    7,
+    2,
+    8,
+    12,
+    3,
+    5,
+    10,
+    9,
+    15,
+    6,
+    14,
+    13,
+    11
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -3,
+    -1,
+    -1,
+    3
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    1,
+    3,
+    3,
+    7
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    8,
+    12,
+    6,
+    10,
+    9,
+    13,
+    7,
+    11,
+    15,
+    14
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -3,
+    -1,
+    1,
+    1
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    1,
+    3,
+    5,
+    5
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    8,
+    12,
+    6,
+    15,
+    11,
+    10,
+    7,
+    14,
+    13,
+    9
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -3,
+    -1,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    1,
+    3,
+    6
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    8,
+    2,
+    6,
+    5,
+    9,
+    3,
+    7,
+    11,
+    10
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -3,
+    1
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    1,
+    5
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    8,
+    2,
+    6,
+    5,
+    11,
+    3,
+    10,
+    9,
+    7
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -2
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    2
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 1,
+   "certificate_alpha": [
+    1,
+    0,
+    3,
+    2
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -2,
+    -2,
+    -2,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    2,
+    2,
+    2,
+    8
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    7,
+    2,
+    8,
+    11,
+    3,
+    5,
+    12,
+    15,
+    6,
+    9,
+    14,
+    13,
+    10
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -2,
+    -2,
+    -1,
+    3
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    2,
+    2,
+    3,
+    7
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    8,
+    11,
+    6,
+    12,
+    15,
+    7,
+    9,
+    14,
+    13,
+    10
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -2,
+    -2,
+    1,
+    1
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    2,
+    2,
+    5,
+    5
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    7,
+    2,
+    8,
+    9,
+    3,
+    5,
+    6,
+    12,
+    15,
+    10,
+    14,
+    13,
+    11
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -2,
+    -2,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    2,
+    2,
+    6
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    7,
+    2,
+    8,
+    11,
+    3,
+    5,
+    10,
+    9,
+    6
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -2,
+    -1,
+    -1,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    2,
+    3,
+    3,
+    6
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    8,
+    11,
+    6,
+    12,
+    13,
+    7,
+    9,
+    10,
+    15,
+    14
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -2,
+    -1,
+    1
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    2,
+    3,
+    5
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    8,
+    11,
+    6,
+    10,
+    9,
+    7
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -3,
+    -1,
+    -1
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    3,
+    3
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 2,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    7,
+    6
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -2,
+    -2,
+    -2,
+    -1,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    2,
+    2,
+    2,
+    3,
+    6
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    7,
+    2,
+    8,
+    12,
+    3,
+    5,
+    15,
+    14,
+    13,
+    6,
+    11,
+    10,
+    9
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -2,
+    -2,
+    -1
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    2,
+    2,
+    3
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    8,
+    2,
+    11,
+    10,
+    9,
+    3,
+    7,
+    6,
+    5
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -3,
+    -2,
+    -2,
+    -1,
+    -1,
+    1
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    2,
+    2,
+    3,
+    3,
+    5
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    8,
+    12,
+    6,
+    15,
+    14,
+    13,
+    7,
+    11,
+    10,
+    9
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -2,
+    -2,
+    -2,
+    -2
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    2,
+    2,
+    2
+   ],
+   "rho_subgroup": "2Z_4",
+   "certificate_faces": 2,
+   "certificate_alpha": [
+    4,
+    7,
+    6,
+    5,
+    0,
+    3,
+    2,
+    1
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -2,
+    -2,
+    -2,
+    -1,
+    -1
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    2,
+    2,
+    3,
+    3
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    4,
+    7,
+    8,
+    11,
+    0,
+    10,
+    9,
+    1,
+    2,
+    6,
+    5,
+    3
+   ]
+  },
+  {
+   "genus": 0,
+   "orders": [
+    -2,
+    -2,
+    -1,
+    -1,
+    -1,
+    -1
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    2,
+    3,
+    3,
+    3,
+    3
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    4,
+    7,
+    8,
+    12,
+    0,
+    15,
+    9,
+    1,
+    2,
+    6,
+    14,
+    13,
+    3,
+    11,
+    10,
+    5
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [],
+   "angles_in_quarter_turns": [],
+   "rho_subgroup": "0",
+   "certificate_faces": 1,
+   "certificate_alpha": [
+    2,
+    3,
+    0,
+    1
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -3,
+    -3,
+    9
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    1,
+    13
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    6,
+    2,
+    8,
+    3,
+    12,
+    5,
+    10,
+    9,
+    13,
+    7,
+    11,
+    15,
+    14
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -3,
+    -2,
+    8
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    2,
+    12
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    6,
+    2,
+    8,
+    3,
+    9,
+    5,
+    7,
+    12,
+    15,
+    10,
+    14,
+    13,
+    11
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -3,
+    -1,
+    7
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    3,
+    11
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    8,
+    10,
+    6,
+    12,
+    7,
+    13,
+    9,
+    11,
+    15,
+    14
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -3,
+    1,
+    5
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    5,
+    9
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    6,
+    2,
+    8,
+    3,
+    12,
+    5,
+    10,
+    9,
+    14,
+    7,
+    15,
+    11,
+    13
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -3,
+    2,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    6,
+    8
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    6,
+    2,
+    8,
+    3,
+    10,
+    5,
+    12,
+    7,
+    15,
+    9,
+    14,
+    13,
+    11
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -3,
+    3,
+    3
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    7,
+    7
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    6,
+    2,
+    8,
+    3,
+    10,
+    5,
+    12,
+    7,
+    13,
+    9,
+    11,
+    15,
+    14
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -3,
+    6
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    1,
+    10
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    6,
+    2,
+    8,
+    3,
+    9,
+    5,
+    7,
+    11,
+    10
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -2,
+    -2,
+    7
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    2,
+    2,
+    11
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    6,
+    2,
+    8,
+    3,
+    12,
+    5,
+    15,
+    14,
+    13,
+    7,
+    11,
+    10,
+    9
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -2,
+    -1,
+    6
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    2,
+    3,
+    10
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    8,
+    11,
+    6,
+    12,
+    14,
+    7,
+    9,
+    15,
+    10,
+    13
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -2,
+    1,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    2,
+    5,
+    8
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    7,
+    2,
+    8,
+    9,
+    3,
+    5,
+    6,
+    12,
+    14,
+    10,
+    15,
+    11,
+    13
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -2,
+    2,
+    3
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    2,
+    6,
+    7
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    6,
+    2,
+    8,
+    3,
+    12,
+    5,
+    13,
+    15,
+    14,
+    7,
+    9,
+    11,
+    10
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -2,
+    5
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    2,
+    9
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    7,
+    2,
+    8,
+    10,
+    3,
+    5,
+    11,
+    6,
+    9
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -1,
+    -1,
+    5
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    3,
+    3,
+    9
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    8,
+    12,
+    6,
+    14,
+    15,
+    13,
+    7,
+    11,
+    9,
+    10
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -1,
+    1,
+    3
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    3,
+    5,
+    7
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    8,
+    10,
+    6,
+    12,
+    7,
+    14,
+    9,
+    15,
+    11,
+    13
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    -1,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    3,
+    8
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    5,
+    2,
+    3,
+    8,
+    10,
+    6,
+    11,
+    7,
+    9
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    1,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    5,
+    6
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    6,
+    2,
+    8,
+    3,
+    10,
+    5,
+    11,
+    7,
+    9
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -3,
+    3
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    7
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 2,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    6,
+    2,
+    7,
+    3,
+    5
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -2,
+    -2,
+    -2,
+    6
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    2,
+    2,
+    10
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    4,
+    5,
+    8,
+    11,
+    0,
+    1,
+    12,
+    15,
+    2,
+    14,
+    13,
+    3,
+    6,
+    10,
+    9,
+    7
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -2,
+    -2,
+    -1,
+    5
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    2,
+    3,
+    9
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    5,
+    1,
+    3,
+    8,
+    12,
+    6,
+    15,
+    14,
+    13,
+    7,
+    11,
+    10,
+    9
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -2,
+    -2,
+    2,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    2,
+    6,
+    6
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    4,
+    6,
+    5,
+    8,
+    0,
+    2,
+    1,
+    12,
+    3,
+    13,
+    15,
+    14,
+    7,
+    9,
+    11,
+    10
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -2,
+    -2,
+    2,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    2,
+    6,
+    6
+   ],
+   "rho_subgroup": "2Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    6,
+    1,
+    8,
+    3,
+    12,
+    5,
+    15,
+    14,
+    13,
+    7,
+    11,
+    10,
+    9
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -2,
+    -2,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    2,
+    8
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    4,
+    5,
+    7,
+    8,
+    0,
+    1,
+    12,
+    2,
+    3,
+    15,
+    14,
+    13,
+    6,
+    11,
+    10,
+    9
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -2,
+    -2,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    2,
+    8
+   ],
+   "rho_subgroup": "2Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    8,
+    1,
+    11,
+    10,
+    9,
+    3,
+    7,
+    6,
+    5
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -2,
+    -1,
+    -1,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    3,
+    3,
+    8
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    4,
+    5,
+    8,
+    12,
+    0,
+    1,
+    15,
+    9,
+    2,
+    7,
+    14,
+    13,
+    3,
+    11,
+    10,
+    6
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -2,
+    -1,
+    1,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    3,
+    5,
+    6
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    8,
+    1,
+    10,
+    12,
+    15,
+    3,
+    13,
+    5,
+    14,
+    6,
+    9,
+    11,
+    7
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -2,
+    -1,
+    3
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    3,
+    7
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    4,
+    6,
+    8,
+    11,
+    0,
+    9,
+    1,
+    10,
+    2,
+    5,
+    7,
+    3
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -2,
+    1,
+    1
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    5,
+    5
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    8,
+    1,
+    9,
+    11,
+    10,
+    3,
+    5,
+    7,
+    6
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -2,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    6
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 2,
+   "certificate_alpha": [
+    4,
+    5,
+    7,
+    6,
+    0,
+    1,
+    3,
+    2
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -1,
+    -1,
+    1,
+    1
+   ],
+   "angles_in_quarter_turns": [
+    3,
+    3,
+    5,
+    5
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    8,
+    1,
+    12,
+    10,
+    13,
+    3,
+    14,
+    6,
+    15,
+    5,
+    7,
+    9,
+    11
+   ]
+  },
+  {
+   "genus": 1,
+   "orders": [
+    -1,
+    -1,
+    2
+   ],
+   "angles_in_quarter_turns": [
+    3,
+    3,
+    6
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    4,
+    6,
+    8,
+    10,
+    0,
+    9,
+    1,
+    11,
+    2,
+    5,
+    3,
+    7
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    -3,
+    11
+   ],
+   "angles_in_quarter_turns": [
+    1,
+    15
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    1,
+    0,
+    4,
+    6,
+    2,
+    8,
+    3,
+    9,
+    5,
+    7,
+    12,
+    14,
+    10,
+    15,
+    11,
+    13
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    -2,
+    10
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    14
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    5,
+    1,
+    3,
+    8,
+    11,
+    6,
+    12,
+    14,
+    7,
+    9,
+    15,
+    10,
+    13
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    -2,
+    10
+   ],
+   "angles_in_quarter_turns": [
+    2,
+    14
+   ],
+   "rho_subgroup": "2Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    8,
+    1,
+    11,
+    10,
+    12,
+    3,
+    14,
+    6,
+    5,
+    7,
+    15,
+    9,
+    13
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    -1,
+    9
+   ],
+   "angles_in_quarter_turns": [
+    3,
+    13
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    5,
+    1,
+    3,
+    8,
+    12,
+    6,
+    14,
+    15,
+    13,
+    7,
+    11,
+    9,
+    10
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    1,
+    7
+   ],
+   "angles_in_quarter_turns": [
+    5,
+    11
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    5,
+    1,
+    3,
+    8,
+    10,
+    6,
+    12,
+    7,
+    14,
+    9,
+    15,
+    11,
+    13
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    2,
+    6
+   ],
+   "angles_in_quarter_turns": [
+    6,
+    10
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    6,
+    1,
+    8,
+    3,
+    12,
+    5,
+    14,
+    15,
+    13,
+    7,
+    11,
+    9,
+    10
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    3,
+    5
+   ],
+   "angles_in_quarter_turns": [
+    7,
+    9
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    5,
+    1,
+    3,
+    8,
+    12,
+    6,
+    15,
+    13,
+    14,
+    7,
+    10,
+    11,
+    9
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    4,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    8,
+    8
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    5,
+    1,
+    3,
+    8,
+    9,
+    6,
+    7,
+    12,
+    14,
+    10,
+    15,
+    11,
+    13
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    4,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    8,
+    8
+   ],
+   "rho_subgroup": "2Z_4",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    8,
+    1,
+    11,
+    12,
+    9,
+    3,
+    7,
+    14,
+    5,
+    6,
+    15,
+    10,
+    13
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    4,
+    4
+   ],
+   "angles_in_quarter_turns": [
+    8,
+    8
+   ],
+   "rho_subgroup": "0",
+   "certificate_faces": 4,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    6,
+    1,
+    8,
+    3,
+    10,
+    5,
+    12,
+    7,
+    14,
+    9,
+    15,
+    11,
+    13
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    8
+   ],
+   "angles_in_quarter_turns": [
+    12
+   ],
+   "rho_subgroup": "Z_4",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    5,
+    1,
+    3,
+    8,
+    10,
+    6,
+    11,
+    7,
+    9
+   ]
+  },
+  {
+   "genus": 2,
+   "orders": [
+    8
+   ],
+   "angles_in_quarter_turns": [
+    12
+   ],
+   "rho_subgroup": "0",
+   "certificate_faces": 3,
+   "certificate_alpha": [
+    2,
+    4,
+    0,
+    6,
+    1,
+    8,
+    3,
+    10,
+    5,
+    11,
+    7,
+    9
+   ]
+  }
+ ]
+}
