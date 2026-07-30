@@ -217,6 +217,47 @@ def check_proposition12(quick: bool) -> dict:
     }
 
 
+# --------------------------------------------------------------------------- 7
+
+
+def check_proposition20(quick: bool) -> dict:
+    """On a torus, ``max E(X, p, m)`` must equal the intended ``image(rho)``.
+
+    Proposition 20 says the holonomy at fixed conformal structure and fixed positions
+    is *computed* by Abel-Jacobi: ``image(rho) = d Z_4`` with
+    ``d = max {e | 4 : e | all m_i, sum (m_i/e) p_i ~ (4/e) K}``.  On a torus ``K`` is
+    trivial, so this is a finite computation in ``(Q/Z)^2``, and the witnesses of
+    Proposition 12 are exactly the points where ``max E`` takes the intended value.
+    """
+    from seamless_existence.elliptic import combination
+
+    n_max, bound = (3, 4) if quick else (4, 6)
+    rows = []
+    ok = True
+    for k, mu in genus1_cases(n_max, bound):
+        witness = divisor_witness(k, mu)
+        if witness is None:
+            continue
+        d = 4 // k
+        m = [d * x for x in mu]
+        E = []
+        for e in (1, 2, 4):
+            if any(x % e for x in m):
+                continue
+            if combination([x // e for x in m], witness).is_zero():
+                E.append(e)
+        good = bool(E) and max(E) == d
+        ok = ok and good
+        rows.append({"k": k, "mu": list(mu), "orders": m, "E": E,
+                     "max_E": max(E) if E else None, "expected_d": d, "ok": good})
+    return {
+        "name": "Proposition 20 (holonomy is computed at fixed X and positions)",
+        "n_cases": len(rows),
+        "rows": rows,
+        "ok": ok,
+    }
+
+
 # --------------------------------------------------------------------------- 5, 6
 
 
@@ -328,6 +369,23 @@ def to_markdown(result: dict) -> str:
             shown += 1
     L.append("")
 
+    p20 = result["proposition20"]
+    L += ["## 4b. Proposition 20 -- the holonomy is computed, not chosen", "",
+          f"For each of the {p20['n_cases']} genus-1 witnesses, the set",
+          "`E = {e | 4 : e divides every order and sum (m_i/e) c_i = 0}` was computed",
+          "exactly, and `max E` compared with the intended `image(rho)` generator.",
+          "",
+          "| `k` | orders `m` | `E` | `max E` | expected | ok |",
+          "|---|---|---|---|---|---|"]
+    for r in p20["rows"][:14]:
+        L.append(
+            f"| {r['k']} | {r['orders']} | {r['E']} | {r['max_E']} | "
+            f"{r['expected_d']} | {'yes' if r['ok'] else 'NO'} |"
+        )
+    if len(p20["rows"]) > 14:
+        L.append(f"| ... {len(p20['rows']) - 14} more rows | | | | | |")
+    L.append("")
+
     t10 = result["theorem10"]
     L += ["## 5-6. Theorem 10 and Lemma 3 against exhaustive construction", "",
           f"All {t10['total_gluings']} connected gluings of at most {t10['max_faces']} unit",
@@ -365,6 +423,7 @@ def main() -> None:
         "theorem8": check_theorem8(args.quick),
         "corollary9": check_corollary9(args.quick),
         "proposition12": check_proposition12(args.quick),
+        "proposition20": check_proposition20(args.quick),
         "theorem10": check_theorem10_and_lemma3(args.max_faces),
     }
     result["ok"] = all(v["ok"] for v in result.values() if isinstance(v, dict))
@@ -374,7 +433,8 @@ def main() -> None:
     (out / "verification.json").write_text(json.dumps(result, indent=1))
     (out / "verification.md").write_text(to_markdown(result))
 
-    for key in ("lemma6", "theorem8", "corollary9", "proposition12", "theorem10"):
+    for key in ("lemma6", "theorem8", "corollary9", "proposition12",
+                "proposition20", "theorem10"):
         print(f"{'PASS' if result[key]['ok'] else 'FAIL'}  {result[key]['name']}")
     print(f"wrote {out / 'verification.md'}")
     sys.exit(0 if result["ok"] else 1)

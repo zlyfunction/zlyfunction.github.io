@@ -72,7 +72,7 @@
     },
     "transitive": true,
     "generator_set": "complete",
-    "seconds": 20.7
+    "seconds": 20.1
    },
    {
     "genus": 4,
@@ -96,7 +96,7 @@
     },
     "transitive": true,
     "generator_set": "random subset of 20",
-    "seconds": 6.0
+    "seconds": 5.6
    },
    {
     "genus": 5,
@@ -120,7 +120,7 @@
     },
     "transitive": true,
     "generator_set": "random subset of 64",
-    "seconds": 368.7
+    "seconds": 358.6
    }
   ],
   "ok": true
@@ -278,7 +278,7 @@
     "constant": true,
     "separating": true,
     "ok": true,
-    "seconds": 21.2
+    "seconds": 20.2
    },
    {
     "genus": 3,
@@ -300,7 +300,7 @@
     "constant": true,
     "separating": true,
     "ok": true,
-    "seconds": 20.5
+    "seconds": 20.4
    },
    {
     "genus": 3,
@@ -324,7 +324,7 @@
     "constant": true,
     "separating": true,
     "ok": true,
-    "seconds": 20.9
+    "seconds": 21.0
    }
   ],
   "ok": true
@@ -2030,6 +2030,1004 @@
   ],
   "ok": true
  },
+ "proposition20": {
+  "name": "Proposition 20 (holonomy is computed at fixed X and positions)",
+  "n_cases": 49,
+  "rows": [
+   {
+    "k": 1,
+    "mu": [],
+    "orders": [],
+    "E": [
+     1,
+     2,
+     4
+    ],
+    "max_E": 4,
+    "expected_d": 4,
+    "ok": true
+   },
+   {
+    "k": 1,
+    "mu": [
+     0
+    ],
+    "orders": [
+     0
+    ],
+    "E": [
+     1,
+     2,
+     4
+    ],
+    "max_E": 4,
+    "expected_d": 4,
+    "ok": true
+   },
+   {
+    "k": 1,
+    "mu": [
+     0,
+     0
+    ],
+    "orders": [
+     0,
+     0
+    ],
+    "E": [
+     1,
+     2,
+     4
+    ],
+    "max_E": 4,
+    "expected_d": 4,
+    "ok": true
+   },
+   {
+    "k": 1,
+    "mu": [
+     0,
+     0,
+     0
+    ],
+    "orders": [
+     0,
+     0,
+     0
+    ],
+    "E": [
+     1,
+     2,
+     4
+    ],
+    "max_E": 4,
+    "expected_d": 4,
+    "ok": true
+   },
+   {
+    "k": 1,
+    "mu": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "orders": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "E": [
+     1,
+     2,
+     4
+    ],
+    "max_E": 4,
+    "expected_d": 4,
+    "ok": true
+   },
+   {
+    "k": 2,
+    "mu": [
+     -1,
+     -1,
+     2
+    ],
+    "orders": [
+     -2,
+     -2,
+     4
+    ],
+    "E": [
+     1,
+     2
+    ],
+    "max_E": 2,
+    "expected_d": 2,
+    "ok": true
+   },
+   {
+    "k": 2,
+    "mu": [
+     -1,
+     -1,
+     -1,
+     3
+    ],
+    "orders": [
+     -2,
+     -2,
+     -2,
+     6
+    ],
+    "E": [
+     1,
+     2
+    ],
+    "max_E": 2,
+    "expected_d": 2,
+    "ok": true
+   },
+   {
+    "k": 2,
+    "mu": [
+     -1,
+     -1,
+     0,
+     2
+    ],
+    "orders": [
+     -2,
+     -2,
+     0,
+     4
+    ],
+    "E": [
+     1,
+     2
+    ],
+    "max_E": 2,
+    "expected_d": 2,
+    "ok": true
+   },
+   {
+    "k": 2,
+    "mu": [
+     -1,
+     -1,
+     1,
+     1
+    ],
+    "orders": [
+     -2,
+     -2,
+     2,
+     2
+    ],
+    "E": [
+     1,
+     2
+    ],
+    "max_E": 2,
+    "expected_d": 2,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     3
+    ],
+    "orders": [
+     -3,
+     3
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     2
+    ],
+    "orders": [
+     -2,
+     2
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -3,
+     6
+    ],
+    "orders": [
+     -3,
+     -3,
+     6
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -2,
+     5
+    ],
+    "orders": [
+     -3,
+     -2,
+     5
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -1,
+     4
+    ],
+    "orders": [
+     -3,
+     -1,
+     4
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     0,
+     3
+    ],
+    "orders": [
+     -3,
+     0,
+     3
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     1,
+     2
+    ],
+    "orders": [
+     -3,
+     1,
+     2
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     4
+    ],
+    "orders": [
+     -2,
+     -2,
+     4
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -1,
+     3
+    ],
+    "orders": [
+     -2,
+     -1,
+     3
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     0,
+     2
+    ],
+    "orders": [
+     -2,
+     0,
+     2
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     1,
+     1
+    ],
+    "orders": [
+     -2,
+     1,
+     1
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -1,
+     -1,
+     2
+    ],
+    "orders": [
+     -1,
+     -1,
+     2
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -3,
+     0,
+     6
+    ],
+    "orders": [
+     -3,
+     -3,
+     0,
+     6
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -3,
+     1,
+     5
+    ],
+    "orders": [
+     -3,
+     -3,
+     1,
+     5
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -3,
+     2,
+     4
+    ],
+    "orders": [
+     -3,
+     -3,
+     2,
+     4
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -3,
+     3,
+     3
+    ],
+    "orders": [
+     -3,
+     -3,
+     3,
+     3
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -2,
+     -1,
+     6
+    ],
+    "orders": [
+     -3,
+     -2,
+     -1,
+     6
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -2,
+     0,
+     5
+    ],
+    "orders": [
+     -3,
+     -2,
+     0,
+     5
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -2,
+     1,
+     4
+    ],
+    "orders": [
+     -3,
+     -2,
+     1,
+     4
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -2,
+     2,
+     3
+    ],
+    "orders": [
+     -3,
+     -2,
+     2,
+     3
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -1,
+     -1,
+     5
+    ],
+    "orders": [
+     -3,
+     -1,
+     -1,
+     5
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -1,
+     0,
+     4
+    ],
+    "orders": [
+     -3,
+     -1,
+     0,
+     4
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -1,
+     1,
+     3
+    ],
+    "orders": [
+     -3,
+     -1,
+     1,
+     3
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -1,
+     2,
+     2
+    ],
+    "orders": [
+     -3,
+     -1,
+     2,
+     2
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     0,
+     0,
+     3
+    ],
+    "orders": [
+     -3,
+     0,
+     0,
+     3
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     0,
+     1,
+     2
+    ],
+    "orders": [
+     -3,
+     0,
+     1,
+     2
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     1,
+     1,
+     1
+    ],
+    "orders": [
+     -3,
+     1,
+     1,
+     1
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     -2,
+     6
+    ],
+    "orders": [
+     -2,
+     -2,
+     -2,
+     6
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     -1,
+     5
+    ],
+    "orders": [
+     -2,
+     -2,
+     -1,
+     5
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     0,
+     4
+    ],
+    "orders": [
+     -2,
+     -2,
+     0,
+     4
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     1,
+     3
+    ],
+    "orders": [
+     -2,
+     -2,
+     1,
+     3
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     2,
+     2
+    ],
+    "orders": [
+     -2,
+     -2,
+     2,
+     2
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -1,
+     -1,
+     4
+    ],
+    "orders": [
+     -2,
+     -1,
+     -1,
+     4
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -1,
+     0,
+     3
+    ],
+    "orders": [
+     -2,
+     -1,
+     0,
+     3
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -1,
+     1,
+     2
+    ],
+    "orders": [
+     -2,
+     -1,
+     1,
+     2
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     0,
+     0,
+     2
+    ],
+    "orders": [
+     -2,
+     0,
+     0,
+     2
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     0,
+     1,
+     1
+    ],
+    "orders": [
+     -2,
+     0,
+     1,
+     1
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -1,
+     -1,
+     -1,
+     3
+    ],
+    "orders": [
+     -1,
+     -1,
+     -1,
+     3
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -1,
+     -1,
+     0,
+     2
+    ],
+    "orders": [
+     -1,
+     -1,
+     0,
+     2
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   },
+   {
+    "k": 4,
+    "mu": [
+     -1,
+     -1,
+     1,
+     1
+    ],
+    "orders": [
+     -1,
+     -1,
+     1,
+     1
+    ],
+    "E": [
+     1
+    ],
+    "max_E": 1,
+    "expected_d": 1,
+    "ok": true
+   }
+  ],
+  "ok": true
+ },
  "theorem10": {
   "name": "Theorem 10 and Lemma 3 against exhaustive construction",
   "max_faces": 4,
@@ -2044,11 +3042,11 @@
    },
    "3": {
     "connected_gluings": 9504,
-    "seconds": 0.3
+    "seconds": 0.5
    },
    "4": {
     "connected_gluings": 1880064,
-    "seconds": 71.8
+    "seconds": 116.5
    }
   },
   "total_gluings": 1889667,

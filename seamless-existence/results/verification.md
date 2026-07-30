@@ -105,6 +105,30 @@ Sample verified witnesses:
 | 4 | [-3, 1, 2] | 1 | (25/36, 0), (3/4, 0), (2/3, 1/2) |
 | 4 | [-2, -2, 4] | 2 | (1/12, 0), (3/4, 0), (2/3, 1/2) |
 
+## 4b. Proposition 20 -- the holonomy is computed, not chosen
+
+For each of the 49 genus-1 witnesses, the set
+`E = {e | 4 : e divides every order and sum (m_i/e) c_i = 0}` was computed
+exactly, and `max E` compared with the intended `image(rho)` generator.
+
+| `k` | orders `m` | `E` | `max E` | expected | ok |
+|---|---|---|---|---|---|
+| 1 | [] | [1, 2, 4] | 4 | 4 | yes |
+| 1 | [0] | [1, 2, 4] | 4 | 4 | yes |
+| 1 | [0, 0] | [1, 2, 4] | 4 | 4 | yes |
+| 1 | [0, 0, 0] | [1, 2, 4] | 4 | 4 | yes |
+| 1 | [0, 0, 0, 0] | [1, 2, 4] | 4 | 4 | yes |
+| 2 | [-2, -2, 4] | [1, 2] | 2 | 2 | yes |
+| 2 | [-2, -2, -2, 6] | [1, 2] | 2 | 2 | yes |
+| 2 | [-2, -2, 0, 4] | [1, 2] | 2 | 2 | yes |
+| 2 | [-2, -2, 2, 2] | [1, 2] | 2 | 2 | yes |
+| 4 | [-3, 3] | [1] | 1 | 1 | yes |
+| 4 | [-2, 2] | [1] | 1 | 1 | yes |
+| 4 | [-3, -3, 6] | [1] | 1 | 1 | yes |
+| 4 | [-3, -2, 5] | [1] | 1 | 1 | yes |
+| 4 | [-3, -1, 4] | [1] | 1 | 1 | yes |
+| ... 35 more rows | | | | | |
+
 ## 5-6. Theorem 10 and Lemma 3 against exhaustive construction
 
 All 1889667 connected gluings of at most 4 unit
@@ -117,8 +141,8 @@ none of them is a signature the criterion of Theorem 10 calls empty.
 |---|---|---|
 | 1 | 3 | 0.0 |
 | 2 | 96 | 0.0 |
-| 3 | 9504 | 0.3 |
-| 4 | 1880064 | 71.8 |
+| 3 | 9504 | 0.5 |
+| 4 | 1880064 | 116.5 |
 
 ## Not verified here
 

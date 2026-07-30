@@ -1,0 +1,373 @@
+{
+ "max_faces": 5,
+ "targets": [
+  {
+   "target": [
+    1,
+    [
+     -1,
+     1
+    ],
+    1
+   ],
+   "name": "torus, cones 3pi/2 and 5pi/2 (no 3,5-quadrangulation)",
+   "expected_empty": true,
+   "min_faces": 2,
+   "found_at": null,
+   "proved_empty_up_to": 5,
+   "status": "no mesh",
+   "rows": [
+    {
+     "n_faces": 2,
+     "found": null,
+     "nodes": 16,
+     "exhausted": true,
+     "seconds": 0.0
+    },
+    {
+     "n_faces": 3,
+     "found": null,
+     "nodes": 382,
+     "exhausted": true,
+     "seconds": 0.01
+    },
+    {
+     "n_faces": 4,
+     "found": null,
+     "nodes": 12120,
+     "exhausted": true,
+     "seconds": 0.24
+    },
+    {
+     "n_faces": 5,
+     "found": null,
+     "nodes": 540442,
+     "exhausted": true,
+     "seconds": 14.02
+    }
+   ]
+  },
+  {
+   "target": [
+    1,
+    [
+     -2,
+     2
+    ],
+    2
+   ],
+   "name": "torus, cones pi and 3pi, holonomy in {0, pi}: Q(1,-1)",
+   "expected_empty": true,
+   "min_faces": 2,
+   "found_at": null,
+   "proved_empty_up_to": 5,
+   "status": "no mesh",
+   "rows": [
+    {
+     "n_faces": 2,
+     "found": null,
+     "nodes": 25,
+     "exhausted": true,
+     "seconds": 0.0
+    },
+    {
+     "n_faces": 3,
+     "found": null,
+     "nodes": 611,
+     "exhausted": true,
+     "seconds": 0.01
+    },
+    {
+     "n_faces": 4,
+     "found": null,
+     "nodes": 30345,
+     "exhausted": true,
+     "seconds": 0.55
+    },
+    {
+     "n_faces": 5,
+     "found": null,
+     "nodes": 1731075,
+     "exhausted": true,
+     "seconds": 42.47
+    }
+   ]
+  },
+  {
+   "target": [
+    2,
+    [
+     8
+    ],
+    2
+   ],
+   "name": "genus 2, one cone of 6pi, holonomy in {0, pi}: Q(4)",
+   "expected_empty": true,
+   "min_faces": 3,
+   "found_at": null,
+   "proved_empty_up_to": 5,
+   "status": "no mesh",
+   "rows": [
+    {
+     "n_faces": 3,
+     "found": null,
+     "nodes": 1120,
+     "exhausted": true,
+     "seconds": 0.02
+    },
+    {
+     "n_faces": 4,
+     "found": null,
+     "nodes": 96550,
+     "exhausted": true,
+     "seconds": 1.49
+    },
+    {
+     "n_faces": 5,
+     "found": null,
+     "nodes": 9801780,
+     "exhausted": true,
+     "seconds": 169.21
+    }
+   ]
+  },
+  {
+   "target": [
+    2,
+    [
+     2,
+     6
+    ],
+    2
+   ],
+   "name": "genus 2, cones 3pi and 5pi, holonomy in {0, pi}: Q(1,3)",
+   "expected_empty": true,
+   "min_faces": 4,
+   "found_at": null,
+   "proved_empty_up_to": 5,
+   "status": "no mesh",
+   "rows": [
+    {
+     "n_faces": 4,
+     "found": null,
+     "nodes": 63064,
+     "exhausted": true,
+     "seconds": 0.99
+    },
+    {
+     "n_faces": 5,
+     "found": null,
+     "nodes": 8306306,
+     "exhausted": true,
+     "seconds": 154.45
+    }
+   ]
+  },
+  {
+   "target": [
+    1,
+    [
+     -2,
+     2
+    ],
+    1
+   ],
+   "name": "torus, cones pi and 3pi, some odd holonomy",
+   "expected_empty": false,
+   "min_faces": 2,
+   "found_at": 2,
+   "proved_empty_up_to": null,
+   "status": "FOUND",
+   "rows": [
+    {
+     "n_faces": 2,
+     "found": [
+      4,
+      5,
+      7,
+      6,
+      0,
+      1,
+      3,
+      2
+     ],
+     "nodes": 17,
+     "exhausted": true,
+     "seconds": 0.0
+    }
+   ]
+  },
+  {
+   "target": [
+    2,
+    [
+     8
+    ],
+    1
+   ],
+   "name": "genus 2, one cone of 6pi, primitive 4-differential",
+   "expected_empty": false,
+   "min_faces": 3,
+   "found_at": 3,
+   "proved_empty_up_to": null,
+   "status": "FOUND",
+   "rows": [
+    {
+     "n_faces": 3,
+     "found": [
+      2,
+      4,
+      0,
+      5,
+      1,
+      3,
+      8,
+      10,
+      6,
+      11,
+      7,
+      9
+     ],
+     "nodes": 7,
+     "exhausted": true,
+     "seconds": 0.0
+    }
+   ]
+  },
+  {
+   "target": [
+    2,
+    [
+     8
+    ],
+    4
+   ],
+   "name": "genus 2, one cone of 6pi, translation surface",
+   "expected_empty": false,
+   "min_faces": 3,
+   "found_at": 3,
+   "proved_empty_up_to": null,
+   "status": "FOUND",
+   "rows": [
+    {
+     "n_faces": 3,
+     "found": [
+      2,
+      4,
+      0,
+      6,
+      1,
+      8,
+      3,
+      10,
+      5,
+      11,
+      7,
+      9
+     ],
+     "nodes": 20,
+     "exhausted": true,
+     "seconds": 0.0
+    }
+   ]
+  },
+  {
+   "target": [
+    2,
+    [
+     2,
+     6
+    ],
+    1
+   ],
+   "name": "genus 2, cones 3pi and 5pi, primitive 4-differential",
+   "expected_empty": false,
+   "min_faces": 4,
+   "found_at": 4,
+   "proved_empty_up_to": null,
+   "status": "FOUND",
+   "rows": [
+    {
+     "n_faces": 4,
+     "found": [
+      2,
+      4,
+      0,
+      6,
+      1,
+      8,
+      3,
+      12,
+      5,
+      14,
+      15,
+      13,
+      7,
+      11,
+      9,
+      10
+     ],
+     "nodes": 169,
+     "exhausted": true,
+     "seconds": 0.0
+    }
+   ]
+  },
+  {
+   "target": [
+    0,
+    [
+     -1,
+     -1,
+     -1,
+     -1,
+     -1,
+     -1,
+     -1,
+     -1
+    ],
+    1
+   ],
+   "name": "the cube: genus 0, eight cones of 3pi/2",
+   "expected_empty": false,
+   "min_faces": 6,
+   "found_at": 6,
+   "proved_empty_up_to": null,
+   "status": "FOUND",
+   "rows": [
+    {
+     "n_faces": 6,
+     "found": [
+      4,
+      8,
+      12,
+      16,
+      0,
+      19,
+      20,
+      9,
+      1,
+      7,
+      23,
+      13,
+      2,
+      11,
+      22,
+      17,
+      3,
+      15,
+      21,
+      5,
+      6,
+      18,
+      14,
+      10
+     ],
+     "nodes": 399,
+     "exhausted": true,
+     "seconds": 0.03
+    }
+   ]
+  }
+ ]
+}

@@ -52,18 +52,29 @@ The framing that makes this land for a graphics audience: *the sufficient
 condition was combinatorial, the obstructions are conformal, and the obstructions
 were already classified -- here is the bridge.*
 
-## M3. Boundaries and feature curves
+## M3. Boundaries and feature curves -- mostly done
 
-Shen et al.'s conclusion flags padding feasibility in the bounded / feature-curve
-setting as needing new theory, and the 2025 feature-aligned paper gives only
-sufficient conditions.  The differential side of the dictionary extends: surfaces
-with boundary correspond to `k`-differentials on the double, and feature curves to
-prescribed horizontal/vertical trajectory conditions, i.e. to strata with a
-prescribed real structure.  Concrete first question: what does the Reduction Lemma
-become when `M` has boundary and `H_1(M \ C)` is free?  (Guess: the point-pushing
-argument gets stronger, not weaker, so the collapse is even more complete and
-existence should be nearly unconditional -- which would explain why the 2025
-sufficient conditions work as well as they do in practice.)
+Done (`docs/proofs.md` §8, `results/boundary.md`):
+
+* Gauss-Bonnet with boundary and the parity constraint it forces (Lemma 14).
+* The space of signatures with fixed orders and turnings is again `Z_4^{2g}`
+  (Lemma 15), and the Reduction Lemma holds verbatim with `D` enlarged by the
+  boundary turnings (Theorem 16).  Sliding a boundary component along a loop is the
+  boundary analogue of point pushing.
+* Corollary 17: an odd turning -- one `pi/2` corner suffices -- collapses the
+  holonomy entirely.  The guess recorded here originally was right, and this is the
+  precise form of it.
+* The doubling map (Lemma 18), verified on every boundary mesh of at most three
+  squares, and the necessary condition it yields (Corollary 19), which turns out to
+  fire on nothing in range.
+
+Left open: the boundary analogue of Theorem 10.  Doubling reduces it to
+non-emptiness of *real* strata -- `k`-differentials invariant under a prescribed
+anti-holomorphic involution, with the boundary as the fixed locus.  That is a
+well-posed question in flat geometry and is now the whole content of the
+feature-curve case.  Everything computational points at the answer being
+"non-empty always", which would make feature-aligned existence unconditional given
+Gauss-Bonnet and the parity constraint.
 
 ## M4. Quantization feasibility
 
@@ -84,14 +95,22 @@ in particular explaining the odd-valence restriction in terms of `image(rho)`, s
 odd valence is exactly `D = Z_4` -- is a clean, self-contained paper-sized
 question.
 
-## M6. Fixed mesh connectivity
+## M6. Fixed mesh connectivity -- partly tooled up
 
 Stated as unknown in the 2025 paper.  This is the genuinely combinatorial version
-and is probably hard; `experiments/exhaustive.py` is the only rigorous tool here
-and it stops at four squares.  Improving it is a real project: canonical-form
-based orderly generation of quadrangulations by genus and valence multiset would
-push it to `N = 7` or `8` and turn the "not found" rows of the survey into
-theorems for small meshes.
+and is probably hard.  The tooling improved, though:
+
+* `experiments/exhaustive.py` enumerates *every* gluing and stops at four squares.
+* `search.exhaustive_target_search` decides *one* signature at a time and reaches
+  five squares, because the target prunes hard: a closed vertex cycle whose length
+  is not an allowed valence kills the branch.  This is what makes the negative
+  evidence for the four unrealizable signatures rigorous rather than anecdotal, and
+  it also finds certificates the annealer never does.
+
+Next steps here: extend the pruning to meshes with boundary (currently only the
+closed case), add a genus bound to prune mid-way, and -- for the complete
+enumeration -- canonical-form-based orderly generation to reach seven or eight
+squares.
 
 ## M7. Three dimensions
 
@@ -99,14 +118,30 @@ Frame-field meshability.  Largest payoff, largest risk, and the dictionary used
 here has no direct analogue -- there is no `k`-differential story in 3D.  Listed
 for completeness, not recommended as a next step.
 
+## State of play
+
+Proved and machine-checked, closed case: the dictionary, the Reduction Lemma, the
+Main Theorem, genus 0 and genus 1 complete, and the relation to the
+fixed-conformal-structure criterion (`docs/proofs.md` §1-§7, §9).
+
+Proved, boundary case: Gauss-Bonnet with corners, the Reduction Lemma with the
+turnings, the collapse from an odd turning, and the doubling map (§8).
+
+Blocked in this environment: M1, because `arxiv.org` is refused by the egress proxy
+(`403` to `CONNECT`), so Gendron-Tahar cannot be read here.
+
 ## Immediate next actions
 
-1. Verify the items in `docs/VERIFY.md` -- one afternoon with the PDFs.  Two of the
-   original items have been discharged by writing the proofs; what is left is all
-   literature checking.
-2. M1: extract the Gendron-Tahar list.  This is now the *only* thing between
-   Theorem 10 and a complete answer for every genus.
-3. Give (S1)-(S6) of `docs/proofs.md` §7 proper citations.
-4. Improve the search so that low-genus, many-cone targets stop failing (the cube,
-   which obviously exists, is not found by the current annealer at `N = 6`; see
-   `README.md`, Limitations).
+1. M1: extract the Gendron-Tahar list for `k = 4`.  This is the *only* thing between
+   Theorem 10 and a complete answer for every genus, and it needs nothing but the
+   paper.  The 120 square-tiled certificates in `results/survey.json` are a ready
+   test of whatever list comes out.
+2. Verify the remaining items of `docs/VERIFY.md` -- all literature checks now --
+   and give (S1)-(S6) of `docs/proofs.md` §7 proper citations.
+3. M3's open end: non-emptiness of real strata (4-differentials invariant under an
+   anti-holomorphic involution).  A literature search on real / Klein-surface strata
+   is the first step; everything computational here says the answer is "always
+   non-empty", which would make feature-aligned existence unconditional.
+4. M2: the write-up.
+5. Extend the pruned per-signature search to meshes with boundary, which is the one
+   place where the unreliable annealer is still load-bearing.

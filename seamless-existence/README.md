@@ -117,9 +117,59 @@ failed search:
   `(Q/Z)^2` with exact `Fraction` arithmetic and verifying both defining
   conditions, for every admissible `(k, mu)` in a range -- the criterion says
   "non-empty" exactly when a witness gets built;
+* **Proposition 20** (at fixed conformal structure the holonomy is *computed*, not
+  chosen) on every genus-1 witness, by evaluating the Abel-Jacobi set
+  `E = {e | 4 : e divides every order and sum (m_i/e) c_i = 0}` exactly and checking
+  `max E` against the intended `image(rho)`;
 * **Theorem 10 and Lemma 3** against all `1 889 667` gluings of at most four unit
   squares: each satisfies Gauss-Bonnet and has holonomy equal to the valence mod 4
-  at every vertex, and none realizes a signature the theorem calls empty.
+  at every vertex, and none realizes a signature the theorem calls empty;
+* **Theorem 10 negatively**: for each of the four unrealizable signatures, a pruned
+  exhaustive search over *all* gluings of a given size finds nothing, which is a
+  proof at that size (`results/exhaustive_target.md`).  This is the only rigorous
+  negative evidence in the repository; the annealing searches are not evidence of
+  absence.  The same search finds certificates the annealer never does -- the cube
+  turns up in 399 nodes.
+
+**Finding 7 -- the fixed-conformal-structure criterion, reconciled.**  At a fixed
+Riemann surface and fixed cone positions the holonomy is not free at all: it is
+computed by Abel-Jacobi, `image(rho) = d Z_4` with
+`d = max {e | 4 : e divides every m_i and sum (m_i/e) p_i ~ (4/e) K}`
+(`docs/proofs.md` Proposition 20).  So a signature is realizable iff *some* `(X, p)`
+has `max E = d` (Corollary 21) -- the fixed-structure criterion of
+Chen-Zheng-Ke-Lei-Luo-Gu is the pointwise condition, and the question here is
+whether the locus it cuts out is non-empty.  This also explains their restriction to
+even topological valence: an odd `m_i` forces `E = {1}` for every `(X, p)`, i.e. a
+genuine primitive 4-differential and `image(rho) = Z_4` -- exactly the `D = Z_4`
+regime where, for the topological question, the holonomy drops out entirely
+(Corollary 22).  The hard case there is the easy case here.
+
+**Finding 6 -- feature curves: the same reduction, and no obstruction in sight.**
+Cutting along a feature network turns the problem into one on a surface with
+boundary whose sides must develop to axis-parallel segments.  `docs/proofs.md` §8
+carries the machinery over:
+
+* Gauss-Bonnet becomes `sum (4 - v_i) + sum (2 - a_j) = 4 chi`, which forces
+  `sum m_i + sum a_j` to be even (Lemma 14);
+* the space of signatures with fixed orders and boundary turnings is again
+  `Z_4^{2g}` (Lemma 15), and the **Reduction Lemma holds verbatim** with
+  `D = <m_i, t_j>` enlarged by the turnings `t_j = sum (2 - a_j)` (Theorem 16) --
+  sliding a boundary component along a loop plays the role of point pushing;
+* hence a single boundary component of odd turning -- one `pi/2` corner is enough --
+  forces `D = Z_4` and a single orbit, so **the holonomy along homology loops cannot
+  obstruct anything** (Corollary 17).  Real feature networks are full of right-angle
+  corners, which is a precise reason the feature-aligned literature's sufficient
+  conditions work as well as they do in practice.
+
+Doubling along the boundary (Lemma 18, verified on all 110 303 boundary meshes of at
+most three squares) transports a feature-aligned signature to a closed one on a
+surface of genus `2g + b - 1`.  It is the only route by which the closed
+classification could produce a feature-curve obstruction, and it produces none: of
+3058 admissible feature-aligned signatures in range, Corollary 19 rules out zero.
+The reason is structural -- a double that could land in one of Masur-Smillie's empty
+strata always also admits the `image(rho~) = Z_4` alternative, where the stratum is
+non-empty.  Deciding the boundary case therefore needs *real* strata, differentials
+invariant under an anti-holomorphic involution; that is the open end of §8.
 
 ## Main Theorem
 
@@ -146,6 +196,7 @@ docs/proofs.md       ALL PROOFS: the dictionary, the Reduction Lemma, the Main
 docs/dictionary.md   exposition: seamless <-> flat Z_4 metric <-> 4-differential
 docs/reduction.md    exposition: the Reduction Lemma and what it means
 docs/genus1.md       exposition: complete answers in genus 0 and 1
+                     (§8 of docs/proofs.md covers boundary / feature curves)
 docs/literature.md   annotated reading list: what to extract from which paper
 docs/roadmap.md      milestones M0-M7 and immediate next actions
 docs/VERIFY.md       claims still needing a source check, and what has been discharged
@@ -156,9 +207,11 @@ src/seamless_existence/
   search.py          exhaustive and targeted (annealing) search
   predict.py         what the literature says about each reduced stratum
   elliptic.py        exact (Q/Z)^2 arithmetic and the genus-1 divisor witnesses
-experiments/         verify_proofs, survey, exhaustive enumeration, negative search
-results/             generated: verification.md, survey.md, answers.md, ...
-tests/               45 tests, no dependencies
+experiments/         verify_proofs, survey, exhaustive, exhaustive_target,
+                     negative_search, boundary_survey, tables
+results/             generated: verification.md, survey.md, answers.md,
+                     exhaustive_target.md, boundary.md, ...
+tests/               59 tests, no dependencies
 ```
 
 Pure standard library, Python 3.11+.
@@ -169,7 +222,9 @@ PYTHONPATH=src python3 experiments/verify_proofs.py     # ~3 min, checks docs/pr
 PYTHONPATH=src python3 experiments/verify_proofs.py --deep   # + genus 5, ~9 min
 PYTHONPATH=src python3 experiments/survey.py            # ~10 min, writes results/
 PYTHONPATH=src python3 experiments/exhaustive.py        # ~1 min, N <= 4
+PYTHONPATH=src python3 experiments/exhaustive_target.py # ~7 min, one signature at a time
 PYTHONPATH=src python3 experiments/negative_search.py   # long; hammers the four empty strata
+PYTHONPATH=src python3 experiments/boundary_survey.py   # ~5 min, feature curves
 ```
 
 ## Limitations
@@ -183,11 +238,20 @@ PYTHONPATH=src python3 experiments/negative_search.py   # long; hammers the four
   HTTPS blocked for `arxiv.org`, `springer.com` and `cims.nyu.edu`.  Literature
   statements are from memory and secondary sources; every one of them is listed in
   `docs/VERIFY.md` with what to check.
-* **A failed search proves nothing.**  Annealing is weak exactly where certificates
-  are hardest: low genus with many cones.  The cube -- genus 0, eight cones of
-  angle `3 pi/2`, six squares -- is *not* found by the annealer even with 800 000
-  iterations, though it obviously exists (`tests/test_quadmesh.py` builds it by
-  hand).  So "not found" rows are evidence only when the theory independently says
-  the stratum is empty, or when `experiments/exhaustive.py` covers the size.
+* **A failed annealing search proves nothing**, and annealing is weak exactly where
+  certificates are hardest: low genus with many cones.  The cube -- genus 0, eight
+  cones of angle `3 pi/2`, six squares -- is *not* found by the annealer even with
+  800 000 iterations, though it obviously exists; with boundary it misses the
+  five-square fan (`QuadMesh.fan(5)`).  For closed meshes this is now fixed by the
+  pruned per-target search of `experiments/exhaustive_target.py`, which settles the
+  cube in 399 nodes and decides any single signature exhaustively up to five squares.
+  For meshes with boundary the annealer is still all there is above three squares, so
+  the boundary survey takes every negative statement from exhaustive enumeration
+  instead.
+* **Fitting the corner count is not the same as fitting in the mesh.**  A quad mesh
+  cannot subdivide a single boundary edge, so padding a feature-aligned signature to
+  a given size means adding whole squares.  The 412 signatures that the boundary
+  survey reports as unrealizable with three squares are, for the most part, simply
+  larger than three squares.
 * Exhaustive enumeration stops at four squares (`N = 5` is 324 times larger).
   Orderly generation would push it to seven or eight; that is milestone M6.

@@ -39,7 +39,7 @@ from typing import Sequence
 
 from .signature import Signature, subgroup_generator
 
-__all__ = ["QuadMesh", "MeshInvariant"]
+__all__ = ["QuadMesh", "MeshInvariant", "BoundaryInvariant"]
 
 
 @dataclass(frozen=True)
@@ -67,8 +67,62 @@ class MeshInvariant:
         )
 
 
+@dataclass(frozen=True)
+class BoundaryInvariant:
+    """What a mesh with boundary certifies.
+
+    ``corner_angles`` is one sorted tuple per boundary component, in quarter turns;
+    ``turnings`` is ``sum (2 - a)`` per component, which is what ``rho`` sees.
+    """
+
+    genus: int
+    n_boundary: int
+    orders: tuple[int, ...]
+    corner_angles: tuple[tuple[int, ...], ...]
+    rho_subgroup: int
+
+    def turnings(self) -> tuple[int, ...]:
+        return tuple(sum(2 - a for a in comp) for comp in self.corner_angles)
+
+    def as_tuple(self):
+        return (
+            self.genus,
+            self.n_boundary,
+            self.orders,
+            self.corner_angles,
+            self.rho_subgroup,
+        )
+
+    def stripped(self) -> "BoundaryInvariant":
+        """Forget interior marked points; boundary corners of angle pi/2 stay.
+
+        A boundary vertex of angle ``pi`` (two quarter turns) is the boundary
+        analogue of a marked point -- the boundary is straight there -- so those are
+        dropped too.
+        """
+        return BoundaryInvariant(
+            self.genus,
+            self.n_boundary,
+            tuple(m for m in self.orders if m != 0),
+            tuple(tuple(a for a in comp if a != 2) for comp in self.corner_angles),
+            self.rho_subgroup,
+        )
+
+
 class QuadMesh:
-    """A closed quad mesh given by a gluing involution on ``4 * n_faces`` darts."""
+    """A quad mesh given by a gluing involution on ``4 * n_faces`` darts.
+
+    A fixed point ``alpha[d] == d`` means side ``d`` is *unglued*: the mesh then has
+    boundary, and that side is a boundary edge.  With no fixed points the mesh is
+    closed and every method below behaves as it did before boundary support was
+    added.
+
+    For a mesh with boundary the flat structure is a seamless parametrization with
+    *aligned* boundary: every boundary edge is a side of a unit square, hence maps to
+    an axis-parallel segment.  That is exactly the feature-curve condition of
+    ``docs/proofs.md`` §8, so a quad mesh with boundary certifies a
+    *feature-aligned* signature.
+    """
 
     __slots__ = ("n_faces", "alpha")
 
@@ -79,8 +133,6 @@ class QuadMesh:
             for d, e in enumerate(alpha):
                 if alpha[e] != d:
                     raise ValueError("alpha must be an involution")
-                if e == d:
-                    raise ValueError("alpha must be fixed-point free")
         self.n_faces = n_faces
         self.alpha = tuple(alpha)
 
@@ -118,16 +170,54 @@ class QuadMesh:
         stack = [0]
         while stack:
             d = stack.pop()
-            for e in (self.sigma(d), self.alpha[d]):
+            for e in (self.sigma(d), self.alpha[d]):  # alpha[d] == d is harmless
                 if e not in seen:
                     seen.add(e)
                     stack.append(e)
         return len(seen) == 4 * self.n_faces
 
+    def is_boundary_dart(self, d: int) -> bool:
+        return self.alpha[d] == d
+
+    def has_boundary(self) -> bool:
+        return any(self.alpha[d] == d for d in range(4 * self.n_faces))
+
+    def n_edges(self) -> int:
+        """Interior edges count once for two darts, boundary edges once for one."""
+        n_bd = sum(1 for d in range(4 * self.n_faces) if self.is_boundary_dart(d))
+        return (4 * self.n_faces - n_bd) // 2 + n_bd
+
     def vertex_orbits(self) -> list[list[int]]:
-        seen = [False] * (4 * self.n_faces)
+        """The vertices, as the sets of darts whose tail they are.
+
+        Around an interior vertex the map ``nu`` cycles through all incident
+        corners.  Around a boundary vertex it walks a *chain* instead, starting at
+        the dart that is itself a boundary dart and ending at the dart whose
+        predecessor in its face is a boundary dart.  Either way the class has one
+        element per incident corner, so its size is the valence (interior) or the
+        corner angle in quarter turns (boundary).
+        """
+        n = 4 * self.n_faces
+        seen = [False] * n
         orbits = []
-        for d0 in range(4 * self.n_faces):
+        # boundary chains first, started from the boundary darts
+        for d0 in range(n):
+            if seen[d0] or not self.is_boundary_dart(d0):
+                continue
+            orbit = []
+            d = d0
+            while True:
+                seen[d] = True
+                orbit.append(d)
+                prev = self.sigma_inv(d)
+                if self.is_boundary_dart(prev):
+                    break
+                d = self.alpha[prev]
+                if seen[d]:  # pragma: no cover - defensive
+                    break
+            orbits.append(orbit)
+        # then the interior cycles
+        for d0 in range(n):
             if seen[d0]:
                 continue
             orbit = []
@@ -139,21 +229,96 @@ class QuadMesh:
             orbits.append(orbit)
         return orbits
 
+    def is_boundary_vertex(self, orbit: Sequence[int]) -> bool:
+        return any(self.is_boundary_dart(d) for d in orbit)
+
     def valences(self) -> list[int]:
+        """Valences of all vertices; for a boundary vertex, the number of corners."""
         return [len(o) for o in self.vertex_orbits()]
 
+    def euler_characteristic(self) -> int:
+        return len(self.vertex_orbits()) - self.n_edges() + self.n_faces
+
+    def n_boundary_components(self) -> int:
+        return len(self.boundary_cycles())
+
     def genus(self) -> int:
-        v = len(self.vertex_orbits())
-        e = 2 * self.n_faces
-        f = self.n_faces
-        chi = v - e + f
-        if chi % 2:
-            raise AssertionError(f"non-integral genus: chi = {chi}")
-        return (2 - chi) // 2
+        chi = self.euler_characteristic()
+        b = self.n_boundary_components()
+        if (2 - chi - b) % 2:
+            raise AssertionError(f"non-integral genus: chi = {chi}, b = {b}")
+        return (2 - chi - b) // 2
 
     def orders(self) -> tuple[int, ...]:
-        """Cone orders ``m_i = valence - 4`` (marked points of order 0 included)."""
-        return tuple(v - 4 for v in self.valences())
+        """Interior cone orders ``m_i = valence - 4`` (order 0 = regular, included)."""
+        return tuple(
+            len(o) - 4 for o in self.vertex_orbits() if not self.is_boundary_vertex(o)
+        )
+
+    def corner_angles(self) -> tuple[int, ...]:
+        """Boundary corner angles in quarter turns, one per boundary vertex."""
+        return tuple(
+            len(o) for o in self.vertex_orbits() if self.is_boundary_vertex(o)
+        )
+
+    def next_boundary_dart(self, d: int) -> int:
+        """The next boundary dart along the boundary, starting from boundary dart ``d``."""
+        if not self.is_boundary_dart(d):
+            raise ValueError("not a boundary dart")
+        x = self.sigma(d)
+        while not self.is_boundary_dart(x):
+            x = self.sigma(self.alpha[x])
+        return x
+
+    def boundary_cycles(self) -> list[list[int]]:
+        """The boundary components, each as the cyclic list of its boundary darts."""
+        n = 4 * self.n_faces
+        seen = set()
+        cycles = []
+        for d0 in range(n):
+            if not self.is_boundary_dart(d0) or d0 in seen:
+                continue
+            cycle = []
+            d = d0
+            while d not in seen:
+                seen.add(d)
+                cycle.append(d)
+                d = self.next_boundary_dart(d)
+            cycles.append(cycle)
+        return cycles
+
+    def turning(self) -> int:
+        """Total boundary turning in quarter turns, ``sum (2 - a)`` over corners."""
+        return sum(2 - a for a in self.corner_angles())
+
+    def boundary_holonomy(self, cycle: Sequence[int]) -> int:
+        """Rotational holonomy along a boundary component, in quarter turns.
+
+        Walking the component with the surface on the left and accumulating the
+        chart transitions crossed while rotating around each vertex; negated for the
+        same reason as in ``vertex_holonomy``.  It must equal the turning mod 4.
+        """
+        total = 0
+        for d in cycle:
+            x = self.sigma(d)
+            while not self.is_boundary_dart(x):
+                total += self.rotation(x)
+                x = self.sigma(self.alpha[x])
+        return (-total) % 4
+
+    def boundary_turning(self, cycle: Sequence[int]) -> int:
+        """Turning along one boundary component, in quarter turns.
+
+        Each boundary dart of the cycle ends at one boundary vertex, so summing
+        ``2 - a`` over the corners met walking the cycle gives its turning.
+        """
+        total = 0
+        for d in cycle:
+            # the vertex at the head of d is the tail of the next boundary dart
+            head = self.next_boundary_dart(d)
+            orbit = next(o for o in self.vertex_orbits() if head in o)
+            total += 2 - len(orbit)
+        return total
 
     # ------------------------------------------------------------- holonomy
 
@@ -166,6 +331,8 @@ class QuadMesh:
             f = stack.pop()
             for s in range(4):
                 d = 4 * f + s
+                if self.is_boundary_dart(d):
+                    continue
                 g = self.face(self.alpha[d])
                 if r[g] is None:
                     r[g] = (r[f] + self.rotation(d)) % 4
@@ -180,8 +347,8 @@ class QuadMesh:
         out = []
         for d in range(4 * self.n_faces):
             e = self.alpha[d]
-            if d > e:
-                continue  # visit each edge once
+            if d >= e:
+                continue  # visit each interior edge once, skip boundary darts
             f, g = self.face(d), self.face(e)
             out.append((r[f] + self.rotation(d) - r[g]) % 4)
         return out
@@ -211,15 +378,48 @@ class QuadMesh:
             rho_subgroup=self.rho_subgroup(),
         )
 
+    def boundary_invariant(self) -> BoundaryInvariant:
+        cycles = self.boundary_cycles()
+        per_component = []
+        for c in cycles:
+            angles = []
+            for d in c:
+                head = self.next_boundary_dart(d)
+                orbit = next(o for o in self.vertex_orbits() if head in o)
+                angles.append(len(orbit))
+            per_component.append(tuple(sorted(angles)))
+        return BoundaryInvariant(
+            genus=self.genus(),
+            n_boundary=len(cycles),
+            orders=tuple(sorted(self.orders())),
+            corner_angles=tuple(sorted(per_component)),
+            rho_subgroup=self.rho_subgroup(),
+        )
+
     def check_consistency(self) -> None:
-        """Verify Gauss-Bonnet and the per-vertex holonomy condition."""
-        g = self.genus()
-        if sum(self.orders()) != 4 * (2 * g - 2):
-            raise AssertionError("Gauss-Bonnet violated")
+        """Verify Gauss-Bonnet and the holonomy conditions, with or without boundary.
+
+        * Gauss-Bonnet: ``sum_interior (4 - v) + sum_corners (2 - a) = 4 chi``.
+        * every interior vertex: holonomy equals its valence mod 4.
+        * every boundary component: holonomy equals its turning mod 4.
+        """
+        chi = self.euler_characteristic()
+        interior = sum(4 - (m + 4) for m in self.orders())
+        if interior + self.turning() != 4 * chi:
+            raise AssertionError(
+                f"Gauss-Bonnet violated: {interior} + {self.turning()} != {4 * chi}"
+            )
         for orbit in self.vertex_orbits():
+            if self.is_boundary_vertex(orbit):
+                continue
             if self.vertex_holonomy(orbit) != len(orbit) % 4:
                 raise AssertionError(
                     "vertex holonomy != valence mod 4 for orbit " + repr(orbit)
+                )
+        for cycle in self.boundary_cycles():
+            if self.boundary_holonomy(cycle) != self.boundary_turning(cycle) % 4:
+                raise AssertionError(
+                    "boundary holonomy != turning mod 4 for cycle " + repr(cycle)
                 )
 
     def signature(self) -> Signature:
@@ -266,6 +466,73 @@ class QuadMesh:
         if best is None:
             raise ValueError("mesh is not connected")
         return best
+
+    @classmethod
+    def fan(cls, k: int) -> "QuadMesh":
+        """``k`` squares in a cycle around a common apex, outer sides free.
+
+        A disk with one interior cone of angle ``k pi/2`` -- order ``k - 4`` -- and
+        ``k`` boundary corners of angle ``pi/2`` alternating with ``k`` straight
+        ones.  An explicit infinite family of feature-aligned certificates, and the
+        smallest one with odd boundary turning (``k = 3``: turning 3).
+        """
+        if k < 1:
+            raise ValueError("k must be >= 1")
+        alpha = list(range(4 * k))
+        for i in range(k):
+            j = (i + 1) % k
+            alpha[4 * i + 3] = 4 * j
+            alpha[4 * j] = 4 * i + 3
+        return cls(k, alpha)
+
+    @classmethod
+    def strip(cls, n: int) -> "QuadMesh":
+        """A 1-by-``n`` strip of squares: a disk with four right-angle corners."""
+        alpha = list(range(4 * n))
+        for i in range(n - 1):
+            a, b = 4 * i, 4 * (i + 1) + 2
+            alpha[a] = b
+            alpha[b] = a
+        return cls(n, alpha)
+
+    def double(self) -> "QuadMesh":
+        """The double of a mesh with boundary: a closed mesh with twice the faces.
+
+        The mirror copy of face ``f`` is face ``n_faces + f`` with its sides
+        relabelled by ``s |-> (-s) mod 4``, so that the mirror is traversed in the
+        opposite direction and the double is orientable.  Interior edges are glued to
+        the mirror of their partner; each boundary edge is glued to its own mirror,
+        which is exactly reflecting across the boundary.
+
+        On invariants (``docs/proofs.md`` §8, Lemma 14):
+
+        * genus becomes ``2g + b - 1``;
+        * an interior cone of order ``m`` becomes two cones of order ``m``;
+        * a boundary corner of angle ``a pi/2`` becomes one cone of angle ``a pi``,
+          i.e. of order ``2a - 4``;
+        * ``image(rho)`` *grows* by the loops around those new cones:
+          ``image(rho~) = image(rho) + <2a mod 4 : corners>``.  In particular a
+          single corner of odd angle -- the generic feature corner, ``pi/2`` or
+          ``3 pi/2`` -- puts ``2 Z_4`` inside it, so the double of a mesh with such a
+          corner is never a translation surface.
+        """
+        n = self.n_faces
+        if not self.has_boundary():
+            raise ValueError("only a mesh with boundary can be doubled")
+
+        def mirror(d: int) -> int:
+            return 4 * (n + self.face(d)) + ((-self.side(d)) % 4)
+
+        alpha = [0] * (8 * n)
+        for d in range(4 * n):
+            e = self.alpha[d]
+            if e == d:  # boundary edge: glue to its own mirror
+                alpha[d] = mirror(d)
+                alpha[mirror(d)] = d
+            else:
+                alpha[d] = e
+                alpha[mirror(d)] = mirror(e)
+        return QuadMesh(2 * n, alpha)
 
     @classmethod
     def from_faces(cls, faces: Sequence[Sequence[int]]) -> "QuadMesh":

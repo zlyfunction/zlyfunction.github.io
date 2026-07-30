@@ -76,7 +76,16 @@ a citation each in a write-up.
 
 ## Open: mathematics
 
-### 7. Density of square-tiled surfaces in strata of 4-differentials
+### 7. Real strata, for the feature-curve case
+
+`docs/proofs.md` §8 reduces feature-aligned existence to non-emptiness of strata of
+4-differentials invariant under a prescribed anti-holomorphic involution, with the
+feature network as the fixed locus.  Corollary 19 -- the only thing the closed
+classification gives for free -- fires on nothing in range, so this is the whole
+remaining content of the boundary case.  Worth a literature search of its own: real
+strata / differentials on Klein surfaces.
+
+### 8. Density of square-tiled surfaces in strata of 4-differentials
 
 (D3) of `docs/dictionary.md`.  Standard for abelian and quadratic differentials
 (rational points are dense in period coordinates).  For `k = 4` with poles of order

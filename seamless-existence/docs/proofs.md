@@ -533,7 +533,10 @@ between cases 2 and 3 and the *realizable* signature "two cones of angles `pi` a
 | Theorem 8 | recompute orbits under point pushing + transvections; `image(rho)` must be constant on orbits and separate them; orbit counts `1/2/3` |
 | Corollary 9 | orbit count is `1` whenever some order is odd |
 | Proposition 12 | construct the points in `(Q/Z)^2` exactly and verify (AJ) and (P_e); also check the criterion against the independent square-tiled search |
+| Proposition 20 | for every genus-1 witness, compute `E(X, p, m)` exactly and check `max E` equals the intended `image(rho)` |
 | Theorem 10 | every square-tiled surface found must have a signature the criterion does not call empty; run over all 1 889 667 gluings of at most four squares |
+| Theorem 10, negatively | for each of the four unrealizable signatures, a pruned exhaustive search over all gluings of a given size finds nothing -- a proof at that size (`results/exhaustive_target.md`) |
+| Lemma 14, 18 | Gauss-Bonnet with boundary and the doubling formulas, on every mesh with boundary of at most three squares |
 | Lemma 3 consistency | for every gluing: Gauss-Bonnet, and holonomy around each vertex equal to its valence mod 4 |
 
 A search failing to find a certificate is never used as evidence for emptiness in
@@ -571,3 +574,284 @@ Genuinely open here:
 * **Fixed connectivity.**  Everything above allows refinement (Lemma 2).  Existence
   at fixed mesh connectivity is a different question (milestone M6).
 * **Boundaries and feature curves** (milestone M3).
+
+---
+
+## 8. Surfaces with boundary: feature curves
+
+Everything above is for a closed surface.  The setting the graphics pipelines
+actually care about has *feature curves*: a network of curves whose images must be
+axis-parallel, so that the parametrization's isolines follow them.  Cutting along
+the network turns this into a surface with boundary, and this section carries the
+machinery over.  The upshot is that the Reduction Lemma survives verbatim with a
+*larger* group ``D``, which is why feature-aligned pipelines almost never see a
+holonomy obstruction.
+
+### Setup
+
+Let ``M`` be compact oriented of genus ``g`` with ``b >= 1`` boundary components
+and interior marked points ``C``.  A *feature-aligned* seamless parametrization is
+a seamless parametrization of ``M \ C`` (Section 1) whose boundary is a union of
+geodesic arcs each of which develops to an axis-parallel segment.  Boundary
+vertices are corners of angle ``alpha = a pi/2`` with ``a >= 1`` an integer; a
+corner with ``a = 2`` is a straight point of the boundary and carries no
+information.
+
+The signature now records
+
+* interior orders ``m_i > -4`` as before;
+* for each boundary component ``j``, the cyclic sequence of corner angles
+  ``a_{j,1}, ..., a_{j,k_j}``, and in particular its *turning*
+
+      t_j = sum_k (2 - a_{j,k})      (in quarter turns);
+
+* ``rho: H_1(M \ C; Z) -> Z_4`` with ``rho(gamma_i) = m_i`` and
+  ``rho(partial_j) = t_j`` mod 4.
+
+The second condition is forced: the rotational holonomy along a boundary component
+is its total turning, since the boundary is geodesic between corners.
+
+### Lemma 14 (Gauss-Bonnet, and a parity constraint)
+
+*For a feature-aligned structure,*
+
+    sum_i (4 - v_i) + sum_{j,k} (2 - a_{j,k}) = 4 chi(M) = 4 (2 - 2g - b),
+
+*where ``v_i = m_i + 4``.  Consequently ``sum_i m_i + sum_{j,k} a_{j,k}`` is even.*
+
+**Proof.**  Gauss-Bonnet for a flat metric with conical singularities and geodesic
+boundary with corners reads
+``sum_i (2 pi - theta_i) + sum_{j,k} (pi - alpha_{j,k}) = 2 pi chi``; dividing by
+``pi/2`` gives the displayed identity.  Reducing it mod 2 gives
+``sum_i v_i + sum_{j,k} a_{j,k} = 0``, and ``v_i = m_i + 4``. `[]`
+
+The parity statement is not a formality: it is exactly the condition for the total
+corner count of a quad mesh to be a multiple of four, so it is what makes the
+combinatorial search of ``experiments/boundary_survey.py`` exact.
+
+### Lemma 15 (the space of signatures is again ``Z_4^{2g}``)
+
+*``H_1(M \ C; Z)`` is free of rank ``2g + b + n - 1``; the classes ``gamma_i`` and
+``partial_j``, oriented as above, satisfy the single relation
+``sum_i gamma_i = sum_j partial_j``; and*
+
+    H_1(M \ C) / <gamma_i, partial_j>  =  H_1(M) / <partial_j>  =  Z^{2g},
+
+*with the induced intersection form unimodular.  Hence the set of signatures with
+prescribed orders and turnings is a coset of ``Z_4^{2g}``.*
+
+**Proof.**  The first two statements are standard for a compact surface with
+boundary and punctures.  Capping each boundary component with a disk gives a closed
+genus-``g`` surface and identifies the quotient with its first homology, on which
+the intersection form is the standard symplectic one, hence unimodular.  Two
+signatures with the same orders and turnings differ by a homomorphism killing all
+``gamma_i`` and ``partial_j``, i.e. by an element of ``Hom(Z^{2g}, Z_4)``. `[]`
+
+So the bookkeeping is identical to the closed case -- the extra ``b - 1``
+generators of homology are exactly eaten by the extra ``b - 1`` independent
+constraints ``rho(partial_j) = t_j``.
+
+### Theorem 16 (Reduction Lemma with boundary)
+
+*Let ``g >= 1``, and fix the interior orders and the corner data.  Put*
+
+    D = < m_1, ..., m_n, t_1, ..., t_b >  <=  Z_4 .
+
+*Two feature-aligned signatures with these data lie in the same orbit of the group
+of homeomorphisms of ``M`` preserving ``C`` and preserving each boundary component
+with its corner sequence if and only if they have the same ``image(rho)``.  The
+number of orbits is the number of subgroups of ``Z_4`` containing ``D``.*
+
+**Proof.**  Identical to Theorem 8, with the three ingredients adapted.
+
+*Translations.*  Lemma 5 applies unchanged to pushing an interior cone ``c_p``
+along a loop.  It also applies to *sliding a boundary component*: a collar of
+``partial_j`` plays the role of the puncture, the slide along ``alpha`` is again a
+product ``T_{alpha_L} T_{alpha_R}^{-1}`` of twists along the two curves bounding an
+annulus that contains the collar, and the same computation gives
+
+    x |-> x + <x, alpha> [partial_j] ,    hence   rho |-> rho + t_j <., alpha> .
+
+The slide preserves the corner sequence of ``partial_j``, so it is admissible.
+Since ``<., alpha>`` realizes every element of ``H^1`` of the capped surface as
+``alpha`` ranges over a symplectic basis (Lemma 15), these moves give exactly the
+translations by ``D . Z_4^{2g}``.
+
+*Symplectic part.*  Lemma 6 is a statement about ``Sp(2g, Z_4)`` and is unchanged.
+
+*Base point.*  In Lemma 7, replace the disk ``D_0`` by an embedded genus-0
+subsurface ``P`` containing all of ``C`` and all ``b`` boundary components of ``M``
+and having one further boundary circle; then ``Sigma = M \ int(P)`` has genus ``g``
+and one boundary circle.  Setting ``rho_0 = 0`` on a symplectic basis inside
+``Sigma`` is consistent because
+``rho_0([partial Sigma]) = sum_i m_i - sum_j t_j = 0`` in ``Z_4`` by the relation of
+Lemma 15.  Mapping classes supported in ``Sigma`` fix ``rho_0`` and realize all of
+``Sp(2g, Z_4)`` exactly as before.
+
+The rest of the argument -- reduce mod ``D``, apply Lemma 6, lift -- is verbatim
+Theorem 8. `[]`
+
+### Corollary 17 (why feature-aligned pipelines rarely see a holonomy obstruction)
+
+*If some interior order ``m_i`` is odd, or some boundary component has odd turning
+``t_j`` -- equivalently, an odd number of corners of odd angle -- then
+``D = Z_4``, there is a single orbit, and realizability does not depend on ``rho``.*
+
+**Proof.**  Immediate from Theorem 16, as Corollary 9. `[]`
+
+A single ``pi/2`` corner on a boundary component makes ``t_j`` odd.  Feature
+networks in practice are full of right-angle corners, so ``D = Z_4`` is the normal
+state of affairs and the rotations along homology loops are simply not part of the
+problem.  That is a precise version of the guess recorded in
+``docs/roadmap.md`` M3, and it is the structural reason the sufficient conditions of
+the feature-aligned literature work as well as they do.
+
+### Lemma 18 (doubling)
+
+*Let ``M~ = M ∪_∂ M-bar`` be the double, a closed surface of genus ``2g + b - 1``,
+with its anti-conformal involution.  A feature-aligned structure on ``M`` doubles to
+a flat ``Z_4``-cone structure on ``M~`` in which*
+
+* *each interior cone of order ``m_i`` gives two cones of order ``m_i``;*
+* *each boundary corner of angle ``a pi/2`` gives one interior cone of angle
+  ``a pi``, i.e. of order ``2a - 4``;*
+* *``image(rho~) contains <image(rho), 2a mod 4 : all corners>``.*
+
+**Proof.**  Reflecting the atlas of ``M`` across each boundary arc extends it over
+the mirror copy: a boundary arc develops to an axis-parallel segment, and reflection
+in such a segment is an isometry of the plane, so the doubled atlas again has
+transitions in ``Z_4 |x R^2`` after re-orienting the mirror charts.  The genus of the
+double is ``2g + b - 1`` by Euler characteristic.  A boundary corner of angle
+``alpha`` becomes an interior point with total angle ``2 alpha``; an interior cone
+is duplicated.  Finally, ``image(rho~)`` contains ``image(rho)`` because ``H_1(M)``
+maps to ``H_1(M~)``, and it contains the loops around the new cones, whose
+``rho~``-values are ``2a - 4 = 2a`` mod 4. `[]`
+
+The inclusion in the third item can be **strict**, and that is not a defect of the
+proof: crossing the boundary contributes a rotation by ``pi`` whenever the two
+reflected charts differ in direction, so the double can carry holonomy that the
+signature of ``M`` does not.  The smallest example, found by exhaustive search: a
+genus-0 surface with three straight boundary circles and trivial ``rho`` has a
+double with ``image(rho~) = 2 Z_4``.  Lemma 18 is verified computationally on every
+boundary mesh with at most three squares -- genus and orders exactly as stated, the
+inclusion always valid (``results/boundary.md``).
+
+### Corollary 19 (a necessary condition from the closed classification)
+
+*If every closed signature consisting of genus ``2g + b - 1``, the doubled orders of
+Lemma 18, and a subgroup ``S`` with ``S contains <image(rho), 2a mod 4>`` is
+unrealizable, then the feature-aligned signature is unrealizable.*
+
+This is the only direction the doubling gives for free, and by itself it gives
+nothing: a scan of all 3058 admissible feature-aligned signatures whose corner count
+fits in four squares finds that Corollary 19 **never** applies
+(``experiments/boundary_survey.py``).  The reason is structural.  The doubled orders
+are always even at the corners, so the doubles that could land in one of
+Masur-Smillie's empty strata are exactly those with ``image(rho~) = 2 Z_4``; but the
+same orders with ``image(rho~) = Z_4`` give a primitive 4-differential, and those
+strata are non-empty.  The closed classification therefore never decides a
+feature-aligned signature on its own.
+
+Turning Corollary 19 into an equivalence -- the boundary analogue of Theorem 10 --
+needs non-emptiness of *real* strata, i.e. of ``k``-differentials invariant under a
+prescribed anti-holomorphic involution, and that is where the boundary case stops
+being a corollary of the closed one.  It is the main thing left open here.  The
+evidence so far points at there being nothing to find: every feature-aligned
+signature that the exhaustive enumeration is large enough to settle is realizable,
+and Corollary 17 says the holonomy cannot obstruct as soon as one turning is odd.
+
+### What the computation says
+
+``experiments/boundary_survey.py`` enumerates *every* connected quad mesh with at
+most a given number of squares -- closed or with boundary, that is, every involution
+of the darts with fixed points allowed -- and compares the resulting complete list
+of realizable feature-aligned signatures against every Gauss-Bonnet-admissible
+signature of that size.  Negative statements there are exhaustive, hence proofs at
+that size; the annealer is used only to certify.  Results are in
+``results/boundary.md``.
+
+---
+
+## 9. Fixed conformal structure: the relation to the Abel-Jacobi criterion
+
+The literature contains a second, differently quantified answer: Chen, Zheng, Ke,
+Lei, Luo and Gu give a necessary and sufficient condition for a singularity
+configuration at a *fixed* conformal structure and *fixed* cone positions, of
+Abel-Jacobi type, and their method does not handle singularities of odd topological
+valence.  This section makes the relation to Theorem 10 precise, and explains the
+odd-valence restriction in the language used here.
+
+### Proposition 20 (fixed `X` and fixed positions)
+
+*Let `X` be a Riemann surface of genus `g`, let `p_1, ..., p_n` be distinct points,
+and let `m_i > -4` be integers with `sum_i m_i = 4(2g - 2)`.  Put*
+
+    E(X, p, m) = { e | 4 : e divides every m_i and
+                   sum_i (m_i / e) p_i ~ (4/e) K_X } ,
+
+*where `~` is linear equivalence.  Then*
+
+* *a 4-differential `q` with `div(q) = sum_i m_i p_i` exists iff `1 in E`, i.e. iff*
+
+      sum_i m_i p_i ~ 4 K_X    (equivalently: AJ(sum m_i p_i - 4K_X) = 0 in Jac(X));
+
+* *when it exists, `q` is unique up to scale and its rotational holonomy satisfies*
+
+      image(rho_q) = d Z_4 ,     d = max E(X, p, m) .
+
+**Proof.**  A meromorphic section of `K_X^4` with prescribed divisor exists iff
+`K_X^4 ⊗ O(-sum m_i p_i)` is trivial, which is the displayed linear equivalence, and
+then it is unique up to a constant because the space of sections of a trivial bundle
+on a compact surface is one-dimensional.  By Lemma 4, `q = eta^e` for a
+`(4/e)`-differential `eta` iff `image(rho_q) subset e Z_4`, and such an `eta` has
+`div(eta) = sum (m_i/e) p_i`, so it exists iff `e in E`.  Since the subgroups of
+`Z_4` are totally ordered, `image(rho_q)` is the largest such `e`. `[]`
+
+Two consequences worth stating.
+
+*The holonomy is not free at fixed `(X, p)`.*  It is *computed* by the Abel-Jacobi
+data: `d = max E`.  There is nothing to prescribe.  This is the exact opposite of
+the topological setting, where the orders leave `Z_4^{2g}` worth of freedom in
+`rho` (Lemma 15) and the Reduction Lemma is needed to organize it.
+
+*On a torus the two pictures coincide term by term.*  `K_E` is trivial, so
+`e in E` reads `sum_i (m_i/e) c_i = 0` in the group law -- precisely the conditions
+(AJ) and (P_e) of Proposition 12.  The witnesses constructed by ``elliptic.py`` are
+therefore instances of Proposition 20: they are choices of `(X, p)` with
+`max E = d` for the intended `d`, which is what
+``experiments/verify_proofs.py`` verifies point by point.
+
+### Corollary 21 (the two questions, side by side)
+
+*A holonomy signature with orders `m` and `image(rho) = d Z_4` is realizable (in the
+topological sense of Lemma 2) if and only if there exist a Riemann surface `X` of
+genus `g` and distinct points `p_i` with*
+
+    max E(X, p, m) = d .
+
+**Proof.**  Combine Theorem 10 with Proposition 20: the stratum of primitive
+`(4/d)`-differentials with orders `m_i/d` is non-empty exactly when some `(X, p)`
+has `d in E` and no larger `e in E`. `[]`
+
+So the fixed-structure criterion is the *pointwise* condition, and the question of
+this repository is whether the locus it cuts out is non-empty.  Chen et al. answer
+the first for a given `(X, p)`; Theorem 10 answers the second by quantifying over
+moduli, which is what the graphics question needs, since a parametrization is free
+to choose the flat metric.
+
+### Corollary 22 (why odd valence is the hard case there and the easy case here)
+
+*If some cone has odd topological valence -- that is, some `m_i` is odd -- then
+`E(X, p, m) = {1}` for every `(X, p)`, so `q` is always a primitive 4-differential
+and `image(rho) = Z_4`.*
+
+**Proof.**  `e in E` requires `e | m_i` for all `i`; an odd `m_i` forces `e = 1`. `[]`
+
+Odd valence is therefore exactly the regime `D = Z_4` of Corollary 9: the single
+`MCG`-orbit, the case where the rotations along homology loops carry no information,
+and the case in which the object is a genuine 4-differential rather than the square
+of a quadratic differential or the fourth power of an abelian one.  A method built
+on quadratic differentials -- on squares -- sees only `e >= 2` and so cannot reach
+it; that is the shape of the restriction reported in that line of work.  For the
+topological question the same regime is the *easiest* one, because the holonomy
+drops out of the problem entirely.

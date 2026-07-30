@@ -73,9 +73,18 @@ class TestQuadMesh(unittest.TestCase):
 
     def test_rejects_bad_gluings(self):
         with self.assertRaises(ValueError):
-            QuadMesh(1, [0, 1, 2, 3])  # fixed points
-        with self.assertRaises(ValueError):
             QuadMesh(1, [1, 2, 3, 0])  # not an involution
+
+    def test_fixed_points_mean_boundary(self):
+        """A single unglued square is a flat square with four right-angle corners."""
+        mesh = QuadMesh(1, [0, 1, 2, 3])
+        self.assertTrue(mesh.has_boundary())
+        self.assertEqual(mesh.genus(), 0)
+        self.assertEqual(mesh.n_boundary_components(), 1)
+        self.assertEqual(mesh.orders(), ())
+        self.assertEqual(sorted(mesh.corner_angles()), [1, 1, 1, 1])
+        self.assertEqual(mesh.turning(), 4)
+        mesh.check_consistency()
 
 
 if __name__ == "__main__":
