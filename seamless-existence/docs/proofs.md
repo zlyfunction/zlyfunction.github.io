@@ -356,13 +356,21 @@ surface is non-empty.*
 primitive `(4/d)`-differential `eta` with orders `m_i/d`.
 
 Conversely, let `eta` be a primitive `(4/d)`-differential with orders `m_i/d` on
-some genus-`g` Riemann surface `X`.  Put `q = eta^d`.  By Lemma 4 the rotational
-holonomy `rho'` of `q` has `image(rho') = d Z_4`, and `div(q) = sum m_i c_i`, so by
-Lemma 3 the metric `|q|^{1/2}` is a flat cone metric with the prescribed cone
-angles and with signature `s' = (m, rho')`.  Since `image(rho') = image(rho)`,
-Theorem 8 (for `g >= 1`) puts `s'` in the `MCG(M, C)`-orbit of `s`; for `g = 0`,
-`H^1(M; Z_4) = 0` so `A(m)` is a single point and `s' = s` up to relabelling `C`.
-Lemma 2 (b) now says `s` is realizable. `[]`
+some genus-`g` Riemann surface `X`, at points `p_1, ..., p_n`.  Put `q = eta^d`.  By
+Lemma 4 the rotational holonomy of `q` has image exactly `d Z_4`, and
+`div(q) = sum_i m_i p_i`, so by Lemma 3 the metric `|q|^{1/2}` is a flat cone metric
+on `X` with cone angles `(m_i + 4) pi/2` at the `p_i`.
+
+Transport it to `M`: choose an orientation-preserving homeomorphism `X -> M`
+carrying `p_i` to `c_{sigma(i)}` for a permutation `sigma` matching equal orders.
+The result is a flat cone metric on `M` with cone set `C`, whose signature
+`s' = (m . sigma, rho')` has the same multiset of orders as `s` and, since the
+transport is by a homeomorphism, `image(rho') = d Z_4 = image(rho)`.
+
+For `g >= 1`, Theorem 8 now puts `s'` in the `MCG(M, C)`-orbit of `s`.  For
+`g = 0`, `H^1(M; Z_4) = 0`, so `A(m)` is a single point and `s'` equals `s` after
+relabelling `C`, which is again a mapping class.  Either way Lemma 2 (b) says `s`
+is realizable. `[]`
 
 So the open problem is *equivalent* to a stratum non-emptiness question, for which
 the literature supplies: `d = 4` (abelian differentials) classical, `d = 2`

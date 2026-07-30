@@ -1,0 +1,2060 @@
+{
+ "lemma6": {
+  "name": "Lemma 6 (symplectic transitivity)",
+  "runs": [
+   {
+    "genus": 1,
+    "n_generators": 15,
+    "classes": {
+     "1": {
+      "class_size": 12,
+      "orbit_size": 12,
+      "transitive": true
+     },
+     "2": {
+      "class_size": 3,
+      "orbit_size": 3,
+      "transitive": true
+     },
+     "4": {
+      "class_size": 1,
+      "orbit_size": 1,
+      "transitive": true
+     }
+    },
+    "transitive": true,
+    "generator_set": "complete",
+    "seconds": 0.0
+   },
+   {
+    "genus": 2,
+    "n_generators": 255,
+    "classes": {
+     "1": {
+      "class_size": 240,
+      "orbit_size": 240,
+      "transitive": true
+     },
+     "2": {
+      "class_size": 15,
+      "orbit_size": 15,
+      "transitive": true
+     },
+     "4": {
+      "class_size": 1,
+      "orbit_size": 1,
+      "transitive": true
+     }
+    },
+    "transitive": true,
+    "generator_set": "complete",
+    "seconds": 0.1
+   },
+   {
+    "genus": 3,
+    "n_generators": 4095,
+    "classes": {
+     "1": {
+      "class_size": 4032,
+      "orbit_size": 4032,
+      "transitive": true
+     },
+     "2": {
+      "class_size": 63,
+      "orbit_size": 63,
+      "transitive": true
+     },
+     "4": {
+      "class_size": 1,
+      "orbit_size": 1,
+      "transitive": true
+     }
+    },
+    "transitive": true,
+    "generator_set": "complete",
+    "seconds": 20.7
+   },
+   {
+    "genus": 4,
+    "n_generators": 60,
+    "classes": {
+     "1": {
+      "class_size": 65280,
+      "orbit_size": 65280,
+      "transitive": true
+     },
+     "2": {
+      "class_size": 255,
+      "orbit_size": 255,
+      "transitive": true
+     },
+     "4": {
+      "class_size": 1,
+      "orbit_size": 1,
+      "transitive": true
+     }
+    },
+    "transitive": true,
+    "generator_set": "random subset of 20",
+    "seconds": 6.0
+   },
+   {
+    "genus": 5,
+    "n_generators": 192,
+    "classes": {
+     "1": {
+      "class_size": 1047552,
+      "orbit_size": 1047552,
+      "transitive": true
+     },
+     "2": {
+      "class_size": 1023,
+      "orbit_size": 1023,
+      "transitive": true
+     },
+     "4": {
+      "class_size": 1,
+      "orbit_size": 1,
+      "transitive": true
+     }
+    },
+    "transitive": true,
+    "generator_set": "random subset of 64",
+    "seconds": 368.7
+   }
+  ],
+  "ok": true
+ },
+ "theorem8": {
+  "name": "Theorem 8 (Reduction Lemma)",
+  "rows": [
+   {
+    "genus": 1,
+    "cone_subgroup_generator": 1,
+    "orders": [
+     1,
+     -1
+    ],
+    "n_orbits": 1,
+    "expected_orbits": 1,
+    "orbit_sizes": [
+     16
+    ],
+    "invariants": [
+     1
+    ],
+    "constant": true,
+    "separating": true,
+    "ok": true,
+    "seconds": 0.0
+   },
+   {
+    "genus": 1,
+    "cone_subgroup_generator": 2,
+    "orders": [
+     2,
+     -2
+    ],
+    "n_orbits": 2,
+    "expected_orbits": 2,
+    "orbit_sizes": [
+     4,
+     12
+    ],
+    "invariants": [
+     2,
+     1
+    ],
+    "constant": true,
+    "separating": true,
+    "ok": true,
+    "seconds": 0.0
+   },
+   {
+    "genus": 1,
+    "cone_subgroup_generator": 4,
+    "orders": [
+     0,
+     0
+    ],
+    "n_orbits": 3,
+    "expected_orbits": 3,
+    "orbit_sizes": [
+     1,
+     12,
+     3
+    ],
+    "invariants": [
+     4,
+     1,
+     2
+    ],
+    "constant": true,
+    "separating": true,
+    "ok": true,
+    "seconds": 0.0
+   },
+   {
+    "genus": 2,
+    "cone_subgroup_generator": 1,
+    "orders": [
+     1,
+     7
+    ],
+    "n_orbits": 1,
+    "expected_orbits": 1,
+    "orbit_sizes": [
+     256
+    ],
+    "invariants": [
+     1
+    ],
+    "constant": true,
+    "separating": true,
+    "ok": true,
+    "seconds": 0.1
+   },
+   {
+    "genus": 2,
+    "cone_subgroup_generator": 2,
+    "orders": [
+     2,
+     6
+    ],
+    "n_orbits": 2,
+    "expected_orbits": 2,
+    "orbit_sizes": [
+     16,
+     240
+    ],
+    "invariants": [
+     2,
+     1
+    ],
+    "constant": true,
+    "separating": true,
+    "ok": true,
+    "seconds": 0.1
+   },
+   {
+    "genus": 2,
+    "cone_subgroup_generator": 4,
+    "orders": [
+     4,
+     4
+    ],
+    "n_orbits": 3,
+    "expected_orbits": 3,
+    "orbit_sizes": [
+     1,
+     240,
+     15
+    ],
+    "invariants": [
+     4,
+     1,
+     2
+    ],
+    "constant": true,
+    "separating": true,
+    "ok": true,
+    "seconds": 0.1
+   },
+   {
+    "genus": 3,
+    "cone_subgroup_generator": 1,
+    "orders": [
+     1,
+     15
+    ],
+    "n_orbits": 1,
+    "expected_orbits": 1,
+    "orbit_sizes": [
+     4096
+    ],
+    "invariants": [
+     1
+    ],
+    "constant": true,
+    "separating": true,
+    "ok": true,
+    "seconds": 21.2
+   },
+   {
+    "genus": 3,
+    "cone_subgroup_generator": 2,
+    "orders": [
+     2,
+     14
+    ],
+    "n_orbits": 2,
+    "expected_orbits": 2,
+    "orbit_sizes": [
+     64,
+     4032
+    ],
+    "invariants": [
+     2,
+     1
+    ],
+    "constant": true,
+    "separating": true,
+    "ok": true,
+    "seconds": 20.5
+   },
+   {
+    "genus": 3,
+    "cone_subgroup_generator": 4,
+    "orders": [
+     4,
+     12
+    ],
+    "n_orbits": 3,
+    "expected_orbits": 3,
+    "orbit_sizes": [
+     1,
+     4032,
+     63
+    ],
+    "invariants": [
+     4,
+     1,
+     2
+    ],
+    "constant": true,
+    "separating": true,
+    "ok": true,
+    "seconds": 20.9
+   }
+  ],
+  "ok": true
+ },
+ "corollary9": {
+  "name": "Corollary 9 (odd cone collapses rho)",
+  "rows": [
+   {
+    "genus": 1,
+    "orders": [
+     -1,
+     1
+    ],
+    "has_odd_order": true,
+    "n_orbits": 1,
+    "single_full_orbit": true,
+    "ok": true
+   },
+   {
+    "genus": 1,
+    "orders": [
+     -3,
+     3
+    ],
+    "has_odd_order": true,
+    "n_orbits": 1,
+    "single_full_orbit": true,
+    "ok": true
+   },
+   {
+    "genus": 1,
+    "orders": [
+     -3,
+     1,
+     2
+    ],
+    "has_odd_order": true,
+    "n_orbits": 1,
+    "single_full_orbit": true,
+    "ok": true
+   },
+   {
+    "genus": 2,
+    "orders": [
+     1,
+     7
+    ],
+    "has_odd_order": true,
+    "n_orbits": 1,
+    "single_full_orbit": true,
+    "ok": true
+   },
+   {
+    "genus": 2,
+    "orders": [
+     3,
+     5
+    ],
+    "has_odd_order": true,
+    "n_orbits": 1,
+    "single_full_orbit": true,
+    "ok": true
+   },
+   {
+    "genus": 2,
+    "orders": [
+     -1,
+     9
+    ],
+    "has_odd_order": true,
+    "n_orbits": 1,
+    "single_full_orbit": true,
+    "ok": true
+   },
+   {
+    "genus": 2,
+    "orders": [
+     -3,
+     11
+    ],
+    "has_odd_order": true,
+    "n_orbits": 1,
+    "single_full_orbit": true,
+    "ok": true
+   },
+   {
+    "genus": 3,
+    "orders": [
+     1,
+     15
+    ],
+    "has_odd_order": true,
+    "n_orbits": 1,
+    "single_full_orbit": true,
+    "ok": true
+   },
+   {
+    "genus": 3,
+    "orders": [
+     -3,
+     19
+    ],
+    "has_odd_order": true,
+    "n_orbits": 1,
+    "single_full_orbit": true,
+    "ok": true
+   }
+  ],
+  "ok": true
+ },
+ "proposition12": {
+  "name": "Proposition 12 (genus 1 Abel-Jacobi criterion)",
+  "n_cases": 65,
+  "rows": [
+   {
+    "k": 1,
+    "mu": [],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "exists",
+    "witness": [],
+    "problems": []
+   },
+   {
+    "k": 1,
+    "mu": [
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/2",
+      "0"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 1,
+    "mu": [
+     0,
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/3",
+      "0"
+     ],
+     [
+      "2/3",
+      "0"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 1,
+    "mu": [
+     0,
+     0,
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/4",
+      "0"
+     ],
+     [
+      "1/2",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 1,
+    "mu": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/5",
+      "0"
+     ],
+     [
+      "2/5",
+      "0"
+     ],
+     [
+      "3/5",
+      "0"
+     ],
+     [
+      "4/5",
+      "0"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [
+     -1,
+     1
+    ],
+    "n_nonzero": 2,
+    "e_star": 1,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [
+     0,
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [
+     -1,
+     -1,
+     2
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "7/12",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [
+     -1,
+     0,
+     1
+    ],
+    "n_nonzero": 2,
+    "e_star": 1,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [
+     0,
+     0,
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [
+     -1,
+     -1,
+     -1,
+     3
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/12",
+      "1/8"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [
+     -1,
+     -1,
+     0,
+     2
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "7/12",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [
+     -1,
+     -1,
+     1,
+     1
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "5/12",
+      "3/8"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [
+     -1,
+     0,
+     0,
+     1
+    ],
+    "n_nonzero": 2,
+    "e_star": 1,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 2,
+    "mu": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     3
+    ],
+    "n_nonzero": 2,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/3",
+      "0"
+     ],
+     [
+      "0",
+      "0"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     2
+    ],
+    "n_nonzero": 2,
+    "e_star": 2,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/2",
+      "0"
+     ],
+     [
+      "0",
+      "0"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -1,
+     1
+    ],
+    "n_nonzero": 2,
+    "e_star": 1,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     0,
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -3,
+     6
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "11/12",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -2,
+     5
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "17/18",
+      "5/6"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -1,
+     4
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "35/36",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     0,
+     3
+    ],
+    "n_nonzero": 2,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/3",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "0",
+      "0"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     1,
+     2
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "25/36",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     4
+    ],
+    "n_nonzero": 3,
+    "e_star": 2,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/12",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -1,
+     3
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "5/8",
+      "3/4"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     0,
+     2
+    ],
+    "n_nonzero": 2,
+    "e_star": 2,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/2",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "0",
+      "0"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     1,
+     1
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "17/24",
+      "3/4"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -1,
+     -1,
+     2
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "7/12",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -1,
+     0,
+     1
+    ],
+    "n_nonzero": 2,
+    "e_star": 1,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     0,
+     0,
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -3,
+     0,
+     6
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "11/12",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -3,
+     1,
+     5
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "35/36",
+      "23/24"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -3,
+     2,
+     4
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "25/36",
+      "5/6"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -3,
+     3,
+     3
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "3/4",
+      "17/24"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -2,
+     -1,
+     6
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "17/18",
+      "11/12"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -2,
+     0,
+     5
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "17/18",
+      "5/6"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -2,
+     1,
+     4
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "13/18",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -2,
+     2,
+     3
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "7/9",
+      "7/8"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -1,
+     -1,
+     5
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "25/36",
+      "23/24"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -1,
+     0,
+     4
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "35/36",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -1,
+     1,
+     3
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "29/36",
+      "17/24"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     -1,
+     2,
+     2
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "31/36",
+      "11/12"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     0,
+     0,
+     3
+    ],
+    "n_nonzero": 2,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/3",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "1/3",
+      "1/4"
+     ],
+     [
+      "0",
+      "0"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     0,
+     1,
+     2
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "25/36",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -3,
+     1,
+     1,
+     1
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "35/36",
+      "19/24"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     -2,
+     6
+    ],
+    "n_nonzero": 4,
+    "e_star": 2,
+    "criterion": "exists",
+    "witness": [
+     [
+      "7/12",
+      "1/8"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     -1,
+     5
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "2/3",
+      "15/16"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     0,
+     4
+    ],
+    "n_nonzero": 3,
+    "e_star": 2,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/12",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     1,
+     3
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "5/6",
+      "9/16"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -2,
+     2,
+     2
+    ],
+    "n_nonzero": 4,
+    "e_star": 2,
+    "criterion": "exists",
+    "witness": [
+     [
+      "11/12",
+      "3/8"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -1,
+     -1,
+     4
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "19/24",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -1,
+     0,
+     3
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "5/8",
+      "3/4"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     -1,
+     1,
+     2
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "23/24",
+      "5/8"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     0,
+     0,
+     2
+    ],
+    "n_nonzero": 2,
+    "e_star": 2,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/2",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "1/3",
+      "1/4"
+     ],
+     [
+      "0",
+      "0"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -2,
+     0,
+     1,
+     1
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "17/24",
+      "3/4"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -1,
+     -1,
+     -1,
+     3
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "1/12",
+      "1/8"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -1,
+     -1,
+     0,
+     2
+    ],
+    "n_nonzero": 3,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "7/12",
+      "0"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "1/2",
+      "1/3"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -1,
+     -1,
+     1,
+     1
+    ],
+    "n_nonzero": 4,
+    "e_star": 1,
+    "criterion": "exists",
+    "witness": [
+     [
+      "5/12",
+      "3/8"
+     ],
+     [
+      "3/4",
+      "0"
+     ],
+     [
+      "2/3",
+      "1/2"
+     ],
+     [
+      "1/2",
+      "7/8"
+     ]
+    ],
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     -1,
+     0,
+     0,
+     1
+    ],
+    "n_nonzero": 2,
+    "e_star": 1,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   },
+   {
+    "k": 4,
+    "mu": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "n_nonzero": 0,
+    "e_star": null,
+    "criterion": "empty",
+    "witness": null,
+    "problems": []
+   }
+  ],
+  "ok": true
+ },
+ "theorem10": {
+  "name": "Theorem 10 and Lemma 3 against exhaustive construction",
+  "max_faces": 4,
+  "gluings": {
+   "1": {
+    "connected_gluings": 3,
+    "seconds": 0.0
+   },
+   "2": {
+    "connected_gluings": 96,
+    "seconds": 0.0
+   },
+   "3": {
+    "connected_gluings": 9504,
+    "seconds": 0.3
+   },
+   "4": {
+    "connected_gluings": 1880064,
+    "seconds": 71.8
+   }
+  },
+  "total_gluings": 1889667,
+  "n_signatures_realized": 67,
+  "problems": [],
+  "ok": true
+ },
+ "ok": true
+}
