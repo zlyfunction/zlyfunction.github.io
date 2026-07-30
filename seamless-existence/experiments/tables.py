@@ -88,7 +88,7 @@ def main() -> None:
         else:
             lines += [
                 "**Rule: realizable iff the reduced stratum is non-empty** "
-                "(Main Conjecture); no counterexample in range.",
+                "(`docs/proofs.md` Theorem 10); no counterexample in range.",
                 "",
             ]
         if empty:

@@ -33,7 +33,9 @@ parametrization.  So the question only depends on the orbit.
 > number of subgroups of `Z_4` containing `D`: one if `D = Z_4`, two if
 > `D = 2 Z_4`, three if `D = 0`.
 
-Two families of mapping classes do the work.
+**The proof is in `docs/proofs.md`, Theorem 8** (with Lemmas 5, 6 and 7 as
+ingredients).  What follows is the idea; two families of mapping classes do the
+work.
 
 **Point pushing.**  Pushing the cone `c_p` once around a loop `alpha` changes
 `rho` by `m_p * <alpha, .>`.  As `alpha` ranges over `H_1(M; Z_4)` and the
@@ -48,6 +50,14 @@ Modulo the translations, the handle part lives in `(Z_4 / D)^{2g}`, and
 `Sp`-orbits there are classified by the *content* of the vector, i.e. by the
 subgroup it generates -- equivalently by `image(rho) = D + <handle values>`.
 That is the lemma.
+
+One point that needs care, and that the proof in `docs/proofs.md` handles: the
+action of `MCG(M, C)` on the set of signatures with fixed orders is *affine*, not
+linear, so "the `Sp` action" only makes sense relative to a base point.  Lemma 7
+constructs one: put all the cones inside an embedded disk, take `rho_0` to vanish
+on a symplectic basis chosen outside that disk, and use only mapping classes
+supported in the complement of the disk.  Those fix `rho_0` and still realize all
+of `Sp(2g, Z_4)`.
 
 `mcg.verify_reduction_lemma` checks the conclusion by brute force (BFS over all
 `4^{2g}` handle vectors under both families of moves).  It has been verified for
@@ -72,16 +82,18 @@ realizable?  Combined with `docs/dictionary.md` this is exactly the question of
 whether a stratum of primitive `k`-differentials (`k = 4/d`) with orders `m_i/d`
 is non-empty.
 
-## Main Conjecture
+## Main Theorem
 
 > A holonomy signature `(g, m, rho)` is realizable by a seamless parametrization
 > iff the stratum of primitive `(4/d)`-differentials with orders `m_i / d` is
 > non-empty, where `d` generates `image(rho)`.
 
-The forward direction is the dictionary.  The converse needs (D2) of
-`docs/dictionary.md`.  `results/survey.md` checks the conjecture against a
-square-tiled search on 188 orbits: 178 certified, 4 predicted-empty and not
-found, 0 contradictions.
+This is Theorem 10 of `docs/proofs.md`.  The forward direction is the dictionary;
+the converse combines the dictionary with (D2) and with the Reduction Lemma, which
+is what lets a differential with the *right image of rho* stand in for one with the
+prescribed `rho`.  `results/survey.md` checks it against an independent
+square-tiled search on 188 orbits: 178 certified, 4 predicted-empty and not found,
+0 contradictions.
 
 ## Where the obstructions actually live
 

@@ -37,8 +37,10 @@ them here are from memory and secondary sources and must be checked; see
   **Extract:** the theorem on the holonomy group of a euclidean cone metric on
   the torus with two cone points, and the second proof via the induced conformal
   structure and the residue theorem.  The Abel-Jacobi argument of
-  `docs/genus1.md` should be compared with that second proof; they are very
-  likely the same argument, and the write-up must say so.
+  `docs/proofs.md` Proposition 12 should be compared with that second proof; they
+  are very likely the same argument in the `n_0 = 2` case, and the write-up must
+  say so.  What Proposition 12 adds is the uniform treatment of all `k`, all
+  `n_0`, and primitivity.
 
 ## Non-emptiness of strata: the machinery to borrow
 
@@ -90,7 +92,7 @@ them here are from memory and secondary sources and must be checked; see
   at *fixed* conformal structure and *fixed* cone positions; does not handle
   singularities of odd topological valence.
   **Why it matters here:** it is the same divisor condition that appears in
-  `docs/genus1.md`, quantified differently.  Making the relationship between the
+  `docs/proofs.md` Proposition 12, quantified differently.  Making the relationship between the
   two settings precise is milestone M5.
 
 ## Prescribing flat metrics
@@ -100,7 +102,7 @@ them here are from memory and secondary sources and must be checked; see
   Trans. AMS 324 (1991).
   **Used here:** existence of a flat cone metric with prescribed angles at
   prescribed points on any closed surface, which settles genus 0 outright
-  (`docs/genus1.md`, Proposition 0).
+  (`docs/proofs.md`, Proposition 11); it enters as fact (S6) there.
 
 ## Downstream (not needed for this problem, listed for the roadmap)
 

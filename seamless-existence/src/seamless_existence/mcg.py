@@ -6,7 +6,8 @@ one gives a seamless parametrization for the other by pullback.  So the
 existence question only depends on the *orbit*.
 
 This module computes the orbits by brute force for small genus, in order to
-check the Reduction Lemma of ``docs/reduction.md``:
+check the Reduction Lemma (``docs/proofs.md`` Theorem 8, exposition in
+``docs/reduction.md``):
 
     Orbits of holonomy signatures with fixed genus ``g >= 1`` and fixed multiset
     of orders ``m`` are in bijection with the subgroups ``image(rho) <= Z_4``
@@ -22,10 +23,15 @@ Two families of mapping classes are used.
 2. *Symplectic transvections.*  Dehn twists act on ``H_1(M; Z_4)`` by
    ``T_c(x) = x + <x, c> c``, and these generate the image of ``MCG(M)`` in
    ``Sp(2g, Z_4)`` (``Sp(2g, Z) -> Sp(2g, Z_4)`` is surjective).
+
+That the action really is linear in a suitable coordinate -- and not merely affine
+-- is ``docs/proofs.md`` Lemma 7, which supplies a base point fixed by a subgroup
+realizing all of ``Sp(2g, Z_4)``.
 """
 
 from __future__ import annotations
 
+import random
 from functools import lru_cache
 from itertools import product
 from typing import Iterable
@@ -38,6 +44,9 @@ __all__ = [
     "handle_orbits",
     "orbit_representatives",
     "verify_reduction_lemma",
+    "content",
+    "sp_generators",
+    "verify_sp_transitivity",
 ]
 
 
@@ -49,10 +58,41 @@ def symplectic_product(x: tuple[int, ...], y: tuple[int, ...]) -> int:
     return total % 4
 
 
-def transvection(x: tuple[int, ...], c: tuple[int, ...]) -> tuple[int, ...]:
-    """``T_c(x) = x + <x, c> c`` over ``Z_4``."""
-    s = symplectic_product(x, c)
+def transvection(
+    x: tuple[int, ...], c: tuple[int, ...], power: int = 1
+) -> tuple[int, ...]:
+    """``T_c^power (x) = x + power * <x, c> c`` over ``Z_4``.
+
+    ``T_c`` is the action of the Dehn twist along a curve in the class ``c``, so
+    every power of it is again the action of a mapping class.  Note that rescaling
+    ``c`` does not produce these powers: replacing ``c`` by ``t c`` gives the power
+    ``t^2``, and ``t^2 in {0, 1}`` mod 4.
+    """
+    s = power * symplectic_product(x, c)
     return tuple((xi + s * ci) % 4 for xi, ci in zip(x, c))
+
+
+def content(v: tuple[int, ...]) -> int:
+    """Generator of the subgroup of ``Z_4`` spanned by the entries of ``v``."""
+    return subgroup_generator(v)
+
+
+def sp_generators(
+    genus: int, count: int | None = None, seed: int = 0, powers: tuple[int, ...] = (1,)
+) -> list[tuple[tuple[int, ...], int]]:
+    """Transvection data ``(c, power)`` used as generators of the ``Sp`` action.
+
+    With ``count is None`` every nonzero ``c`` is used, which is the complete set
+    of transvections and needs no justification.  With ``count`` given, a random
+    subset of that size is used: any subgroup of the true action is enough to
+    *prove* transitivity when the resulting orbits are already as large as
+    claimed, which is how the higher-genus checks stay affordable.
+    """
+    all_c = [c for c in product(range(4), repeat=2 * genus) if any(c)]
+    if count is not None and count < len(all_c):
+        rng = random.Random(seed)
+        all_c = rng.sample(all_c, count)
+    return [(c, p) for c in all_c for p in powers]
 
 
 def _push_shifts(genus: int, cone_generator: int) -> list[tuple[int, ...]]:
@@ -137,3 +177,48 @@ def verify_reduction_lemma(genus: int, orders: Iterable[int]) -> dict:
         "constant": constant,
         "separating": separating,
     }
+
+
+def verify_sp_transitivity(
+    genus: int, count: int | None = None, seed: int = 0,
+    powers: tuple[int, ...] = (1, 2, 3),
+) -> dict:
+    """Check that ``Sp(2g, Z_4)`` is transitive on each content class of ``Z_4^{2g}``.
+
+    This is the ingredient of the Reduction Lemma that does the real work
+    (``docs/proofs.md``, Lemma 6).  The check starts from the canonical
+    representative ``d * e_1`` of each content class and closes it up under
+    transvections; success means the orbit is the whole class, so transitivity
+    holds for this genus -- using only genuine mapping class actions, hence
+    rigorously.
+    """
+    gens = sp_generators(genus, count=count, seed=seed, powers=powers)
+    universe = list(product(range(4), repeat=2 * genus))
+    classes: dict[int, set[tuple[int, ...]]] = {}
+    for v in universe:
+        classes.setdefault(content(v), set()).add(v)
+
+    report = {"genus": genus, "n_generators": len(gens), "classes": {}}
+    ok = True
+    for d, expected in sorted(classes.items()):
+        canonical = tuple([d % 4] + [0] * (2 * genus - 1))
+        if d == 4:  # the trivial class is the single vector 0
+            canonical = tuple([0] * (2 * genus))
+        orbit = {canonical}
+        frontier = [canonical]
+        while frontier:
+            v = frontier.pop()
+            for c, p in gens:
+                w = transvection(v, c, p)
+                if w not in orbit:
+                    orbit.add(w)
+                    frontier.append(w)
+        transitive = orbit == expected
+        ok = ok and transitive
+        report["classes"][d] = {
+            "class_size": len(expected),
+            "orbit_size": len(orbit),
+            "transitive": transitive,
+        }
+    report["transitive"] = ok
+    return report

@@ -59,14 +59,20 @@ Two remarks on what is *not* being asked.
 
 ## What this repository contains
 
+All proofs are in `docs/proofs.md`; the other documents are expositions.
+
 1. A dictionary turning the question into non-emptiness of a stratum of
-   `k`-differentials (`docs/dictionary.md`).
+   `k`-differentials, including the topological equivalence that makes the
+   question independent of the mesh and of the conformal structure (Lemmas 1-4).
 2. A Reduction Lemma showing the answer depends on the holonomy only through
    `image(rho) <= Z_4`, leaving at most three cases per cone-angle multiset, and
    explaining why the known sufficient condition has the shape it has
-   (`docs/reduction.md`).
-3. Complete answers in genus 0 and genus 1, the latter reproducing the unique
-   known exception in one line (`docs/genus1.md`).
-4. A computational engine that certifies signatures by constructing square-tiled
-   surfaces, and a survey cross-checking theory against construction over 188
-   orbits (`results/survey.md`).
+   (Theorem 8, Corollary 9).
+3. The Main Theorem: a signature is realizable iff a stratum of primitive
+   `(4/d)`-differentials is non-empty (Theorem 10).
+4. Complete answers in genus 0 and genus 1, the latter reproducing the unique
+   known exception in one line (Propositions 11-12, Corollary 13).
+5. A computational engine that certifies signatures by constructing square-tiled
+   surfaces, a survey cross-checking theory against construction over 188 orbits
+   (`results/survey.md`), and a machine-checked verification of the proofs
+   (`results/verification.md`).

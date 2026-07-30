@@ -11,11 +11,15 @@ Sufficient conditions are strong and combinatorial.  Necessary conditions are
 essentially absent -- the only known obstruction is the torus with two cones of
 angle `3 pi/2` and `5 pi/2`.  The bet of this repository is that the obstructions
 are not new mathematics: they are already classified, in the language of flat
-surfaces and `k`-differentials, and what is missing is the bridge.
+surfaces and `k`-differentials, and what is missing is the bridge.  That bridge is
+now built and proved: **realizability is equivalent to non-emptiness of a stratum of
+primitive `k`-differentials** (Theorem 10).
 
-Start with [`docs/problem.md`](docs/problem.md), then
-[`docs/dictionary.md`](docs/dictionary.md) and
-[`docs/reduction.md`](docs/reduction.md).
+Start with [`docs/problem.md`](docs/problem.md) for the question and
+[`docs/proofs.md`](docs/proofs.md) for the mathematics;
+[`docs/dictionary.md`](docs/dictionary.md), [`docs/reduction.md`](docs/reduction.md)
+and [`docs/genus1.md`](docs/genus1.md) are expositions of the proofs, and
+[`results/verification.md`](results/verification.md) is the machine-checked part.
 
 ## The approach in five lines
 
@@ -65,16 +69,20 @@ size is realized.  A dedicated search with a much larger budget -- up to six ext
 regular vertices, 200 000 annealing steps, six restarts per size -- also fails on
 all four unrealizable signatures (`results/negative_search.json`).
 
-**Finding 3 -- genus 0 and genus 1 are completely settled.**  Genus 0: every
+**Finding 3 -- genus 0 and genus 1 are completely settled, with proofs.**  Genus 0: every
 Gauss-Bonnet-admissible signature is realizable (Troyanov; on the sphere the
 holonomy is determined by the angles).  Genus 1: an Abel-Jacobi argument gives a
 complete list of exceptions, and it recovers the known one in a line -- a
 `k`-differential with divisor `c_1 - c_2` needs `c_1 - c_2` to be a nonzero
-1-torsion point of an elliptic curve, and there are none (`docs/genus1.md`).  The
-same criterion independently reproduces both of Masur-Smillie's genus-1 empty
-strata, which is a good sign that the dictionary is right.
+1-torsion point of an elliptic curve, and there are none (`docs/proofs.md`
+Propositions 11-12, Corollary 13).  The same criterion independently reproduces
+both of Masur-Smillie's genus-1 empty strata, which is a good sign that the
+dictionary is right.  On the torus the answer is a complete list: unrealizable
+exactly for (i) no cones with nontrivial holonomy, (ii) two cones of angle
+`3 pi/2` and `5 pi/2`, (iii) two cones of angle `pi` and `3 pi` with holonomy
+everywhere a multiple of `pi`.
 
-**Finding 4 -- the Main Conjecture survives a 188-orbit test.**  For every genus
+**Finding 4 -- the Main Theorem survives a 188-orbit test.**  For every genus
 `<= 3`, at most 4 cones and orders bounded by 8, the survey compares theory
 against construction (`results/survey.md`):
 
@@ -95,42 +103,70 @@ stratum is one of the four classical empty ones.**
 language -- cone angles as multiples of `pi`, holonomy described in cross-field
 terms -- so it can be checked against an implementation directly.
 
-## Main Conjecture
+**Finding 5 -- the proofs are machine-checked where that is possible.**
+[`results/verification.md`](results/verification.md) checks, with no appeal to any
+failed search:
+
+* **Lemma 6** (`Sp(2g, Z_4)` is transitive on each content class) for
+  `g = 1, ..., 5`, by growing the orbit of `d e_1` under genuine transvections
+  until it is the whole class -- `1 047 552` vectors at `g = 5`;
+* **Theorem 8** (the Reduction Lemma) for `g = 1, 2, 3` and all three cone
+  subgroups `D`, with the predicted orbit counts `1 / 2 / 3`;
+* **Corollary 9** (an odd cone angle collapses the holonomy) case by case;
+* **Proposition 12** (genus 1) by constructing the divisor witnesses explicitly in
+  `(Q/Z)^2` with exact `Fraction` arithmetic and verifying both defining
+  conditions, for every admissible `(k, mu)` in a range -- the criterion says
+  "non-empty" exactly when a witness gets built;
+* **Theorem 10 and Lemma 3** against all `1 889 667` gluings of at most four unit
+  squares: each satisfies Gauss-Bonnet and has holonomy equal to the valence mod 4
+  at every vertex, and none realizes a signature the theorem calls empty.
+
+## Main Theorem
 
 > A holonomy signature `(g, m, rho)` is realizable by a seamless parametrization
 > iff the stratum of primitive `(4/d)`-differentials with orders `m_i / d` is
 > non-empty, where `d` generates `image(rho)`.
 
-The forward direction is the dictionary.  The converse needs the topological
-equivalence (D2) of `docs/dictionary.md`.  Turning the conjecture into a theorem
-with explicit tables is milestone M2; the missing input is the `k = 4` exceptional
-list of Gendron-Tahar (milestone M1).
+Proved as Theorem 10 of [`docs/proofs.md`](docs/proofs.md), from the dictionary
+(Lemmas 1-4), the topological equivalence (Lemma 2) and the Reduction Lemma
+(Theorem 8).  It uses six standard facts, listed as (S1)-(S6) in §7 there, and
+nothing else.
+
+So the open problem is now a bookkeeping exercise over an existing classification.
+What is still missing is the bookkeeping input for `k = 4`: Gendron-Tahar's
+exceptional list (milestone M1).  Writing the whole thing up with explicit tables
+is milestone M2.
 
 ## Layout
 
 ```
 docs/problem.md      the open problem, stated precisely
-docs/dictionary.md   seamless parametrization <-> flat Z_4 metric <-> 4-differential
-docs/reduction.md    the Reduction Lemma and the Main Conjecture
-docs/genus1.md       complete answers in genus 0 and 1
+docs/proofs.md       ALL PROOFS: the dictionary, the Reduction Lemma, the Main
+                     Theorem, genus 0 and genus 1; §7 lists every external fact used
+docs/dictionary.md   exposition: seamless <-> flat Z_4 metric <-> 4-differential
+docs/reduction.md    exposition: the Reduction Lemma and what it means
+docs/genus1.md       exposition: complete answers in genus 0 and 1
 docs/literature.md   annotated reading list: what to extract from which paper
 docs/roadmap.md      milestones M0-M7 and immediate next actions
-docs/VERIFY.md       every claim that still needs checking against a source
+docs/VERIFY.md       claims still needing a source check, and what has been discharged
 src/seamless_existence/
   signature.py       holonomy signatures, reduction to k-differential data
-  mcg.py             mapping class group action, orbit computation
+  mcg.py             MCG action, orbit computation, symplectic transitivity check
   quadmesh.py        square-tiled quarter-translation surfaces
   search.py          exhaustive and targeted (annealing) search
   predict.py         what the literature says about each reduced stratum
-experiments/         survey, exhaustive enumeration, negative search
-results/             generated: survey.md, survey.json, exhaustive.json, ...
-tests/               24 tests, no dependencies
+  elliptic.py        exact (Q/Z)^2 arithmetic and the genus-1 divisor witnesses
+experiments/         verify_proofs, survey, exhaustive enumeration, negative search
+results/             generated: verification.md, survey.md, answers.md, ...
+tests/               45 tests, no dependencies
 ```
 
 Pure standard library, Python 3.11+.
 
 ```bash
-PYTHONPATH=src python3 -m unittest discover -s tests    # ~4 s
+PYTHONPATH=src python3 -m unittest discover -s tests    # ~6 s
+PYTHONPATH=src python3 experiments/verify_proofs.py     # ~3 min, checks docs/proofs.md
+PYTHONPATH=src python3 experiments/verify_proofs.py --deep   # + genus 5, ~9 min
 PYTHONPATH=src python3 experiments/survey.py            # ~10 min, writes results/
 PYTHONPATH=src python3 experiments/exhaustive.py        # ~1 min, N <= 4
 PYTHONPATH=src python3 experiments/negative_search.py   # long; hammers the four empty strata
@@ -138,8 +174,11 @@ PYTHONPATH=src python3 experiments/negative_search.py   # long; hammers the four
 
 ## Limitations
 
-* **(D2) is not proved.**  The identification of the graphics question with a
-  question about strata is routine but load-bearing; see `docs/VERIFY.md` item 1.
+* **Six standard facts are used as black boxes** -- (S1)-(S6) of `docs/proofs.md`
+  §7: geodesic triangulations of flat cone surfaces, common refinements of
+  triangulations, transitivity of `Sp(2g, Z)` on primitive vectors, surjectivity of
+  `Sp(2g, Z) -> Sp(2g, Z/N)` and of `MCG(Sigma_{g,1}, partial) -> Sp(2g, Z)`, and
+  Troyanov's theorem.  Nothing else is assumed on the geometric side.
 * **No source PDF could be read.**  The sandbox this was built in had outbound
   HTTPS blocked for `arxiv.org`, `springer.com` and `cims.nyu.edu`.  Literature
   statements are from memory and secondary sources; every one of them is listed in

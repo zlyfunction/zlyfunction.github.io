@@ -1,8 +1,8 @@
 # The dictionary
 
 Everything in this repository rests on translating a graphics question into a
-flat-geometry one.  This file fixes the translation and states precisely which
-step still needs a careful write-up.
+flat-geometry one.  This file fixes the translation; the proofs are Lemmas 1-4 of
+`docs/proofs.md`.
 
 ## 1. Seamless parametrization = flat cone metric with `Z_4` holonomy
 
@@ -31,13 +31,17 @@ makes the question purely topological:
 > realizable by a flat cone metric on the underlying topological surface with the
 > cones at *some* `n` distinct points.
 
-Sketch: a flat cone metric with cones at `p_1, ..., p_n` can be pulled back by a
-homeomorphism taking the prescribed cone vertices to the `p_i`; then triangulate
-the flat structure and refine the input mesh to match.  Conversely a
-parametrization of a refinement induces the metric.  **This is the step that
-needs a careful write-up** (`docs/VERIFY.md`, item 1); it is exactly the standing
-assumption of the topological existence results in the literature, not a new
-claim, but this repository should not lean on it without a proof.
+This is **proved** as Lemma 2 of `docs/proofs.md`: pull the metric back by a
+homeomorphism taking the prescribed cone vertices to the `p_i`, triangulate the
+flat structure geodesically, and refine the input mesh by a common refinement.
+The two standard PL inputs it uses (existence of a geodesic triangulation of a
+flat cone surface, and existence of a common refinement of two triangulations of a
+surface) are listed in `docs/proofs.md` §7 as (S1) and (S2).
+
+The precise statement is slightly stronger than "realizable iff a metric exists":
+realizability is invariant under `MCG(M, C)`, and a signature is realizable iff
+some flat cone metric realizes a signature *in its orbit*.  That is the form
+Theorem 10 uses.
 
 An important consequence of (D2): the *conformal structure is free*.  That is the
 difference between this question and the Abel-Jacobi condition of
@@ -92,8 +96,9 @@ or nearly solved problem:
   `k`-differentials with prescribed zeros and poles are non-empty.
 
 So the open graphics problem reduces to a bookkeeping exercise over an existing
-classification -- *provided* the reduction of `docs/reduction.md` is correct, which
-is where the remaining mathematical content lives.
+classification.  That reduction is `docs/proofs.md` Theorem 10, and the only
+missing entry in the table above is the explicit `k = 4` exceptional list
+(milestone M1).
 
 ## 5. Square-tiled surfaces = quad meshes
 
@@ -108,5 +113,5 @@ statement used to interpret failed searches:
 > constant.
 
 (D3) is standard for `k = 1, 2`; for `k = 4` with poles it is the natural
-analogue and is treated here as a conjecture (`docs/VERIFY.md`, item 2).  It is
+analogue and is treated here as a conjecture (`docs/VERIFY.md`, item 7).  It is
 only ever used to justify *searching*, never to conclude non-existence.

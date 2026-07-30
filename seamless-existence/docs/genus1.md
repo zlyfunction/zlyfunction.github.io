@@ -1,9 +1,11 @@
 # Genus 0 and genus 1, completely
 
-Both low-genus cases can be settled outright, and the genus-1 answer reproduces
-the unique exception known in the graphics literature.  These are the first two
-milestones of `docs/roadmap.md` and they are already done, modulo referee-level
-care on the primitivity step of Proposition A.
+Both low-genus cases are settled outright, and the genus-1 answer reproduces the
+unique exception known in the graphics literature.  Full proofs are in
+`docs/proofs.md` (Proposition 11 for genus 0, Proposition 12 and Corollary 13 for
+genus 1); this file is the exposition.  The genus-1 witnesses are additionally
+constructed explicitly and checked with exact rational arithmetic in
+`results/verification.md`.
 
 ## Genus 0: everything Gauss-Bonnet allows
 
@@ -36,34 +38,39 @@ is principal, i.e. (Abel-Jacobi) iff
 
 We are free to choose both `E` and the distinct points `c_i`, so:
 
-> **Proposition A.** Let `k in {1, 2, 4}` and let `mu` be the reduced orders,
-> `sum mu_i = k(2g - 2) = 0`.  A primitive `k`-differential on a genus-1 surface
-> with these orders exists iff
+> **Proposition A** (= Proposition 12 of `docs/proofs.md`).  Let `k in {1, 2, 4}`
+> and let `mu` be the reduced orders, `mu_i > -k`, `sum mu_i = k(2g - 2) = 0`, and
+> let `n_0` be the number of nonzero orders.  A primitive `k`-differential on a
+> genus-1 surface with these orders exists iff
 >
-> * some `mu_i != 0`, unless `k = 1`; and
-> * it is **not** the case that exactly two orders are nonzero with `|mu_i| = 1`.
+> * `n_0 = 0` and `k = 1`; or
+> * `n_0 = 2` -- the orders are then `(mu, -mu)` -- and `|mu| >= 2`; or
+> * `n_0 >= 3`.
 
-*Proof sketch.*
-If all `mu_i = 0` the differential is nowhere zero, hence `c (dz)^k`, hence a
-`k`-th power -- primitive only for `k = 1`, where it is the flat torus with marked
-points.
+The proof has two halves.  *Necessity* is the Abel-Jacobi computation: `n_0 = 0`
+forces `f` constant, so `q = c(dz)^k` is a `k`-th power; and `n_0 = 2` forces
+`mu(c_1 - c_2) = 0` with `c_1 != c_2`, i.e. a nonzero `mu`-torsion point, which
+does not exist for `|mu| = 1`.
 
-If exactly two orders are nonzero they are `(mu, -mu)` and we need
-`mu(c_1 - c_2) = 0` with `c_1 != c_2`, i.e. a nonzero `mu`-torsion point of `E`.
-For `|mu| = 1` there is none: this is the obstruction.  For `|mu| >= 2` pick
-`c_1 - c_2` of exact order `|mu|`; then `f` with `div(f) = mu(c_1 - c_2)` exists,
-and no root `f = h^e` with `e > 1` dividing `k` can exist, because that would
-force `(mu/e)(c_1 - c_2) = 0`, contradicting exactness of the order.  So the
-differential is primitive.
+*Sufficiency* is a single construction that also delivers primitivity.  Let `e*`
+be the largest divisor of `k` dividing every `mu_i`, let `nu = mu / e*`, and aim
+for
 
-If at least three orders are nonzero, fix all but one point; multiplication by
-`mu_j != 0` is surjective on `E`, so the last point can be solved for, and the
-solution set is a coset of the `mu_j`-torsion, which can be kept away from the
-other points by moving them.  Primitivity is arranged the same way as above by a
-torsion-order argument. `[]`
+    sum_i nu_i c_i = T ,     T of exact order e* .
 
-The last paragraph is the part that deserves referee-level care; the two-point
-case, which is the interesting one, is airtight.
+Then `sum_i mu_i c_i = e* T = 0`, so the differential exists; and for every
+`e > 1` dividing `k` and all the `mu_i` -- necessarily `e | e*`, since the
+divisors of `k` form a chain -- one gets
+`sum_i (mu_i/e) c_i = (e*/e) T`, of exact order `e`, hence nonzero, so no `e`-th
+root exists and the differential is primitive.  Finding such points with all
+`c_i` distinct is easy for `n_0 = 2` (divide `T` by `nu`) and for `n_0 >= 3` follows
+from irreducibility of a coset of `ker(sum nu_i c_i)^0` together with explicit
+one-parameter subgroups on which `c_i - c_j` is non-constant.  See
+`docs/proofs.md` for the details.
+
+`elliptic.py` runs this construction in exact `Q/Z` arithmetic and
+`experiments/verify_proofs.py` checks both conditions on the output, so the
+sufficiency half is machine-verified case by case as well as proved.
 
 ## What Proposition A recovers
 
