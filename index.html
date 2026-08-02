@@ -51,50 +51,43 @@
             --radius-pill: 999px;
         }
 
-        /* ── YouTube-style dark theme ── */
+        /* ── Google-style dark theme ── */
         [data-theme="dark"] {
-            /* YouTube red theme — softer, low-saturation red for links/accents */
-            --google-blue: #e08a83;
-            --google-blue-hover: #ee9f98;
-            --google-blue-light: rgba(224, 138, 131, 0.16);
+            /* Google brand colors, lightened for dark surfaces */
+            --google-blue: #8ab4f8;
+            --google-blue-hover: #aecbfa;
+            --google-blue-light: rgba(138, 180, 248, 0.16);
+            --google-red: #f28b82;
+            --google-yellow: #fdd663;
+            --google-green: #81c995;
 
-            --color-bg: #0f0f0f;
-            --color-surface: #181818;
-            --color-surface-variant: #212121;
-            --color-surface-tonal: #272727;
-            --color-text: #f1f1f1;
-            --color-text-secondary: #aaaaaa;
-            --color-text-tertiary: #717171;
-            --color-accent: #e08a83;
-            --color-accent-light: #ee9f98;
-            --color-border: #3f3f3f;
-            --color-border-light: #272727;
-            --color-highlight: rgba(224, 138, 131, 0.16);
-            --color-award: #ffd24d;
-            --color-award-bg: rgba(255, 210, 77, 0.14);
+            --color-bg: #202124;
+            --color-surface: #202124;
+            --color-surface-variant: #28292c;
+            --color-surface-tonal: #303134;
+            --color-text: #e8eaed;
+            --color-text-secondary: #9aa0a6;
+            --color-text-tertiary: #80868b;
+            --color-accent: #8ab4f8;
+            --color-accent-light: #aecbfa;
+            --color-border: #3c4043;
+            --color-border-light: #2d2e31;
+            --color-highlight: rgba(138, 180, 248, 0.16);
+            --color-award: #fdd663;
+            --color-award-bg: rgba(253, 214, 99, 0.14);
             --color-card-shadow: rgba(0, 0, 0, 0.6);
             --color-card-shadow-soft: rgba(0, 0, 0, 0.4);
         }
 
         [data-theme="dark"] nav {
-            background: rgba(15, 15, 15, 0.92);
-            border-bottom-color: #272727;
-        }
-
-        /* YouTube red accent bar in place of the Google four-color gradient */
-        [data-theme="dark"] .section-title::before {
-            background: #ff0000;
-        }
-
-        /* YouTube red dot before the first academic group (Teaching Assistant) */
-        [data-theme="dark"] .academic-group:nth-of-type(1) .academic-subtitle::before {
-            background: #ff0000;
+            background: rgba(32, 33, 36, 0.92);
+            border-bottom-color: #2d2e31;
         }
 
         /* Neutral dark chips behind the colorful illustration icons */
         [data-theme="dark"] .funfact-icon,
         [data-theme="dark"] .misc-card-icon {
-            background: #272727;
+            background: #303134;
         }
 
         /* Brighten Go-board lines so they read on dark */
@@ -1359,16 +1352,6 @@
         function applyTheme(theme) {
             var dark = theme === 'dark';
             document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-            // Swap Google branding for YouTube branding in dark mode
-            document.querySelectorAll('.bio-logo-google').forEach(function (img) {
-                img.src = dark ? './youtube_logo.svg' : './google_logo.png';
-                img.alt = dark ? 'YouTube' : 'Google';
-                var link = img.closest('a.logo-link');
-                if (link) {
-                    link.href = dark ? 'https://www.youtube.com/' : 'https://about.google/';
-                    link.setAttribute('aria-label', dark ? 'YouTube' : 'Google');
-                }
-            });
             // Swap the thesis illustration for its dark-mode version
             var thesis = document.getElementById('thesis-img');
             if (thesis) {
