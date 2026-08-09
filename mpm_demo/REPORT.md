@@ -200,6 +200,39 @@ dusting. Spray identity is also keyed to particle id rather than resampled per
 frame — an independent random subset each keyframe made the powder strobe
 (consecutive-keyframe identity overlap: ~0.1 → 0.97).
 
+### 4.1 The disappearing-spread postmortem
+
+The one remaining complaint — snow visibly vanishing as it spread, and the
+final deposit looking barren rather than like a fluffy carpet — was diagnosed
+by replaying the exact splat/threshold pipeline offline and counting, per
+frame, how many of the 340k simulated particles land in each renderable
+bucket. The answer was unambiguous: **it was a rendering bug, not a
+simulation bug.** The sim conserves mass (the point-cloud truth view shows a
+wide, intact debris field to the last frame), but the surface path hid it:
+
+- After the burst the deposit relaxes into a carpet only **1–2 particles
+  thick** over most of its footprint (measured: ~2.5 particles per bake cell,
+  spread stops growing ~0.5 s after impact). The isosurface at `ISO_FRAC=0.40`
+  therefore sat above most of the carpet's density, and the "dead band" of
+  anti-flicker logic deliberately rendered nothing there. Net effect: **only
+  ~74% of all particles were meshed at late times; ~25.5% of the snow was
+  invisible by construction**, and it was precisely the spread-out part — so
+  spreading *was* disappearing.
+- The Gaussian skirt of the carpet is ~3 cells thick, but floor mirroring only
+  doubled the bottom 3 cells (`MIRROR_BAND=3`), leaving the rest of the foot
+  below iso.
+- `MIN_COMPONENT=500` at the coarser 2.1-spacing cell silently means "drop any
+  chunk under ~38 mm across" — an eighth of a 300 mm letter — so genuine
+  rubble was being reclassified as dust.
+
+The fix is three constants: `ISO_FRAC` 0.40 → **0.12**, `MIRROR_BAND` 3 →
+**12** cells, `MIN_COMPONENT` 500 → **120** (~24 mm, still well above the
+noise scale). Meshed fraction at late frames goes **74% → 96.4%**, the dead
+band shrinks from ~4.5% to ~1.2%, and the residue is a real fluff halo of
+~180 one-millimetre grains instead of 2500 invisible ones. No re-simulation
+was needed; the same raw particle data now renders as a continuous snow
+carpet with chunks sitting on it.
+
 ---
 
 ## 5. Reproducing

@@ -55,10 +55,22 @@ CELL_PER_SPACING = 2.1   # grid spacing as a multiple of the measured median
                          # the particles so the splatted field is a connected
                          # solid, not a cloud of separate per-particle blobs
 SIGMA = 1.5           # gaussian blur of the splat field, in cells
-ISO_FRAC = 0.40       # isolevel as a fraction of interior (median) density
+ISO_FRAC = 0.12       # isolevel as a fraction of interior (median) density.
+                      # Lower than intuition suggests: after the burst the
+                      # deposit settles into a 1-2-particle-thick carpet
+                      # (~2.5 particles per bake cell over the footprint),
+                      # and at 0.40 nearly a third of the spread snow sits
+                      # below the isolevel and silently vanishes (see the
+                      # disappearance analysis in REPORT.md). 0.12 keeps
+                      # ~98% of the carpet meshed at every frame.
 TARGET_TRIS = 36000   # decimation target per frame
-MIN_COMPONENT = 500   # drop blobs smaller than this many cells (their
-                      # particles land in the spray pass instead)
+MIN_COMPONENT = 120   # drop blobs smaller than this many cells (their
+                      # particles land in the spray pass instead). At the
+                      # coarser 2.1-spacing cell, 500 cells is a ~38mm chunk --
+                      # an eighth of a letter -- so real debris was being
+                      # classified as dust. 120 cells ~ 24mm: still well above
+                      # the numerical-noise scale, small enough to keep
+                      # genuine rubble.
 # Those four are really one decision: how hard the decimator has to work.
 # Triangle *size* is what produces flat-shard artifacts -- a debris chunk
 # that survives decimation as only 2-3 triangles reads as a floating polygon
@@ -74,7 +86,12 @@ SAT_BOOST = 1.75      # re-saturate vertex colors (the white sheen/env lighting
                       # in the viewer washes colors out; k-NN averaging also
                       # pulls them toward the frosty mean)
 PAD = 6               # grid padding, cells
-MIRROR_BAND = 3.0     # mirror particles within this many cells of the floor
+MIRROR_BAND = 12.0    # mirror particles within this many cells of the floor.
+                      # The carpet's density foot is ~3 cells thick (Gaussian
+                      # skirt), so particles up to ~12 cells above the floor
+                      # are still part of the surface that benefits from the
+                      # doubled below-floor density; 3 cells only mirrored the
+                      # bottom skin and left the rest of the foot thin.
 SPRAY_FRAC = 0.028    # fraction of particles *eligible* to render as spray.
                       # Chosen once per particle id, NOT per frame: an
                       # independent random subsample each frame hands every

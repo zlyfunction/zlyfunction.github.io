@@ -76,6 +76,7 @@ ap.add_argument("--inv-dx", type=float, default=200.0, help="grid cells per worl
 ap.add_argument("--letters", type=int, default=0, help="sim only the first N letters (0 = whole word)")
 ap.add_argument("--out", default=None)
 ap.add_argument("--debug-plastic", action="store_true", help="print Jp (plastic state) stats per frame")
+ap.add_argument("--dump-jp", default=None, help="also save per-frame Jp history to this .npz path")
 args = ap.parse_args()
 
 n_particles_target = args.particles
@@ -427,11 +428,14 @@ def main():
     ground_verts, ground_tris = build_ground_mesh()
 
     frames = np.zeros((n_frames, n_particles, 3), dtype=np.float32)
+    jp_frames = np.zeros((n_frames, n_particles), dtype=np.float32) if args.dump_jp else None
     t0 = time.time()
     for f in range(n_frames):
         for _ in range(substeps):
             substep()
         frames[f] = x.to_numpy()
+        if jp_frames is not None:
+            jp_frames[f] = Jp.to_numpy()
         if args.debug_plastic and (f % 4 == 0 or f == n_frames - 1):
             jp = Jp.to_numpy()
             print(f"  [Jp] f{f:3d} min={jp.min():.4f} max={jp.max():.4f} "
@@ -454,6 +458,9 @@ def main():
         domain=np.array([Lx, Ly, Lz], dtype=np.float32),
     )
     print(f"saved {out_path}  ({os.path.getsize(out_path) / 1e6:.1f} MB)")
+    if jp_frames is not None:
+        np.savez_compressed(args.dump_jp, jp=jp_frames)
+        print(f"saved {args.dump_jp}")
 
 
 if __name__ == "__main__":
