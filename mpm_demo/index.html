@@ -207,7 +207,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+renderer.toneMappingExposure = 0.82;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
@@ -223,7 +223,7 @@ controls.maxDistance = 12;
 // bounce from below -- this is where snow's bluish shadow tint comes from
 const hemi = new THREE.HemisphereLight(0xffffff, 0x8fa8cc, 0.6);
 scene.add(hemi);
-const sun = new THREE.DirectionalLight(0xfff2e0, 2.4);
+const sun = new THREE.DirectionalLight(0xfff2e0, 1.8);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
 sun.shadow.bias = -0.0006;
@@ -248,7 +248,11 @@ const ssaoPass = new SSAOPass(scene, camera, innerWidth, innerHeight);
 ssaoPass.kernelRadius = 0.008;
 ssaoPass.minDistance = 0.00003;
 ssaoPass.maxDistance = 0.003;
-ssaoPass.output = SSAOPass.OUTPUT.Default;
+// Screen-space AO helps chunky piles contact-shadow, but on this scene it
+// mostly smears the thin relief into blotchy stains (especially top-down)
+// and crushes the snow's whites, so it stays off; the sun's shadow map plus
+// the clump geometry carry the depth cue.
+ssaoPass.enabled = false;
 composer.addPass(ssaoPass);
 composer.addPass(new OutputPass());
 
@@ -427,12 +431,13 @@ async function loadScene(name) {
     groundGeo.setIndex(g.indices);
     groundGeo.computeVertexNormals();
     // the ground *is* packed snow, like the slab in the Disney reference
-    // footage -- bright, granular-textured, slightly bluish in shadow
+    // footage. Kept a touch darker and rougher than pure white so the top-down
+    // view doesn't blow out to featureless white under the sun + ACES.
     const groundMat = new THREE.MeshPhysicalMaterial({
-        color: 0xe8edf4, roughness: 0.95, metalness: 0.0, side: THREE.DoubleSide,
-        sheen: 1.0, sheenRoughness: 0.85, sheenColor: 0xffffff,
-        bumpMap: noiseTex, bumpScale: 0.006,
-        envMapIntensity: 0.35,
+        color: 0xd2dbe8, roughness: 1.0, metalness: 0.0, side: THREE.DoubleSide,
+        sheen: 0.6, sheenRoughness: 0.95, sheenColor: 0xdfe8f5,
+        bumpMap: noiseTex, bumpScale: 0.004,
+        envMapIntensity: 0.15,
     });
     const groundMesh = new THREE.Mesh(groundGeo, groundMat);
     groundMesh.receiveShadow = true;
@@ -536,13 +541,13 @@ async function loadScene(name) {
         surfGeo.setIndex(new THREE.BufferAttribute(new Uint16Array(surfMeta.maxTris * 3), 1));
         const surfMat = new THREE.MeshPhysicalMaterial({
             vertexColors: true,   // geometry really has a `color` attribute here
-            color: 0xffffff, roughness: 0.85, metalness: 0.0,
-            // sheen kept moderate: a full white sheen layer washes the
-            // letter colors out to pastel
-            sheen: 0.55, sheenRoughness: 0.5, sheenColor: 0xffffff,
-            clearcoat: 0.1, clearcoatRoughness: 0.6,
-            bumpMap: noiseTex, bumpScale: 0.0022,
-            envMapIntensity: 0.3,
+            color: 0xffffff, roughness: 0.95, metalness: 0.0,
+            // sheen kept weak: a white sheen layer washes the letter colors
+            // out to pastel and pushes the white bed over the ACES shoulder
+            sheen: 0.3, sheenRoughness: 0.7, sheenColor: 0xffffff,
+            clearcoat: 0.05, clearcoatRoughness: 0.8,
+            bumpMap: noiseTex, bumpScale: 0.0018,
+            envMapIntensity: 0.18,
         });
         const surfMesh = new THREE.Mesh(surfGeo, surfMat);
         surfMesh.castShadow = true;

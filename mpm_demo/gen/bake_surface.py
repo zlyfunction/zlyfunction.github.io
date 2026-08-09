@@ -113,7 +113,7 @@ SPRAY_RADIUS = 0.5    # grain radius as a multiple of particle spacing. At
 
 
 SMOOTH_ITERS = 3      # Taubin smoothing passes on the decimated mesh
-CLUMP = 0.28          # baked clumpy micro-relief: fraction of a cell that the
+CLUMP = 0.20          # baked clumpy micro-relief: fraction of a cell that the
                       # decimated surface is pushed in/out along its normal by
                       # a fixed 3D value-noise field. The Disney renders get
                       # their "fluffy clods" from real grain-scale geometry;
@@ -121,7 +121,7 @@ CLUMP = 0.28          # baked clumpy micro-relief: fraction of a cell that the
                       # the nearest achievable thing is to dither the surface
                       # with a fixed ~1-2cm noise. Fixed in space, not per
                       # frame, so settled snow shimmers no more than before.
-CLUMP_FREQ = 3.0      # noise frequency, cycles per cell (above the 5mm mesh
+CLUMP_FREQ = 1.2      # noise frequency, cycles per cell (above the 5mm mesh
                       # scale, so it reads as grain rather than as lumps)
 _NOISE = None         # lazily built fixed permutation + value table
 
