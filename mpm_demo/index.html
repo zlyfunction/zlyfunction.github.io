@@ -219,9 +219,11 @@ controls.maxPolarAngle = Math.PI * 0.5;
 controls.minDistance = 0.3;
 controls.maxDistance = 12;
 
-const hemi = new THREE.HemisphereLight(0xffffff, 0x445566, 0.6);
+// hemisphere light like an overcast sky: white from above, cool snow-blue
+// bounce from below -- this is where snow's bluish shadow tint comes from
+const hemi = new THREE.HemisphereLight(0xffffff, 0x8fa8cc, 0.6);
 scene.add(hemi);
-const sun = new THREE.DirectionalLight(0xffffff, 2.4);
+const sun = new THREE.DirectionalLight(0xfff2e0, 2.4);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
 sun.shadow.bias = -0.0006;
@@ -246,6 +248,7 @@ const ssaoPass = new SSAOPass(scene, camera, innerWidth, innerHeight);
 ssaoPass.kernelRadius = 0.008;
 ssaoPass.minDistance = 0.00003;
 ssaoPass.maxDistance = 0.003;
+ssaoPass.output = SSAOPass.OUTPUT.Default;
 composer.addPass(ssaoPass);
 composer.addPass(new OutputPass());
 
@@ -423,11 +426,13 @@ async function loadScene(name) {
     groundGeo.setAttribute('position', new THREE.BufferAttribute(gpos, 3));
     groundGeo.setIndex(g.indices);
     groundGeo.computeVertexNormals();
+    // the ground *is* packed snow, like the slab in the Disney reference
+    // footage -- bright, granular-textured, slightly bluish in shadow
     const groundMat = new THREE.MeshPhysicalMaterial({
-        color: 0xc7d2e0, roughness: 0.9, metalness: 0.0, side: THREE.DoubleSide,
-        sheen: 1.0, sheenRoughness: 0.75, sheenColor: 0xffffff,
-        bumpMap: noiseTex, bumpScale: 0.0015,
-        envMapIntensity: 0.3,
+        color: 0xe8edf4, roughness: 0.95, metalness: 0.0, side: THREE.DoubleSide,
+        sheen: 1.0, sheenRoughness: 0.85, sheenColor: 0xffffff,
+        bumpMap: noiseTex, bumpScale: 0.006,
+        envMapIntensity: 0.35,
     });
     const groundMesh = new THREE.Mesh(groundGeo, groundMat);
     groundMesh.receiveShadow = true;
@@ -531,12 +536,12 @@ async function loadScene(name) {
         surfGeo.setIndex(new THREE.BufferAttribute(new Uint16Array(surfMeta.maxTris * 3), 1));
         const surfMat = new THREE.MeshPhysicalMaterial({
             vertexColors: true,   // geometry really has a `color` attribute here
-            color: 0xffffff, roughness: 0.8, metalness: 0.0,
+            color: 0xffffff, roughness: 0.85, metalness: 0.0,
             // sheen kept moderate: a full white sheen layer washes the
             // letter colors out to pastel
             sheen: 0.55, sheenRoughness: 0.5, sheenColor: 0xffffff,
             clearcoat: 0.1, clearcoatRoughness: 0.6,
-            bumpMap: noiseTex, bumpScale: 0.0014,
+            bumpMap: noiseTex, bumpScale: 0.0022,
             envMapIntensity: 0.3,
         });
         const surfMesh = new THREE.Mesh(surfGeo, surfMat);

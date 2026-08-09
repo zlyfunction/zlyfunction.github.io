@@ -113,6 +113,41 @@ SPRAY_RADIUS = 0.5    # grain radius as a multiple of particle spacing. At
 
 
 SMOOTH_ITERS = 3      # Taubin smoothing passes on the decimated mesh
+CLUMP = 0.42          # baked clumpy micro-relief: fraction of a cell that the
+                      # decimated surface is pushed in/out along its normal by
+                      # a fixed 3D value-noise field. The Disney renders get
+                      # their "fluffy clods" from real grain-scale geometry;
+                      # at our 5mm cells that scale is far below the mesh, so
+                      # the nearest achievable thing is to dither the surface
+                      # with a fixed ~1-2cm noise. Fixed in space, not per
+                      # frame, so settled snow shimmers no more than before.
+CLUMP_FREQ = 3.0      # noise frequency, cycles per cell (above the 5mm mesh
+                      # scale, so it reads as grain rather than as lumps)
+_NOISE = None         # lazily built fixed permutation + value table
+
+
+def _noise3(p):
+    """Deterministic trilinear value noise, p in cell units, out in [-1,1].
+    Fixed table -> the same world point always gets the same value, so the
+    relief is stable frame to frame even as the mesh is rebuilt."""
+    global _NOISE
+    if _NOISE is None:
+        rng = np.random.default_rng(11)
+        _NOISE = rng.random((64, 64, 64))
+    i = np.floor(p).astype(np.int64)
+    f = p - i
+    f = f * f * (3 - 2 * f)  # smoothstep
+    i0 = i % 64
+    i1 = (i + 1) % 64
+    n = _NOISE
+    c000 = n[i0[:, 0], i0[:, 1], i0[:, 2]]; c100 = n[i1[:, 0], i0[:, 1], i0[:, 2]]
+    c010 = n[i0[:, 0], i1[:, 1], i0[:, 2]]; c110 = n[i1[:, 0], i1[:, 1], i0[:, 2]]
+    c001 = n[i0[:, 0], i0[:, 1], i1[:, 2]]; c101 = n[i1[:, 0], i0[:, 1], i1[:, 2]]
+    c011 = n[i0[:, 0], i1[:, 1], i1[:, 2]]; c111 = n[i1[:, 0], i1[:, 1], i1[:, 2]]
+    x00 = c000 + f[:, 0] * (c100 - c000); x10 = c010 + f[:, 0] * (c110 - c010)
+    x01 = c001 + f[:, 0] * (c101 - c001); x11 = c011 + f[:, 0] * (c111 - c011)
+    y0 = x00 + f[:, 1] * (x10 - x00); y1 = x01 + f[:, 1] * (x11 - x01)
+    return (y0 + f[:, 2] * (y1 - y0)) * 2 - 1
 
 
 def taubin_smooth(verts, faces, iters=SMOOTH_ITERS, lam=0.5, mu=-0.53):
@@ -195,6 +230,22 @@ def reconstruct(points, tree_colors_f32, cell, y_floor, iso):
     faces = np.asarray(faces, np.uint32)
     if SMOOTH_ITERS and len(faces):
         verts = taubin_smooth(verts, faces.astype(np.int64))
+
+    # bake the fluffy clods: push the decimated surface along its own normal
+    # by the fixed noise field. Done *after* smoothing so the high-frequency
+    # component survives (Taubin would otherwise iron exactly this out).
+    if CLUMP and len(faces):
+        v = verts.astype(np.float64)
+        n = np.zeros_like(v)
+        tris = v[faces.astype(np.int64)]
+        fn = np.cross(tris[:, 1] - tris[:, 0], tris[:, 2] - tris[:, 0])
+        for c in range(3):
+            np.add.at(n, faces[:, c].astype(np.int64), fn)
+        ln = np.linalg.norm(n, axis=1)
+        ln[ln == 0] = 1.0
+        n /= ln[:, None]
+        disp = CLUMP * cell * _noise3(verts * (CLUMP_FREQ / cell))
+        verts = (v + n * disp[:, None]).astype(np.float32)
 
     tree = cKDTree(points)
     dist, nn = tree.query(verts, k=COLOR_K, workers=-1)
