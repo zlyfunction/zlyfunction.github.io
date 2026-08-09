@@ -2,9 +2,14 @@
 
 The shot this reproduces is the title card of Disney's snow-paper video
 (Stomakhin et al. 2013, "A Material Point Method for Snow Simulation"):
-solid snow letters fall, hit the ground, and burst apart -- the bases crush
-and splay outward while the tops fracture off in chunks and a haze of powder
-sprays out sideways.
+solid snow letters fall onto a floor covered in a real layer of powder,
+crater into it, and burst apart -- the bases crush and splay outward, the
+tops fracture off in chunks, and both letter snow and plowed bed snow spray
+out sideways. The bed is not cosmetic: it is simulated with the same model
+(only softer), so chunks plow furrows into it, bow waves pile up ahead of
+sliding debris, and the rubble ends up sitting *on* snow instead of on a
+bare floor -- which is also what gives the settled scene real thickness seen
+from above.
 
 Physics is the paper's constitutive model, transferred with MLS-MPM (Hu et
 al. 2018):
@@ -71,6 +76,14 @@ ap.add_argument("--powder-jp", type=float, default=1.3,
 ap.add_argument("--powder-h", type=float, default=0.01, help="residual strength of fully torn powder")
 ap.add_argument("--friction", type=float, default=6.0,
                 help="ground tangential drag, as a decay rate in 1/s (see ground_slip)")
+ap.add_argument("--bed-thickness", type=float, default=0.02,
+                help="depth of the powder bed covering the floor, world units")
+ap.add_argument("--bed-softness", type=float, default=0.5,
+                help="Lame scale of bed snow relative to letter snow (softer = deeper craters)")
+ap.add_argument("--bed-friction", type=float, default=4.0,
+                help="bed internal tangential drag rate in 1/s -- this is what stops a soft "
+                     "bed from spreading laterally under its own weight and flowing out from "
+                     "under the letters")
 ap.add_argument("--dt", type=float, default=4e-5)
 ap.add_argument("--inv-dx", type=float, default=200.0, help="grid cells per world unit")
 ap.add_argument("--letters", type=int, default=0, help="sim only the first N letters (0 = whole word)")
@@ -147,7 +160,9 @@ THICK = args.thickness
 # --------------------------------------------------------------- domain ---
 dx = 1.0 / args.inv_dx
 inv_dx = 1.0 / dx
-GROUND_Y = 0.05
+GROUND_Y = 0.05           # the *visual* floor: top of the powder bed
+BED = args.bed_thickness
+BED_Y = GROUND_Y - BED    # collider plane: bottom of the bed (rigid base)
 
 Lx = word_w + 0.55
 Ly = GROUND_Y + args.drop_height + word_h + 0.22
@@ -172,6 +187,8 @@ theta_c = args.theta_c
 theta_s = args.theta_s
 gravity = 9.8
 friction_mu = args.friction
+args_bed_softness = args.bed_softness
+bed_slip = float(np.exp(-args.bed_friction * args.dt))
 # Tangential retention per substep. Expressed as a decay *rate* (1/s) so the
 # amount of drag a sliding chunk feels per second of contact is independent
 # of dt / the substep count -- a plain per-substep factor would be applied
@@ -187,6 +204,9 @@ p_rho = args.density
 # first; this only decides how far the pieces deform once they can move.
 _impact_v = float(np.sqrt(args.v0 ** 2 + 2.0 * gravity * args.drop_height))
 _brittleness = theta_c * float(np.sqrt(E / p_rho)) / _impact_v
+
+# bed slab volume, used for the ppc check and total-volume bookkeeping
+bed_vol = Lx * BED * Lz if BED > 0 else 0.0
 
 # --------------------------------------------------------- particle init ---
 rng = np.random.default_rng(7)
@@ -239,19 +259,49 @@ for (ch, hexcol), mask, want in zip(WORD, masks, counts):
 
 init_pos = np.concatenate(positions).astype(np.float32)
 colors_u8 = (np.concatenate(colors) * 255).astype(np.uint8)
-n_particles = init_pos.shape[0]
 
-p_vol = total_vol / n_particles
+# ------------------------------------------------------------- powder bed ---
+# A uniform slab of loose snow covering the floor, sampled on a jittered grid
+# at the same particle density as the letters so the grid resolution stays
+# adequate everywhere. 0 = letter particle, 1 = bed particle.
+n_letters = init_pos.shape[0]
+bed_particles = np.zeros((0, 3), np.float32)
+if BED > 0:
+    # same mean spacing as the letters: p_vol_letter = dx^3 / ppc_letter
+    letter_vol = total_vol
+    letter_spacing = (letter_vol / n_letters) ** (1.0 / 3.0)
+    margin = 0.03
+    bxs = np.arange(margin, Lx - margin, letter_spacing)
+    bys = np.arange(BED_Y + 0.4 * letter_spacing, GROUND_Y, letter_spacing)
+    bzs = np.arange(margin, Lz - margin, letter_spacing)
+    bx, by, bz = np.meshgrid(bxs, bys, bzs, indexing="ij")
+    bed_particles = np.stack([bx.ravel(), by.ravel(), bz.ravel()], axis=1).astype(np.float32)
+    bed_particles += rng.uniform(-0.3, 0.3, bed_particles.shape).astype(np.float32) * letter_spacing
+    bed_col = np.full((len(bed_particles), 3), [0.92, 0.94, 0.985], np.float32)
+    bed_col += rng.uniform(-0.03, 0.03, bed_col.shape).astype(np.float32)
+    init_pos = np.concatenate([init_pos, bed_particles]).astype(np.float32)
+    colors_u8 = np.concatenate(
+        [colors_u8, (np.clip(bed_col, 0, 1) * 255).astype(np.uint8)])
+is_bed_np = np.concatenate(
+    [np.zeros(n_letters, np.uint8), np.ones(len(bed_particles), np.uint8)])
+n_particles = init_pos.shape[0]
+print(f"bed: {len(bed_particles)} particles ({BED*1000:.0f}mm thick, "
+      f"softness {args.bed_softness}), total {n_particles}")
+
+p_vol = total_vol / n_letters   # per-particle volume is set by the letter
+                                # sampling; the bed is sampled to match it
 p_mass = p_vol * p_rho
 
 # MLS-MPM needs the material sampled at roughly 4-8 particles per grid cell.
 # Below ~2 the material dilates and scatters into numerical dust that looks
 # superficially like fracture but is just under-resolution, so this is
 # printed loudly rather than buried.
-_ppc = n_particles / (total_vol / dx ** 3)
+_ppc = n_letters / (total_vol / dx ** 3)
+_ppc_bed = len(bed_particles) / (bed_vol / dx ** 3) if bed_vol > 0 else 0.0
 print(f"n_particles={n_particles} p_mass={p_mass:.3e} p_vol={p_vol:.3e} "
       f"grid=({nx},{ny},{nz}) substeps/frame={substeps} n_frames={n_frames}")
-print(f"particles per grid cell = {_ppc:.1f}" + ("" if _ppc >= 3.5 else "   <-- TOO LOW, expect numerical dust"))
+print(f"particles per grid cell = {_ppc:.1f} (letters), {_ppc_bed:.1f} (bed)"
+      + ("" if min(_ppc, _ppc_bed if BED > 0 else _ppc) >= 3.5 else "   <-- TOO LOW, expect numerical dust"))
 print(f"word {word_w:.3f} x {word_h:.3f} x {THICK:.3f}, impact speed "
       f"~{_impact_v:.2f} m/s, brittleness ~{_brittleness:.2f} "
       f"(wave speed {np.sqrt(E / p_rho):.0f} m/s, CFL dt < {dx / np.sqrt(E / p_rho):.1e})")
@@ -262,19 +312,21 @@ v = ti.Vector.field(3, ti.f32, n_particles)
 C = ti.Matrix.field(3, 3, ti.f32, n_particles)
 F = ti.Matrix.field(3, 3, ti.f32, n_particles)
 Jp = ti.field(ti.f32, n_particles)
+is_bed = ti.field(ti.u8, n_particles)   # 1 = soft floor-powder, 0 = letter
 
 grid_v = ti.Vector.field(3, ti.f32, (nx, ny, nz))
 grid_m = ti.field(ti.f32, (nx, ny, nz))
 
 
 @ti.kernel
-def init_particles(pos: ti.types.ndarray(), v0: ti.f32):
+def init_particles(pos: ti.types.ndarray(), bed: ti.types.ndarray(), v0: ti.f32):
     for p in range(n_particles):
         x[p] = ti.Vector([pos[p, 0], pos[p, 1], pos[p, 2]])
         v[p] = ti.Vector([0.0, -v0, 0.0])
         F[p] = ti.Matrix.identity(ti.f32, 3)
         C[p] = ti.Matrix.zero(ti.f32, 3, 3)
         Jp[p] = 1.0
+        is_bed[p] = bed[p]
 
 
 @ti.kernel
@@ -307,7 +359,11 @@ def p2g():
         # where the material is shredded rather than merely cracked.
         t = min(max((Jp[p] - powder_jp) / 0.5, 0.0), 1.0)
         h = h * (1.0 - t) + powder_h * t
-        mu, la = mu_0 * h, lambda_0 * h
+        # the floor bed is the same model, just softer, so the letters dig in
+        bed_soft = 1.0
+        if is_bed[p]:
+            bed_soft = args_bed_softness
+        mu, la = mu_0 * h * bed_soft, lambda_0 * h * bed_soft
         U, sig, V = ti.svd(F[p])
         J = 1.0
         for d in ti.static(range(3)):
@@ -361,7 +417,7 @@ def grid_update():
             # is why the letters used to just deflate in place and no amount
             # of constitutive tuning could make them burst.
             wy = j * dx
-            if wy < GROUND_Y + 2.0 * dx and gv.y < 0.0:
+            if wy < BED_Y + 2.0 * dx and gv.y < 0.0:
                 gv.y = 0.0
                 gv.x *= ground_slip
                 gv.z *= ground_slip
@@ -393,7 +449,11 @@ def g2p():
             new_C += 4.0 * inv_dx * inv_dx * weight * g_v.outer_product(dpos)
         v[p] = new_v
         C[p] = new_C
-        x[p] += dt * new_v
+        # the soft powder bed needs internal drag or it spreads laterally and
+        # flows out from under the letters like a liquid (snow resists shear)
+        if is_bed[p]:
+            v[p] *= bed_slip
+        x[p] += dt * v[p]
 
 
 def substep():
@@ -404,8 +464,8 @@ def substep():
 
 # ---------------------------------------------------------- ground mesh ---
 def build_ground_mesh(nxv=24, nzv=12):
-    """A flat quad grid, visual only -- the collider itself is the analytic
-    plane in grid_update()."""
+    """A flat quad grid at the *visual* floor (top of the powder bed). The
+    collider itself is the analytic plane at the bed bottom in grid_update()."""
     xs = np.linspace(0.0, Lx, nxv)
     zs = np.linspace(0.0, Lz, nzv)
     gx, gz = np.meshgrid(xs, zs, indexing="ij")
@@ -424,7 +484,7 @@ def build_ground_mesh(nxv=24, nzv=12):
 
 
 def main():
-    init_particles(init_pos, args.v0)
+    init_particles(init_pos, is_bed_np, args.v0)
     ground_verts, ground_tris = build_ground_mesh()
 
     frames = np.zeros((n_frames, n_particles, 3), dtype=np.float32)
@@ -452,6 +512,7 @@ def main():
         out_path,
         frames=frames,
         colors=colors_u8,
+        is_bed=is_bed_np,
         ground_verts=ground_verts,
         ground_tris=ground_tris,
         fps=np.float32(args.fps),

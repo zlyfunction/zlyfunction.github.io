@@ -113,7 +113,7 @@ SPRAY_RADIUS = 0.5    # grain radius as a multiple of particle spacing. At
 
 
 SMOOTH_ITERS = 3      # Taubin smoothing passes on the decimated mesh
-CLUMP = 0.42          # baked clumpy micro-relief: fraction of a cell that the
+CLUMP = 0.28          # baked clumpy micro-relief: fraction of a cell that the
                       # decimated surface is pushed in/out along its normal by
                       # a fixed 3D value-noise field. The Disney renders get
                       # their "fluffy clods" from real grain-scale geometry;
