@@ -16,7 +16,7 @@ var PigeonWidget=(function(e){Object.defineProperty(e,Symbol.toStringTag,{value:
       <stop offset="58%" stop-color="${s.irid2}" stop-opacity="0.44"/>
       <stop offset="100%" stop-color="${s.irid2}" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="${l}-chest" cx="0.5" cy="0.44" r="0.58">
+    <radialGradient id="${l}-chest" cx="0.5" cy="0.44" r="0.5">
       <stop offset="0%" stop-color="${s.chest}" stop-opacity="0.98"/>
       <stop offset="52%" stop-color="${s.chest}" stop-opacity="0.86"/>
       <stop offset="100%" stop-color="${s.chestDeep}" stop-opacity="0"/>
