@@ -638,12 +638,28 @@
             text-decoration: underline;
         }
 
-        /* Compact affiliation badge strip */
+        /* Compact affiliation badge strip — grouped into Companies | Universities */
         .affiliation-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            align-items: center;
+            gap: 8px 10px;
             margin: 18px 0 0;
+        }
+
+        .affil-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .affil-divider {
+            width: 1px;
+            height: 18px;
+            background: var(--color-border);
+            margin: 0 2px;
+            flex-shrink: 0;
         }
 
         .affil-chip {
@@ -756,6 +772,7 @@
             overflow: hidden;
             background: var(--color-surface-variant);
             border: 1px solid var(--color-border-light);
+            user-select: none;
         }
 
         .pub-thumb-wrap--has-fig {
@@ -767,11 +784,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.35s ease, opacity 0.3s ease;
-        }
-
-        .pub-item:hover .pub-thumb-wrap:not(.pub-thumb-wrap--has-fig) .pub-thumb {
-            transform: scale(1.04);
+            transition: transform 0.35s ease, opacity 0.28s ease;
         }
 
         .pub-thumb-fig {
@@ -779,48 +792,62 @@
             inset: 0;
             width: 100%;
             height: 100%;
-            opacity: 0;
-            transition: opacity 0.28s ease;
-            pointer-events: none;
-        }
-
-        .pub-thumb-fig--contain {
-            object-fit: contain;
-            background: #ffffff;
-            padding: 8px;
-        }
-
-        .pub-thumb-fig--cover {
             object-fit: cover;
-            background: #14161a;
+            opacity: 0;
+            transform: scale(1.03);
+            transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+            pointer-events: none;
         }
 
         .pub-thumb-badge {
             position: absolute;
-            right: 6px;
-            bottom: 6px;
+            right: 7px;
+            bottom: 7px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             font-family: var(--font-display);
-            font-size: 10px;
+            font-size: 10.5px;
             font-weight: 500;
             letter-spacing: 0.01em;
-            padding: 2px 7px;
+            padding: 3px 8px;
             border-radius: var(--radius-pill);
-            background: rgba(32, 33, 36, 0.72);
+            background: rgba(24, 26, 31, 0.68);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             color: #ffffff;
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             pointer-events: none;
-            transition: opacity 0.22s ease;
+            transition: opacity 0.22s ease, transform 0.22s ease;
         }
 
-        .pub-thumb-wrap--has-fig:hover .pub-thumb-fig,
+        .pub-thumb-badge svg {
+            width: 11px;
+            height: 11px;
+            flex-shrink: 0;
+            opacity: 0.92;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .pub-thumb-wrap--has-fig:hover .pub-thumb-fig {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            .pub-thumb-wrap--has-fig:hover .pub-thumb-badge {
+                opacity: 0;
+                transform: translateY(2px);
+            }
+        }
+
         .pub-thumb-wrap--has-fig.show-fig .pub-thumb-fig {
             opacity: 1;
+            transform: scale(1);
         }
 
-        .pub-thumb-wrap--has-fig:hover .pub-thumb-badge,
         .pub-thumb-wrap--has-fig.show-fig .pub-thumb-badge {
             opacity: 0;
+            transform: translateY(2px);
         }
 
         .pub-details {
@@ -1527,7 +1554,17 @@
             }
 
             .affiliation-row {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .affil-group {
                 justify-content: center;
+            }
+
+            .affil-divider {
+                display: none;
             }
 
             .pub-item {
@@ -1863,53 +1900,59 @@
         <!-- Bio -->
         <section class="bio">
             <p class="lang-en">
+                I write code at <a href="https://about.google/">Google</a>, and previously worked as a research intern
+                at <a href="https://www.tencent.com/en-us/">Pixel Lab, Tencent America</a>.
                 I received my Ph.D. from the
                 <a href="http://cims.nyu.edu/">Courant Institute of Mathematical Sciences</a>
                 at New York University, where I was fortunate to be advised by
                 <a href="https://cims.nyu.edu/gcl/daniele.html">Daniele Panozzo</a> and
-                <a href="https://cims.nyu.edu/gcl/denis.html">Denis Zorin</a>.
-                My doctoral research focused on surface parametrization and remeshing with guarantees, developing
-                robust geometry processing algorithms with provable correctness.
+                <a href="https://cims.nyu.edu/gcl/denis.html">Denis Zorin</a>, focusing on surface parametrization and
+                remeshing with provable correctness guarantees.
                 Prior to NYU, I received my B.S. from the School of the Gifted Young
-                (<span lang="zh-Hans">少年班学院</span>) at the
-                <a href="http://www.ustc.edu.cn/">University of Science and Technology of China</a>,
-                and worked as a research intern at
-                <a href="https://www.tencent.com/en-us/">Pixel Lab, Tencent America</a>.
+                (SCGY, <span lang="zh-Hans">少年班学院</span>) at the
+                <a href="http://www.ustc.edu.cn/">University of Science and Technology of China</a>.
             </p>
             <p class="lang-zh" style="display:none">
+                我目前在 <a href="https://about.google/">Google</a> 写代码，此前曾在腾讯北美
+                <a href="https://www.tencent.com/en-us/">Pixel Lab</a> 担任实习研究员。
                 我在纽约大学<a href="http://cims.nyu.edu/">柯朗数学科学研究所</a>（Courant Institute）获得博士学位，导师为
                 <a href="https://cims.nyu.edu/gcl/daniele.html">Daniele Panozzo</a> 教授和
-                <a href="https://cims.nyu.edu/gcl/denis.html">Denis Zorin</a> 教授。
-                我的博士研究专注于有理论保证的曲面参数化与重网格化，重点开发具有可证明正确性的鲁棒几何处理算法。
-                在进入纽约大学之前，我在<a href="http://www.ustc.edu.cn/">中国科学技术大学</a>少年班学院获得学士学位，并曾在腾讯北美
-                <a href="https://www.tencent.com/en-us/">Pixel Lab</a> 担任实习研究员。
+                <a href="https://cims.nyu.edu/gcl/denis.html">Denis Zorin</a> 教授，博士期间专注于具有可证明正确性保证的曲面参数化与重网格化研究；
+                本科毕业于<a href="http://www.ustc.edu.cn/">中国科学技术大学</a>少年班学院（SCGY）。
             </p>
 
-            <!-- Compact Affiliation Badges -->
+            <!-- Compact Affiliation Badges: Companies | Universities -->
             <div class="affiliation-row">
-                <a class="affil-chip" href="https://about.google/" target="_blank" rel="noopener noreferrer">
-                    <img class="affil-logo--google" src="./assets/logo-google.webp" alt="Google" width="48" height="16">
-                    <span class="affil-sep">·</span>
-                    <span data-en="SWE" data-zh="软件工程师">SWE</span>
-                </a>
-                <a class="affil-chip" href="http://cims.nyu.edu/" target="_blank" rel="noopener noreferrer">
-                    <img class="affil-logo--nyu" src="./assets/logo-nyu.webp" alt="NYU" width="12" height="16">
-                    <span class="affil-name">NYU Courant</span>
-                    <span class="affil-sep">·</span>
-                    <span data-en="Ph.D." data-zh="博士">Ph.D.</span>
-                </a>
-                <a class="affil-chip" href="http://www.ustc.edu.cn/" target="_blank" rel="noopener noreferrer">
-                    <img class="affil-logo--ustc" src="./assets/logo-ustc.webp" alt="USTC" width="16" height="16">
-                    <span class="affil-name">USTC</span>
-                    <span class="affil-sep">·</span>
-                    <span data-en="B.S. (SGY)" data-zh="少年班学士">B.S. (SGY)</span>
-                </a>
-                <a class="affil-chip" href="https://www.tencent.com/en-us/" target="_blank" rel="noopener noreferrer">
-                    <img class="affil-logo--pixel" src="./assets/logo-pixellab.webp" alt="Pixel Lab" width="85"
-                        height="15">
-                    <span class="affil-sep">·</span>
-                    <span data-en="Research Intern" data-zh="研究实习">Research Intern</span>
-                </a>
+                <div class="affil-group">
+                    <a class="affil-chip" href="https://about.google/" target="_blank" rel="noopener noreferrer">
+                        <img class="affil-logo--google" src="./assets/logo-google.webp" alt="Google" width="48"
+                            height="16">
+                        <span class="affil-sep">·</span>
+                        <span data-en="SWE" data-zh="软件工程师">SWE</span>
+                    </a>
+                    <a class="affil-chip" href="https://www.tencent.com/en-us/" target="_blank"
+                        rel="noopener noreferrer">
+                        <img class="affil-logo--pixel" src="./assets/logo-pixellab.webp" alt="Pixel Lab" width="85"
+                            height="15">
+                        <span class="affil-sep">·</span>
+                        <span data-en="Research Intern" data-zh="研究实习">Research Intern</span>
+                    </a>
+                </div>
+                <span class="affil-divider" aria-hidden="true"></span>
+                <div class="affil-group">
+                    <a class="affil-chip" href="http://cims.nyu.edu/" target="_blank" rel="noopener noreferrer">
+                        <img class="affil-logo--nyu" src="./assets/logo-nyu.webp" alt="NYU" width="12" height="16">
+                        <span class="affil-name">NYU Courant</span>
+                        <span class="affil-sep">·</span>
+                        <span data-en="Ph.D." data-zh="博士">Ph.D.</span>
+                    </a>
+                    <a class="affil-chip" href="http://www.ustc.edu.cn/" target="_blank" rel="noopener noreferrer">
+                        <img class="affil-logo--ustc" src="./assets/logo-ustc.webp" alt="USTC" width="16" height="16">
+                        <span class="affil-name">USTC</span>
+                        <span class="affil-sep">·</span>
+                        <span data-en="B.S. (SCGY)" data-zh="少年班学士">B.S. (SCGY)</span>
+                    </a>
+                </div>
             </div>
 
             <!-- Thesis Visual -->
@@ -1942,10 +1985,22 @@
 
             <!-- Pub 0 -->
             <div class="pub-item">
-                <div class="pub-thumb-wrap">
+                <div class="pub-thumb-wrap pub-thumb-wrap--has-fig" onclick="togglePubFig(this)"
+                    title="Hover or tap to preview paper">
                     <img class="pub-thumb" src="./assets/pub-holonomy.webp"
                         alt="Which Holonomy Signatures Are Realizable?" width="160" height="160" loading="lazy"
                         decoding="async">
+                    <img class="pub-thumb-fig" src="./assets/paper-holonomy.webp"
+                        alt="Paper preview: Which Holonomy Signatures Are Realizable?" width="160" height="160"
+                        loading="lazy" decoding="async">
+                    <span class="pub-thumb-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        <span data-en="Paper" data-zh="论文">Paper</span>
+                    </span>
                 </div>
                 <div class="pub-details">
                     <p class="pub-title">Which Holonomy Signatures Are Realizable? A Complete Answer for Closed Surfaces
@@ -1988,10 +2043,21 @@
 
             <!-- Pub 1 -->
             <div class="pub-item">
-                <div class="pub-thumb-wrap">
+                <div class="pub-thumb-wrap pub-thumb-wrap--has-fig" onclick="togglePubFig(this)"
+                    title="Hover or tap to preview paper">
                     <img class="pub-thumb" src="./assets/pub-bijective.webp"
                         alt="BijectiveRemesh: Maintaining Bijective Mappings for Data Transfer Across Remeshed Manifolds"
                         width="160" height="160" loading="lazy" decoding="async">
+                    <img class="pub-thumb-fig" src="./assets/paper-bijective.webp"
+                        alt="Paper preview: BijectiveRemesh" width="160" height="160" loading="lazy" decoding="async">
+                    <span class="pub-thumb-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        <span data-en="Paper" data-zh="论文">Paper</span>
+                    </span>
                 </div>
                 <div class="pub-details">
                     <p class="pub-title">BijectiveRemesh: Maintaining Bijective Mappings for Data Transfer Across
@@ -2032,14 +2098,21 @@
             <!-- Pub 2 -->
             <div class="pub-item">
                 <div class="pub-thumb-wrap pub-thumb-wrap--has-fig" onclick="togglePubFig(this)"
-                    title="Hover or tap to preview paper figure">
+                    title="Hover or tap to preview paper">
                     <img class="pub-thumb" src="./assets/pub-whichcross.webp"
                         alt="Which Cross Fields Can Be Quadrangulated?" width="160" height="160" loading="lazy"
                         decoding="async">
-                    <img class="pub-thumb-fig pub-thumb-fig--contain" src="./assets/fig-whichcross.webp"
-                        alt="Paper figure: seamless parametrization cut graph and checkerboard" width="160" height="160"
+                    <img class="pub-thumb-fig" src="./assets/paper-whichcross.webp"
+                        alt="Paper preview: Which Cross Fields Can Be Quadrangulated?" width="160" height="160"
                         loading="lazy" decoding="async">
-                    <span class="pub-thumb-badge" data-en="✦ Paper Fig" data-zh="✦ 论文配图">✦ Paper Fig</span>
+                    <span class="pub-thumb-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        <span data-en="Paper" data-zh="论文">Paper</span>
+                    </span>
                 </div>
                 <div class="pub-details">
                     <p class="pub-title">Which Cross Fields Can Be Quadrangulated?</p>
@@ -2085,13 +2158,20 @@
             <!-- Pub 3 -->
             <div class="pub-item">
                 <div class="pub-thumb-wrap pub-thumb-wrap--has-fig" onclick="togglePubFig(this)"
-                    title="Hover or tap to preview paper figure">
+                    title="Hover or tap to preview paper">
                     <img class="pub-thumb" src="./assets/pub-conformal.webp" alt="Discrete Conformal Equivalence"
                         width="160" height="160" loading="lazy" decoding="async">
-                    <img class="pub-thumb-fig pub-thumb-fig--contain" src="./assets/fig-conformal.webp"
-                        alt="Paper figure: discrete conformal equivalence on high-genus meshes" width="160" height="160"
-                        loading="lazy" decoding="async">
-                    <span class="pub-thumb-badge" data-en="✦ Paper Fig" data-zh="✦ 论文配图">✦ Paper Fig</span>
+                    <img class="pub-thumb-fig" src="./assets/paper-conformal.webp"
+                        alt="Paper preview: Efficient and Robust Discrete Conformal Equivalence with Boundary"
+                        width="160" height="160" loading="lazy" decoding="async">
+                    <span class="pub-thumb-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        <span data-en="Paper" data-zh="论文">Paper</span>
+                    </span>
                 </div>
                 <div class="pub-details">
                     <p class="pub-title">Efficient and Robust Discrete Conformal Equivalence with Boundary</p>
@@ -2135,13 +2215,20 @@
             <!-- Pub 4 -->
             <div class="pub-item">
                 <div class="pub-thumb-wrap pub-thumb-wrap--has-fig" onclick="togglePubFig(this)"
-                    title="Hover or tap to preview paper figure">
+                    title="Hover or tap to preview paper">
                     <img class="pub-thumb" src="./assets/pub-fracture.webp" alt="Ductile Fracture Simulation"
                         width="160" height="160" loading="lazy" decoding="async">
-                    <img class="pub-thumb-fig pub-thumb-fig--cover" src="./assets/fig-fracture.webp"
-                        alt="Paper figure: MPM ductile fracture simulation results" width="160" height="160"
-                        loading="lazy" decoding="async">
-                    <span class="pub-thumb-badge" data-en="✦ Paper Fig" data-zh="✦ 论文配图">✦ Paper Fig</span>
+                    <img class="pub-thumb-fig" src="./assets/paper-fracture.webp"
+                        alt="Paper preview: Simulation and Visualization of Ductile Fracture with the Material Point Method"
+                        width="160" height="160" loading="lazy" decoding="async">
+                    <span class="pub-thumb-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        <span data-en="Paper" data-zh="论文">Paper</span>
+                    </span>
                 </div>
                 <div class="pub-details">
                     <p class="pub-title">Simulation and Visualization of Ductile Fracture with the Material Point Method
@@ -2190,13 +2277,20 @@
             <!-- Pub 5 -->
             <div class="pub-item">
                 <div class="pub-thumb-wrap pub-thumb-wrap--has-fig" onclick="togglePubFig(this)"
-                    title="Hover or tap to preview paper figure">
+                    title="Hover or tap to preview paper">
                     <img class="pub-thumb" src="./assets/pub-vehicle.webp" alt="Vehicle Re-Identification" width="160"
                         height="160" loading="lazy" decoding="async">
-                    <img class="pub-thumb-fig pub-thumb-fig--contain" src="./assets/fig-vehicle.webp"
-                        alt="Paper figure: Dual-CNN feature fusion with Joint Bayesian loss" width="160" height="160"
-                        loading="lazy" decoding="async">
-                    <span class="pub-thumb-badge" data-en="✦ Paper Fig" data-zh="✦ 论文配图">✦ Paper Fig</span>
+                    <img class="pub-thumb-fig" src="./assets/paper-vehicle.webp"
+                        alt="Paper preview: Vehicle Re-Identification by Deep Feature Fusion Based on Joint Bayesian Criterion"
+                        width="160" height="160" loading="lazy" decoding="async">
+                    <span class="pub-thumb-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        <span data-en="Paper" data-zh="论文">Paper</span>
+                    </span>
                 </div>
                 <div class="pub-details">
                     <p class="pub-title">Vehicle Re-Id by Deep Feature Fusion Based on Joint Bayesian Criterion</p>
