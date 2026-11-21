@@ -4,13 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Leyi Zhu — Software Engineer @ Google">
+    <meta name="description"
+        content="Leyi Zhu — Software Engineer at Google. Ph.D. from Courant Institute (NYU) in Computer Graphics and Geometry Processing.">
+    <meta property="og:title" content="Leyi Zhu">
+    <meta property="og:description"
+        content="Software Engineer @ Google · Ph.D. in Geometry Processing & Computer Graphics (NYU Courant)">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%231a73e8%22/><path d=%22M18 18h8v22h12v6H18V18zm20 0h10v5l-7 17h7v6H36v-5l7-17h-5v-6z%22 fill=%22%23fff%22/></svg>">
     <title>Leyi Zhu</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Google+Sans+Text:wght@400;500;600&family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap"
         rel="stylesheet">
+    <script>
+        function getPreferredTheme() {
+            try {
+                var saved = localStorage.getItem('theme');
+                if (saved === 'dark' || saved === 'light') return saved;
+            } catch (e) { }
+            return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        }
+        // Apply preferred theme before first paint to avoid flash of wrong theme
+        document.documentElement.setAttribute('data-theme', getPreferredTheme());
+    </script>
     <style>
         :root {
             /* Google brand colors */
@@ -36,8 +54,8 @@
             --color-highlight: #e8f0fe;
             --color-award: #b06000;
             --color-award-bg: #feefc3;
-            --color-card-shadow: rgba(60, 64, 67, 0.15);
-            --color-card-shadow-soft: rgba(60, 64, 67, 0.08);
+            --color-card-shadow: rgba(60, 64, 67, 0.14);
+            --color-card-shadow-soft: rgba(60, 64, 67, 0.07);
 
             --font-display: 'Google Sans', 'Google Sans Display', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             --font-sans: 'Google Sans Text', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
@@ -45,9 +63,9 @@
             /* Backwards-compatible aliases used elsewhere in this stylesheet */
             --font-serif: var(--font-display);
 
-            --max-width: 860px;
+            --max-width: 880px;
             --radius-card: 16px;
-            --radius-card-lg: 24px;
+            --radius-card-lg: 22px;
             --radius-pill: 999px;
         }
 
@@ -62,8 +80,8 @@
             --google-green: #81c995;
 
             --color-bg: #202124;
-            --color-surface: #202124;
-            --color-surface-variant: #28292c;
+            --color-surface: #25262a;
+            --color-surface-variant: #292a2d;
             --color-surface-tonal: #303134;
             --color-text: #e8eaed;
             --color-text-secondary: #9aa0a6;
@@ -71,50 +89,46 @@
             --color-accent: #8ab4f8;
             --color-accent-light: #aecbfa;
             --color-border: #3c4043;
-            --color-border-light: #2d2e31;
+            --color-border-light: #323438;
             --color-highlight: rgba(138, 180, 248, 0.16);
             --color-award: #fdd663;
             --color-award-bg: rgba(253, 214, 99, 0.14);
-            --color-card-shadow: rgba(0, 0, 0, 0.6);
-            --color-card-shadow-soft: rgba(0, 0, 0, 0.4);
+            --color-card-shadow: rgba(0, 0, 0, 0.5);
+            --color-card-shadow-soft: rgba(0, 0, 0, 0.32);
         }
 
         [data-theme="dark"] nav {
-            background: rgba(32, 33, 36, 0.92);
+            background: rgba(32, 33, 36, 0.88);
             border-bottom-color: #2d2e31;
         }
 
         /* Neutral dark chips behind the colorful illustration icons */
         [data-theme="dark"] .funfact-icon,
         [data-theme="dark"] .misc-card-icon {
-            background: #303134;
+            background: #35363a;
         }
 
         /* Brighten Go-board lines so they read on dark */
         [data-theme="dark"] .funfact-icon--go svg g {
-            stroke: #909090;
+            stroke: #9aa0a6;
         }
 
-        /* The Pixel Lab wordmark is black on transparent — flip it to white on dark */
-        [data-theme="dark"] .bio-logo-pixel {
+        /* Dark-mode affiliation chip logo adjustments */
+        [data-theme="dark"] .affil-logo--pixel,
+        [data-theme="dark"] .affil-logo--ustc {
             filter: brightness(0) invert(1);
+            opacity: 0.9;
         }
 
-        /* The USTC seal is dim blue on dark — render it as a clean white seal */
-        [data-theme="dark"] .bio-logo-square {
-            filter: brightness(0) invert(1);
-        }
-
-        /* NYU is purple-on-transparent — sit it on a small white background on dark */
-        [data-theme="dark"] .bio-logo-nyu {
+        [data-theme="dark"] .affil-logo--nyu {
             background: #ffffff;
             border-radius: 3px;
             padding: 1px 2px;
         }
 
-        /* Lift the dark thesis illustration a touch so detail stays readable */
+        /* Keep dark thesis chalkboard rich without washing out blacks */
         [data-theme="dark"] .thesis-visual img {
-            filter: brightness(1.22);
+            filter: brightness(1.05) contrast(1.02);
         }
 
         *,
@@ -125,6 +139,10 @@
 
         html {
             scroll-behavior: smooth;
+        }
+
+        section[id] {
+            scroll-margin-top: 84px;
         }
 
         body {
@@ -145,7 +163,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(255, 255, 255, 0.88);
             backdrop-filter: saturate(180%) blur(14px);
             -webkit-backdrop-filter: saturate(180%) blur(14px);
             border-bottom: 1px solid var(--color-border-light);
@@ -158,15 +176,21 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 64px;
+            height: 62px;
         }
 
         nav .nav-name {
             font-family: var(--font-display);
             font-weight: 500;
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             color: var(--color-text);
             letter-spacing: -0.01em;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        nav .nav-name:hover {
+            color: var(--color-accent);
         }
 
         nav .nav-links {
@@ -179,7 +203,7 @@
         .nav-sections {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
         }
 
         /* Hamburger — hidden on desktop, shown when tabs are collapsed */
@@ -195,7 +219,7 @@
             padding: 0;
             border-radius: 50%;
             cursor: pointer;
-            margin-left: 8px;
+            margin-left: 6px;
             transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
         }
 
@@ -237,12 +261,12 @@
                 flex-direction: column;
                 align-items: stretch;
                 gap: 2px;
-                min-width: 168px;
+                min-width: 176px;
                 background: var(--color-surface);
                 border: 1px solid var(--color-border);
                 border-radius: 14px;
                 padding: 8px;
-                box-shadow: 0 4px 18px var(--color-card-shadow);
+                box-shadow: 0 6px 20px var(--color-card-shadow);
                 z-index: 200;
             }
 
@@ -264,12 +288,13 @@
             color: var(--color-text-secondary);
             text-decoration: none;
             letter-spacing: 0;
-            padding: 8px 14px;
+            padding: 7px 13px;
             border-radius: var(--radius-pill);
             transition: background-color 0.2s ease, color 0.2s ease;
         }
 
-        nav .nav-links a:hover {
+        nav .nav-links a:hover,
+        nav .nav-links a.active {
             color: var(--color-accent);
             background: var(--color-highlight);
         }
@@ -281,7 +306,7 @@
             color: var(--color-accent);
             background: transparent;
             border: 1px solid var(--color-border);
-            padding: 6px 14px;
+            padding: 6px 13px;
             border-radius: var(--radius-pill);
             cursor: pointer;
             margin-left: 8px;
@@ -308,7 +333,7 @@
             padding: 0;
             border-radius: 50%;
             cursor: pointer;
-            margin-left: 8px;
+            margin-left: 6px;
             transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
         }
 
@@ -319,8 +344,8 @@
         }
 
         #theme-toggle svg {
-            width: 18px;
-            height: 18px;
+            width: 17px;
+            height: 17px;
             display: block;
         }
 
@@ -345,13 +370,13 @@
 
         /* ── Profile Section ── */
         .profile-section {
-            padding: 64px 0 40px;
+            padding: 52px 0 32px;
         }
 
         .profile {
             display: flex;
-            align-items: flex-start;
-            gap: 40px;
+            align-items: center;
+            gap: 36px;
         }
 
         .profile-photo-wrap {
@@ -361,52 +386,144 @@
             align-items: center;
             gap: 10px;
             cursor: pointer;
+            user-select: none;
+            outline: none;
+        }
+
+        .profile-photo-wrap:focus-visible .profile-photo {
+            box-shadow: 0 0 0 3px var(--color-bg), 0 0 0 5px var(--color-accent);
         }
 
         .profile-photo {
-            width: 180px;
-            height: 180px;
+            width: 172px;
+            height: 172px;
             border-radius: 50%;
             object-fit: cover;
             object-position: center 55%;
             border: none;
-            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.1), 0 2px 6px 2px rgba(60, 64, 67, 0.08);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: 0 0 0 3px var(--color-surface), 0 0 0 4px var(--color-border-light), 0 4px 14px var(--color-card-shadow-soft);
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
         }
 
         .profile-photo-wrap:hover .profile-photo {
             transform: scale(1.03);
-            box-shadow: 0 2px 6px 0 rgba(60, 64, 67, 0.15), 0 6px 14px 4px rgba(60, 64, 67, 0.1);
+            box-shadow: 0 0 0 3px var(--color-surface), 0 0 0 4px var(--color-accent), 0 8px 20px var(--color-card-shadow);
         }
 
         .photo-hint {
             font-family: var(--font-display);
-            font-size: 12px;
+            font-size: 11.5px;
+            font-weight: 500;
             color: var(--color-accent);
-            opacity: 0.85;
-            animation: hint-pulse 2s ease-in-out 1s 3;
+            background: var(--color-highlight);
+            padding: 3px 11px;
+            border-radius: var(--radius-pill);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            animation: hint-pulse 2.2s ease-in-out 1s 3;
+        }
+
+        .profile-photo-wrap:hover .photo-hint {
+            transform: translateY(-1px);
         }
 
         @keyframes hint-pulse {
 
             0%,
             100% {
-                opacity: 0.85;
+                opacity: 0.88;
             }
 
             50% {
                 opacity: 1;
-                transform: scale(1.05);
+                transform: scale(1.04);
             }
         }
 
+        .profile-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .profile-info h1 {
+            font-family: var(--font-display);
+            font-size: 2.45rem;
+            font-weight: 500;
+            color: var(--color-text);
+            margin: 0 0 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.16;
+        }
+
+        .profile-info .subtitle {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            color: var(--color-text-secondary);
+            margin: 0 0 18px;
+            font-weight: 400;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .subtitle .google-wordmark-link {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .subtitle .google-wordmark-link:hover {
+            opacity: 0.85;
+        }
+
+        .subtitle .google-wordmark {
+            height: 1.24em;
+            width: auto;
+            display: block;
+            transform: translateY(0.11em);
+        }
+
+        .profile-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .profile-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-display);
+            font-size: 0.84rem;
+            font-weight: 500;
+            color: var(--color-text);
+            text-decoration: none;
+            padding: 7px 15px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-pill);
+            background: var(--color-surface);
+            transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.15s ease;
+        }
+
+        .profile-links a svg {
+            width: 15px;
+            height: 15px;
+            color: var(--color-accent);
+            flex-shrink: 0;
+        }
+
+        .profile-links a:hover {
+            background-color: var(--color-highlight);
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px var(--color-card-shadow-soft);
+        }
+
         /* ── Pigeon of the Day ── */
-        /* The wrapper owns the placement so the link itself stays shrink-wrapped;
-           putting flex-basis on the link would stretch its hover background into
-           a full-width band once it drops onto its own row. */
         .daily-pigeon-wrap {
             margin-left: auto;
-            align-self: center;
             flex-shrink: 0;
             display: flex;
             justify-content: center;
@@ -417,21 +534,25 @@
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            padding: 10px 14px 12px;
-            border-radius: 18px;
+            padding: 10px 14px 11px;
+            border-radius: 20px;
+            background: var(--color-surface-variant);
+            border: 1px solid var(--color-border-light);
             text-decoration: none;
-            transition: transform 0.25s ease, background-color 0.25s ease;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
         }
 
         .daily-pigeon:hover {
             transform: translateY(-3px);
-            background-color: var(--color-surface-variant);
+            border-color: var(--color-accent);
+            background-color: var(--color-highlight);
+            box-shadow: 0 4px 12px var(--color-card-shadow-soft);
         }
 
         .daily-pigeon-slot {
             display: block;
-            width: 150px;
-            height: 150px;
+            width: 132px;
+            height: 132px;
         }
 
         .daily-pigeon-slot svg {
@@ -440,201 +561,145 @@
             height: 100%;
         }
 
+        .daily-pigeon-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+        }
+
         .daily-pigeon-label {
             font-family: var(--font-display);
-            font-size: 12px;
+            font-size: 11.5px;
+            font-weight: 500;
             color: var(--color-accent);
-            opacity: 0.85;
             white-space: nowrap;
         }
 
-        /* Too narrow to sit beside the photo without squeezing the name and
-           links: drop it onto its own centred row underneath instead. */
-        @media (max-width: 900px) {
-            .profile {
-                flex-wrap: wrap;
-            }
-
-            .daily-pigeon-wrap {
-                flex-basis: 100%;
-                margin-left: 0;
-            }
-        }
-
-        /* At this width .profile is already a column, where flex-basis would be
-           sizing the height rather than the width. */
-        @media (max-width: 640px) {
-            .daily-pigeon-wrap {
-                flex-basis: auto;
-                width: 100%;
-            }
-        }
-
-        .profile-info h1 {
-            font-family: var(--font-display);
-            font-size: 2.5rem;
-            font-weight: 500;
-            color: var(--color-text);
-            margin: 4px 0 6px;
-            letter-spacing: -0.015em;
-            line-height: 1.2;
-        }
-
-        .profile-info .subtitle {
-            font-family: var(--font-display);
-            font-size: 1.05rem;
+        .daily-pigeon-sub {
+            display: none;
+            font-size: 11px;
             color: var(--color-text-secondary);
-            margin: 0 0 20px;
-            font-weight: 400;
+            white-space: nowrap;
         }
 
-        .profile-info .affiliation {
-            font-size: 0.92rem;
-            color: var(--color-accent);
-            margin: 0 0 16px;
-            font-weight: 500;
-        }
+        /* Tablet: keep Avatar · Info · Pigeon side-by-side in one harmonious row */
+        @media (max-width: 820px) and (min-width: 641px) {
+            .profile {
+                gap: 20px;
+            }
 
-        .profile-links {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+            .profile-photo {
+                width: 140px;
+                height: 140px;
+            }
 
-        .profile-links a {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font-display);
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--color-accent);
-            text-decoration: none;
-            padding: 8px 18px;
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-pill);
-            background: var(--color-surface);
-            transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
-        }
+            .profile-info h1 {
+                font-size: 2.05rem;
+            }
 
-        .profile-links a:hover {
-            background-color: var(--color-highlight);
-            border-color: var(--color-accent);
-            color: var(--google-blue-hover);
-            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.08);
+            .profile-links a {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .daily-pigeon {
+                padding: 8px 10px 10px;
+            }
+
+            .daily-pigeon-slot {
+                width: 102px;
+                height: 102px;
+            }
         }
 
         /* ── Bio / About ── */
         .bio {
-            padding: 0 0 24px;
+            padding: 0 0 36px;
             border-bottom: 1px solid var(--color-border-light);
             margin-bottom: 48px;
         }
 
         .bio p {
             font-size: 0.975rem;
-            line-height: 1.75;
+            line-height: 1.78;
             color: var(--color-text);
-            margin: 0 0 14px;
-        }
-
-        .bio p:last-child {
-            margin-bottom: 0;
-        }
-
-        .bio strong {
-            color: var(--color-accent);
-            font-weight: 500;
+            margin: 0 0 16px;
         }
 
         .bio a {
             color: var(--color-accent);
             text-decoration: none;
-            transition: text-decoration-color 0.2s;
-            text-decoration-color: transparent;
+            font-weight: 500;
             text-underline-offset: 3px;
         }
 
         .bio a:hover {
             text-decoration: underline;
-            text-decoration-color: var(--color-accent);
         }
 
-        .bio .logo-link {
+        /* Compact affiliation badge strip */
+        .affiliation-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 18px 0 0;
+        }
+
+        .affil-chip {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            height: 2.05em;
-            margin: 0 0.16em;
-            padding: 0;
-            border-bottom: 0;
-            vertical-align: -0.58em;
-            line-height: 1;
+            gap: 7px;
+            padding: 5px 12px;
+            border-radius: var(--radius-pill);
+            background: var(--color-surface-variant);
+            border: 1px solid var(--color-border-light);
+            color: var(--color-text-secondary) !important;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 500 !important;
+            text-decoration: none !important;
+            transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
         }
 
-        .bio .logo-link:hover {
-            border-bottom: 0;
-            opacity: 0.86;
+        .affil-chip:hover {
+            border-color: var(--color-border);
+            background: var(--color-surface-tonal);
+            color: var(--color-text) !important;
+            transform: translateY(-1px);
         }
 
-        .bio-logo {
-            display: inline-block;
+        .affil-chip img {
+            display: block;
+            height: 16px;
             width: auto;
-            height: 1.82em;
-            max-width: 10em;
             object-fit: contain;
-            vertical-align: middle;
         }
 
-        .logo-link-square {
-            width: 2.08em;
+        .affil-chip .affil-logo--google {
+            height: 15px;
         }
 
-        .bio-logo-square {
-            height: 1.9em;
-            max-width: 1.9em;
+        .affil-chip .affil-logo--pixel {
+            height: 15px;
         }
 
-        .bio-logo-nyu {
-            height: 2.05em;
-            max-width: 1.5em;
+        .affil-chip .affil-sep {
+            color: var(--color-text-tertiary);
+            font-weight: 400;
         }
 
-        .bio-logo-pixel {
-            height: 1.52em;
-            max-width: 10.4em;
-        }
-
-        .bio-logo-google {
-            height: 1.45em;
-            max-width: 8em;
-            vertical-align: middle;
-        }
-
-        .bio-logo-phrase {
-            white-space: nowrap;
-        }
-
-        .research-interests {
-            background: var(--color-highlight);
-            border-left: 3px solid var(--color-accent);
-            padding: 14px 20px;
-            border-radius: 0 12px 12px 0;
-            margin: 20px 0 0;
-            font-size: 0.95rem;
-        }
-
-        .research-interests strong {
-            font-weight: 500;
+        .affil-chip .affil-name {
+            color: var(--color-text);
         }
 
         /* ── Section Headers ── */
         .section-title {
             font-family: var(--font-display);
-            font-size: 1.625rem;
+            font-size: 1.55rem;
             font-weight: 500;
             color: var(--color-text);
-            margin: 0 0 28px;
+            margin: 0 0 24px;
             padding-bottom: 0;
             display: flex;
             align-items: center;
@@ -662,178 +727,140 @@
             margin-bottom: 48px;
         }
 
-        /* ── Academic ── */
-        .academic-section {
-            padding-bottom: 48px;
-            border-bottom: 1px solid var(--color-border-light);
-            margin-bottom: 48px;
-        }
-
-        .academic-group+.academic-group {
-            margin-top: 32px;
-        }
-
-        .academic-group {
-            padding: 0;
-        }
-
-        .academic-subtitle {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-family: var(--font-display);
-            font-size: 1.125rem;
-            font-weight: 500;
-            color: var(--color-text);
-            margin: 0 0 16px;
-        }
-
-        .academic-subtitle::before {
-            content: "";
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--google-blue);
-            flex-shrink: 0;
-        }
-
-        /* Rotate Google brand colors across academic groups */
-        .academic-group:nth-of-type(1) .academic-subtitle::before {
-            background: var(--google-blue);
-        }
-
-        .academic-group:nth-of-type(2) .academic-subtitle::before {
-            background: var(--google-red);
-        }
-
-        .academic-group:nth-of-type(3) .academic-subtitle::before {
-            background: var(--google-green);
-        }
-
-        .academic-group:nth-of-type(4) .academic-subtitle::before {
-            background: var(--google-yellow);
-        }
-
-        .academic-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            gap: 12px;
-        }
-
-        .academic-item {
-            position: relative;
-            background: var(--color-surface);
-            border: 1px solid var(--color-border-light);
-            border-radius: var(--radius-card);
-            padding: 18px 64px 18px 22px;
-            overflow: hidden;
-            transition: box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
-        }
-
-        .academic-item-icon {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: var(--color-highlight);
-            color: var(--color-accent);
-            transition: background-color 0.2s ease;
-        }
-
-        .academic-item-icon svg {
-            width: 20px;
-            height: 20px;
-            display: block;
-            stroke: currentColor;
-        }
-
-        .academic-item:hover {
-            border-color: var(--color-border);
-            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.1), 0 2px 6px 2px rgba(60, 64, 67, 0.06);
-        }
-
-        .academic-item:hover .academic-item-icon {
-            background: var(--google-blue);
-            color: #fff;
-        }
-
-        .academic-item-title {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--color-text);
-            margin: 0 0 4px;
-        }
-
-        .academic-item-meta {
-            font-size: 0.875rem;
-            color: var(--color-text-secondary);
-            margin: 0;
-        }
-
-        .academic-item a {
-            color: var(--color-accent);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .academic-item a:hover {
-            text-decoration: underline;
-        }
-
         .pub-item {
             display: flex;
             gap: 22px;
-            padding: 22px;
+            padding: 20px 22px;
             margin-bottom: 16px;
             background: var(--color-surface);
             border: 1px solid var(--color-border-light);
             border-radius: var(--radius-card);
-            transition: box-shadow 0.25s ease, border-color 0.25s ease;
+            transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+        }
+
+        .pub-item:last-child {
+            margin-bottom: 0;
         }
 
         .pub-item:hover {
-            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.1), 0 2px 6px 2px rgba(60, 64, 67, 0.06);
+            box-shadow: 0 2px 8px var(--color-card-shadow-soft), 0 4px 16px var(--color-card-shadow-soft);
             border-color: var(--color-border);
         }
 
-        .pub-thumb {
+        .pub-thumb-wrap {
+            position: relative;
             flex-shrink: 0;
             width: 160px;
             height: 160px;
-            object-fit: cover;
             border-radius: 12px;
-            border: none;
+            overflow: hidden;
+            background: var(--color-surface-variant);
+            border: 1px solid var(--color-border-light);
+        }
+
+        .pub-thumb-wrap--has-fig {
+            cursor: pointer;
+        }
+
+        .pub-thumb {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.35s ease, opacity 0.3s ease;
+        }
+
+        .pub-item:hover .pub-thumb-wrap:not(.pub-thumb-wrap--has-fig) .pub-thumb {
+            transform: scale(1.04);
+        }
+
+        .pub-thumb-fig {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.28s ease;
+            pointer-events: none;
+        }
+
+        .pub-thumb-fig--contain {
+            object-fit: contain;
+            background: #ffffff;
+            padding: 8px;
+        }
+
+        .pub-thumb-fig--cover {
+            object-fit: cover;
+            background: #14161a;
+        }
+
+        .pub-thumb-badge {
+            position: absolute;
+            right: 6px;
+            bottom: 6px;
+            font-family: var(--font-display);
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            padding: 2px 7px;
+            border-radius: var(--radius-pill);
+            background: rgba(32, 33, 36, 0.72);
+            color: #ffffff;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            pointer-events: none;
+            transition: opacity 0.22s ease;
+        }
+
+        .pub-thumb-wrap--has-fig:hover .pub-thumb-fig,
+        .pub-thumb-wrap--has-fig.show-fig .pub-thumb-fig {
+            opacity: 1;
+        }
+
+        .pub-thumb-wrap--has-fig:hover .pub-thumb-badge,
+        .pub-thumb-wrap--has-fig.show-fig .pub-thumb-badge {
+            opacity: 0;
         }
 
         .pub-details {
             flex: 1;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .pub-title {
             font-family: var(--font-display);
-            font-size: 1.0625rem;
+            font-size: 1.05rem;
             font-weight: 500;
-            line-height: 1.4;
+            line-height: 1.38;
             margin: 0 0 6px;
             color: var(--color-text);
             letter-spacing: -0.005em;
         }
 
+        .pub-venue-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 5px;
+        }
+
         .pub-venue {
-            font-size: 0.875rem;
+            font-size: 0.855rem;
+            color: var(--color-text-secondary);
+            margin: 0;
+            font-style: italic;
+        }
+
+        .pub-meta {
+            font-size: 0.845rem;
             color: var(--color-text-secondary);
             margin: 0 0 6px;
-            font-style: normal;
+            line-height: 1.5;
         }
 
         .pub-award {
@@ -841,49 +868,33 @@
             align-items: center;
             gap: 4px;
             font-family: var(--font-display);
-            font-size: 0.75rem;
+            font-size: 0.74rem;
             font-weight: 500;
             color: var(--color-award);
             background: var(--color-award-bg);
-            padding: 3px 10px;
+            padding: 2px 9px;
             border-radius: var(--radius-pill);
-            margin-bottom: 6px;
             letter-spacing: 0;
-        }
-
-        .pub-meta {
-            font-size: 0.85rem;
-            color: var(--color-text-secondary);
-            margin: 0 0 12px;
-        }
-
-        .pub-meta a {
-            color: var(--color-accent);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .pub-meta a:hover {
-            text-decoration: underline;
         }
 
         .pub-buttons {
             display: flex;
-            gap: 8px;
+            gap: 7px;
             flex-wrap: wrap;
-            margin-top: 4px;
+            margin-top: 6px;
         }
 
         .pub-btn {
             display: inline-flex;
             align-items: center;
+            gap: 5px;
             font-family: var(--font-display);
-            font-size: 0.8125rem;
+            font-size: 0.8rem;
             font-weight: 500;
             color: var(--color-accent);
             background: var(--color-surface);
             border: 1px solid var(--color-border);
-            padding: 6px 16px;
+            padding: 5px 14px;
             border-radius: var(--radius-pill);
             cursor: pointer;
             text-transform: none;
@@ -893,11 +904,12 @@
             line-height: 1.4;
         }
 
-        .pub-btn:hover {
+        .pub-btn:hover,
+        .pub-btn.active {
             background: var(--color-highlight);
             border-color: var(--color-accent);
             color: var(--google-blue-hover);
-            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.08);
+            box-shadow: 0 1px 2px var(--color-card-shadow-soft);
         }
 
         a.pub-btn {
@@ -910,13 +922,13 @@
 
         .abstract {
             display: none;
-            font-size: 0.875rem;
-            line-height: 1.7;
+            font-size: 0.865rem;
+            line-height: 1.68;
             margin-top: 14px;
-            padding: 16px 20px;
+            padding: 14px 18px;
             background: var(--color-surface-variant);
             border-left: 3px solid var(--google-blue);
-            border-radius: 0 8px 8px 0;
+            border-radius: 0 10px 10px 0;
             color: var(--color-text-secondary);
         }
 
@@ -935,13 +947,13 @@
 
         .abstract.show {
             display: block;
-            animation: fadeIn 0.35s ease;
+            animation: fadeIn 0.28s ease;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(-6px);
+                transform: translateY(-4px);
             }
 
             to {
@@ -950,28 +962,155 @@
             }
         }
 
-        /* ── Miscellaneous ── */
-        .misc-section {
+        /* ── Academic ── */
+        .academic-section {
             padding-bottom: 48px;
             border-bottom: 1px solid var(--color-border-light);
             margin-bottom: 48px;
         }
 
+        .academic-group+.academic-group {
+            margin-top: 28px;
+        }
+
+        .academic-subtitle {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-display);
+            font-size: 1.08rem;
+            font-weight: 500;
+            color: var(--color-text);
+            margin: 0 0 14px;
+        }
+
+        .academic-subtitle::before {
+            content: "";
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--google-blue);
+            flex-shrink: 0;
+        }
+
+        .academic-group:nth-of-type(1) .academic-subtitle::before {
+            background: var(--google-blue);
+        }
+
+        .academic-group:nth-of-type(2) .academic-subtitle::before {
+            background: var(--google-green);
+        }
+
+        .academic-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .academic-list--compact {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .academic-item {
+            position: relative;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--radius-card);
+            padding: 15px 58px 15px 20px;
+            overflow: hidden;
+            transition: box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+        }
+
+        .academic-list--compact .academic-item {
+            padding: 15px 52px 15px 18px;
+        }
+
+        .academic-item-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--color-highlight);
+            color: var(--color-accent);
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .academic-item-icon svg {
+            width: 18px;
+            height: 18px;
+            display: block;
+            stroke: currentColor;
+        }
+
+        .academic-item:hover {
+            border-color: var(--color-border);
+            box-shadow: 0 2px 8px var(--color-card-shadow-soft);
+        }
+
+        .academic-item:hover .academic-item-icon {
+            background: var(--google-blue);
+            color: #fff;
+        }
+
+        .academic-item-title {
+            font-family: var(--font-display);
+            font-size: 0.96rem;
+            font-weight: 500;
+            color: var(--color-text);
+            margin: 0 0 3px;
+        }
+
+        .academic-list--compact .academic-item-title {
+            margin: 0 0 2px;
+            font-size: 0.94rem;
+        }
+
+        .academic-item-meta {
+            font-size: 0.84rem;
+            color: var(--color-text-secondary);
+            margin: 0;
+        }
+
+        .academic-item a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .academic-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Playground / Miscellaneous ── */
+        .misc-section {
+            padding-bottom: 48px;
+        }
+
         .misc-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            gap: 18px;
         }
 
         .misc-card {
             background: var(--color-surface);
             border: 1px solid var(--color-border-light);
             border-radius: var(--radius-card-lg);
-            padding: 24px;
+            padding: 16px 16px 20px;
             text-decoration: none;
             color: inherit;
             transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease, background-color 0.25s ease;
-            display: block;
+            display: flex;
+            flex-direction: column;
             position: relative;
             overflow: hidden;
         }
@@ -988,33 +1127,115 @@
         }
 
         .misc-card:hover {
-            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.1), 0 4px 10px 2px rgba(60, 64, 67, 0.08);
+            box-shadow: 0 2px 6px var(--color-card-shadow-soft), 0 8px 20px var(--color-card-shadow-soft);
             border-color: var(--color-border);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
         }
 
         .misc-card:hover::before {
             opacity: 1;
         }
 
+        .misc-card-preview {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 560 / 333;
+            object-fit: cover;
+            border-radius: 13px;
+            margin-bottom: 14px;
+            border: 1px solid var(--color-border-light);
+            background: #081318;
+        }
+
+        .misc-card picture {
+            display: block;
+        }
+
+        /* Live SVG stage for the Pigeon Generator card */
+        .misc-pigeon-stage {
+            width: 100%;
+            aspect-ratio: 560 / 333;
+            border-radius: 13px;
+            margin-bottom: 14px;
+            border: 1px solid var(--color-border-light);
+            background:
+                radial-gradient(circle at 50% 35%, rgba(56, 189, 248, 0.16) 0%, transparent 62%),
+                radial-gradient(circle at 80% 80%, rgba(0, 230, 118, 0.12) 0%, transparent 52%),
+                linear-gradient(180deg, #131b2e 0%, #0b0f19 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 12px 16px 6px;
+            overflow: hidden;
+        }
+
+        .misc-pigeon-bird {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32%;
+            max-width: 120px;
+            transition: transform 0.28s cubic-bezier(0.2, 0.85, 0.3, 1.2);
+        }
+
+        .misc-pigeon-bird svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .misc-pigeon-bird:nth-child(1) {
+            transform: translateY(4px) scale(0.92);
+        }
+
+        .misc-pigeon-bird:nth-child(2) {
+            transform: translateY(-4px) scale(1.05);
+            z-index: 1;
+        }
+
+        .misc-pigeon-bird:nth-child(3) {
+            transform: translateY(5px) scale(0.9) scaleX(-1);
+        }
+
+        .misc-card:hover .misc-pigeon-bird:nth-child(1) {
+            transform: translateY(0) rotate(-4deg) scale(0.95);
+        }
+
+        .misc-card:hover .misc-pigeon-bird:nth-child(2) {
+            transform: translateY(-9px) scale(1.1);
+        }
+
+        .misc-card:hover .misc-pigeon-bird:nth-child(3) {
+            transform: translateY(1px) scale(0.94) scaleX(-1) rotate(-4deg);
+        }
+
+        .misc-card-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 4px 7px;
+        }
+
         .misc-card-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            flex-shrink: 0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 16px;
             transition: transform 0.25s ease;
         }
 
         .misc-card:hover .misc-card-icon {
-            transform: scale(1.06) rotate(-3deg);
+            transform: scale(1.08) rotate(-4deg);
         }
 
         .misc-card-icon svg {
-            width: 28px;
-            height: 28px;
+            width: 18px;
+            height: 18px;
             display: block;
         }
 
@@ -1038,56 +1259,59 @@
             background: #e8f0fe;
         }
 
-        .misc-card-preview {
-            display: block;
-            width: 100%;
-            aspect-ratio: 560 / 333;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            border: 1px solid var(--color-border-light);
-            background: #081318;
-        }
-
-        .misc-card picture {
-            display: block;
+        .misc-card-icon--pigeon {
+            background: #e0f2f1;
         }
 
         .misc-card-title {
             font-family: var(--font-display);
-            font-size: 1.0625rem;
+            font-size: 1.02rem;
             font-weight: 500;
             color: var(--color-text);
-            margin: 0 0 6px;
-            display: flex;
+            margin: 0;
+            display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+            min-width: 0;
         }
 
         .misc-card-title .misc-card-arrow {
-            width: 16px;
-            height: 16px;
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
             color: var(--color-accent);
             opacity: 0;
-            transform: translateX(-4px);
+            transform: translate(-3px, 2px);
             transition: opacity 0.2s ease, transform 0.2s ease;
         }
 
         .misc-card:hover .misc-card-title .misc-card-arrow {
             opacity: 1;
-            transform: translateX(0);
+            transform: translate(0, 0);
+        }
+
+        .misc-card-tag {
+            margin-left: auto;
+            font-family: var(--font-mono);
+            font-size: 0.69rem;
+            color: var(--color-text-secondary);
+            background: var(--color-surface-tonal);
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .misc-card-desc {
-            font-size: 0.875rem;
+            font-size: 0.86rem;
             color: var(--color-text-secondary);
-            line-height: 1.6;
-            margin: 0;
+            line-height: 1.58;
+            margin: 0 4px;
         }
 
         /* ── Thesis Visual ── */
         .thesis-visual {
-            margin: 32px 0 0;
+            margin: 26px 0 0;
             border: 1px solid var(--color-border-light);
             border-radius: var(--radius-card-lg);
             overflow: hidden;
@@ -1096,24 +1320,26 @@
         }
 
         .thesis-visual:hover {
-            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.1), 0 4px 10px 2px rgba(60, 64, 67, 0.06);
+            box-shadow: 0 2px 8px var(--color-card-shadow-soft), 0 6px 16px var(--color-card-shadow-soft);
             border-color: var(--color-border);
         }
 
         .thesis-visual img {
             width: 100%;
+            aspect-ratio: 3 / 2;
             height: auto;
             display: block;
+            object-fit: cover;
         }
 
         .thesis-caption {
-            padding: 14px 20px;
+            padding: 13px 20px;
             font-size: 0.85rem;
             color: var(--color-text-secondary);
             margin: 0;
             text-align: center;
             border-top: 1px solid var(--color-border-light);
-            line-height: 1.7;
+            line-height: 1.65;
         }
 
         .thesis-caption em {
@@ -1149,7 +1375,7 @@
             background: var(--color-surface);
             border: 1px solid var(--color-border-light);
             border-radius: var(--radius-card-lg);
-            padding: 26px 22px;
+            padding: 24px 20px;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -1159,19 +1385,19 @@
         }
 
         .funfact-card:hover {
-            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.1), 0 4px 10px 2px rgba(60, 64, 67, 0.08);
+            box-shadow: 0 2px 8px var(--color-card-shadow-soft), 0 6px 16px var(--color-card-shadow-soft);
             border-color: var(--color-border);
             transform: translateY(-2px);
         }
 
         .funfact-icon {
-            width: 64px;
-            height: 64px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             transition: transform 0.25s ease;
         }
 
@@ -1180,8 +1406,8 @@
         }
 
         .funfact-icon svg {
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             display: block;
         }
 
@@ -1201,10 +1427,14 @@
             font-family: var(--font-display);
             font-size: 1.5rem;
             font-weight: 600;
-            line-height: 1.15;
+            line-height: 1.2;
             margin: 0 0 4px;
             letter-spacing: -0.01em;
             color: var(--color-text);
+        }
+
+        .funfact-value--text {
+            font-size: 1.32rem;
         }
 
         .funfact-value .funfact-unit {
@@ -1215,7 +1445,7 @@
 
         .funfact-label {
             font-family: var(--font-display);
-            font-size: 0.9375rem;
+            font-size: 0.92rem;
             font-weight: 500;
             color: var(--color-text);
             margin: 0 0 4px;
@@ -1231,27 +1461,72 @@
         /* ── Footer ── */
         footer {
             border-top: 1px solid var(--color-border-light);
-            padding: 28px 0;
+            padding: 28px 0 36px;
             text-align: center;
             font-size: 0.8125rem;
             color: var(--color-text-tertiary);
             font-family: var(--font-sans);
         }
 
-        /* ── Responsive ── */
+        /* ── Mobile Responsive ── */
         @media (max-width: 640px) {
+            .profile-section {
+                padding: 36px 0 24px;
+            }
+
             .profile {
                 flex-direction: column;
                 align-items: center;
                 text-align: center;
-                gap: 24px;
+                gap: 18px;
+            }
+
+            .profile-photo {
+                width: 148px;
+                height: 148px;
             }
 
             .profile-info h1 {
                 font-size: 2rem;
             }
 
+            .profile-info .subtitle {
+                justify-content: center;
+                margin-bottom: 14px;
+            }
+
             .profile-links {
+                justify-content: center;
+            }
+
+            /* Compact horizontal badge for Pigeon of the Day on phones */
+            .daily-pigeon-wrap {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .daily-pigeon {
+                flex-direction: row;
+                gap: 12px;
+                padding: 6px 18px 6px 10px;
+                border-radius: var(--radius-pill);
+            }
+
+            .daily-pigeon-slot {
+                width: 52px;
+                height: 52px;
+            }
+
+            .daily-pigeon-text {
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .daily-pigeon-sub {
+                display: block;
+            }
+
+            .affiliation-row {
                 justify-content: center;
             }
 
@@ -1261,10 +1536,10 @@
                 padding: 18px;
             }
 
-            .pub-thumb {
+            .pub-thumb-wrap {
                 width: 100%;
-                aspect-ratio: 1 / 1;
                 height: auto;
+                aspect-ratio: 1 / 1;
             }
 
             nav .nav-inner {
@@ -1276,14 +1551,13 @@
                 gap: 0;
             }
 
-            nav .nav-links a {
-                font-size: 0.8125rem;
-                padding: 6px 10px;
+            #lang-toggle {
+                padding: 5px 11px;
+                margin-left: 4px;
             }
 
-            #lang-toggle {
-                padding: 5px 10px;
-                margin-left: 4px;
+            .academic-list--compact {
+                grid-template-columns: 1fr;
             }
 
             .funfacts-grid {
@@ -1295,25 +1569,43 @@
             }
 
             .section-title {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
         }
     </style>
     <script>
-        function toggleAbstract(id) {
-            const el = document.getElementById(id);
-            el.classList.toggle('show');
+        function toggleAbstract(id, btn) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            var open = el.classList.toggle('show');
+            if (btn) {
+                btn.classList.toggle('active', open);
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            }
+        }
+
+        function togglePubFig(wrap) {
+            if (!wrap || !wrap.classList.contains('pub-thumb-wrap--has-fig')) return;
+            wrap.classList.toggle('show-fig');
+        }
+
+        function getCurrentLang() {
+            try {
+                return localStorage.getItem('lang') || 'en';
+            } catch (e) {
+                return 'en';
+            }
         }
 
         function toggleProfilePhoto() {
             var img = document.getElementById('profile-photo');
             var hint = document.getElementById('photo-hint');
+            if (!img || !hint) return;
             var isCartoon = img.dataset.state !== 'real';
-            img.src = isCartoon ? './IMG_7036.JPG' : './IMG_7035.PNG';
+            img.src = isCartoon ? './assets/avatar-real.webp' : './assets/avatar-cartoon.webp';
             img.dataset.state = isCartoon ? 'real' : 'cartoon';
-            // Stop pulse animation after first click
             hint.style.animation = 'none';
-            var curLang = document.getElementById('lang-toggle') && document.getElementById('lang-toggle').textContent === 'English' ? 'zh' : 'en';
+            var curLang = getCurrentLang();
             var key = isCartoon ? (curLang + '-back') : curLang;
             hint.textContent = hint.getAttribute('data-' + key);
         }
@@ -1342,33 +1634,35 @@
             if (btn) btn.textContent = lang === 'en' ? '中文' : 'EN';
             // Update html lang attribute
             document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hans';
-            localStorage.setItem('lang', lang);
+            try {
+                localStorage.setItem('lang', lang);
+            } catch (e) { }
         }
 
         function toggleLang() {
-            setLang((localStorage.getItem('lang') || 'en') === 'en' ? 'zh' : 'en');
+            setLang(getCurrentLang() === 'en' ? 'zh' : 'en');
         }
 
-        function applyTheme(theme) {
+        function applyTheme(theme, persist) {
             var dark = theme === 'dark';
             document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-            // Swap the thesis illustration for its dark-mode version
             var thesis = document.getElementById('thesis-img');
             if (thesis) {
-                thesis.src = dark ? thesis.dataset.dark : thesis.dataset.light;
-                if (dark) {
-                    thesis.setAttribute('width', '1456');
-                    thesis.setAttribute('height', '971');
-                } else {
-                    thesis.setAttribute('width', '1456');
-                    thesis.setAttribute('height', '816');
+                var nextSrc = dark ? thesis.dataset.dark : thesis.dataset.light;
+                if (thesis.getAttribute('src') !== nextSrc) {
+                    thesis.src = nextSrc;
                 }
             }
-            localStorage.setItem('theme', theme);
+            if (persist) {
+                try {
+                    localStorage.setItem('theme', dark ? 'dark' : 'light');
+                } catch (e) { }
+            }
         }
 
         function toggleTheme() {
-            applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            applyTheme(next, true);
         }
 
         function setNavMenu(open) {
@@ -1395,13 +1689,61 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-            setLang(localStorage.getItem('lang') || 'en');
-            applyTheme(localStorage.getItem('theme') || 'light');
+            setLang(getCurrentLang());
+            applyTheme(getPreferredTheme(), false);
+
+            // Follow OS dark-mode changes if the user hasn't manually pinned a theme
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+                    try {
+                        if (!localStorage.getItem('theme')) {
+                            applyTheme(e.matches ? 'dark' : 'light', false);
+                        }
+                    } catch (err) { }
+                });
+            }
+
+            // Preload alternate real-life avatar during idle time so clicking swaps instantaneously
+            var preloadRealAvatar = function () {
+                var preload = new Image();
+                preload.src = './assets/avatar-real.webp';
+            };
+            if ('requestIdleCallback' in window) {
+                window.requestIdleCallback(preloadRealAvatar);
+            } else {
+                setTimeout(preloadRealAvatar, 1200);
+            }
+
+            // Lightweight scroll-spy to highlight current section in sticky nav
+            var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav-sections a[href^="#"]'));
+            var sectionEls = navLinks.map(function (a) {
+                return document.querySelector(a.getAttribute('href'));
+            });
+            var ticking = false;
+            function updateActiveNav() {
+                ticking = false;
+                var scrollPos = window.scrollY + 130;
+                var activeIdx = 0;
+                for (var i = 0; i < sectionEls.length; i++) {
+                    if (sectionEls[i] && sectionEls[i].offsetTop <= scrollPos) {
+                        activeIdx = i;
+                    }
+                }
+                if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 24) {
+                    activeIdx = sectionEls.length - 1;
+                }
+                navLinks.forEach(function (link, idx) {
+                    link.classList.toggle('active', idx === activeIdx);
+                });
+            }
+            window.addEventListener('scroll', function () {
+                if (!ticking) {
+                    ticking = true;
+                    window.requestAnimationFrame(updateActiveNav);
+                }
+            }, { passive: true });
+            updateActiveNav();
         });
-    </script>
-    <script>
-        // Apply saved theme before first paint to avoid a flash of the wrong theme
-        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
     </script>
 </head>
 
@@ -1409,17 +1751,18 @@
     <!-- Navigation -->
     <nav>
         <div class="nav-inner">
-            <span class="nav-name" data-en="Leyi Zhu" data-zh="朱乐宜">Leyi Zhu</span>
+            <a href="#about" class="nav-name" data-en="Leyi Zhu" data-zh="朱乐宜">Leyi Zhu</a>
             <div class="nav-links">
                 <div class="nav-sections" id="nav-sections">
-                    <a href="#about" data-en="About" data-zh="关于">About</a>
+                    <a href="#about" class="active" data-en="About" data-zh="关于">About</a>
                     <a href="#publications" data-en="Publications" data-zh="论文">Publications</a>
                     <a href="#academic" data-en="Academic" data-zh="学术">Academic</a>
                     <a href="#funfacts" data-en="Fun Facts" data-zh="趣事">Fun Facts</a>
-                    <a href="#misc" data-en="Misc" data-zh="其他">Misc</a>
+                    <a href="#misc" data-en="Playground" data-zh="互动作品">Playground</a>
                 </div>
                 <button id="lang-toggle" onclick="toggleLang()">中文</button>
-                <button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"
+                    title="Toggle dark mode">
                     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
@@ -1427,7 +1770,8 @@
                     <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="4" />
-                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                        <path
+                            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
                     </svg>
                 </button>
                 <button id="nav-menu-toggle" onclick="toggleNavMenu()" aria-label="Menu" aria-expanded="false"
@@ -1450,38 +1794,67 @@
         <!-- Profile -->
         <section class="profile-section" id="about">
             <div class="profile">
-                <div class="profile-photo-wrap" onclick="toggleProfilePhoto()">
-                    <img id="profile-photo" class="profile-photo" src="./IMG_7035.PNG" alt="Leyi Zhu" width="180"
-                        height="180" data-state="cartoon">
+                <div class="profile-photo-wrap" role="button" tabindex="0" onclick="toggleProfilePhoto()"
+                    onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleProfilePhoto();}"
+                    aria-label="Toggle between cartoon and real-life portrait">
+                    <img id="profile-photo" class="profile-photo" src="./assets/avatar-cartoon.webp" alt="Leyi Zhu"
+                        width="172" height="172" data-state="cartoon">
                     <span id="photo-hint" class="photo-hint" data-en="see me in real life" data-zh="点击看真实照片"
                         data-en-back="back to cartoon" data-zh-back="换回卡通">see me in real life</span>
                 </div>
                 <div class="profile-info">
                     <h1 data-en="Leyi Zhu" data-zh="朱乐宜">Leyi Zhu</h1>
-                    <p class="subtitle lang-en">🧑‍💻 Software Engineer @&thinsp;<span class="bio-logo-phrase"><a
-                                class="logo-link" href="https://about.google/" aria-label="Google" target="_blank"
-                                rel="noopener noreferrer"><img class="bio-logo bio-logo-google" src="./google_logo.png"
-                                    alt="Google"></a></span></p>
-                    <p class="subtitle lang-zh" style="display:none">🧑‍💻 码农 @&thinsp;<span class="bio-logo-phrase"><a
-                                class="logo-link" href="https://about.google/" aria-label="Google" target="_blank"
-                                rel="noopener noreferrer"><img class="bio-logo bio-logo-google" src="./google_logo.png"
-                                    alt="Google"></a></span></p>
+                    <p class="subtitle lang-en">🧑‍💻 Software Engineer @ <a class="google-wordmark-link"
+                            href="https://about.google/" aria-label="Google" target="_blank"
+                            rel="noopener noreferrer"><img class="google-wordmark" src="./assets/logo-google.webp"
+                                alt="Google" width="142" height="48"></a></p>
+                    <p class="subtitle lang-zh" style="display:none">🧑‍💻 码农 @ <a class="google-wordmark-link"
+                            href="https://about.google/" aria-label="Google" target="_blank"
+                            rel="noopener noreferrer"><img class="google-wordmark" src="./assets/logo-google.webp"
+                                alt="Google" width="142" height="48"></a></p>
                     <div class="profile-links">
                         <!-- CV temporarily hidden
                         <a href="./public_html/CV.pdf" data-en="Curriculum Vitae" data-zh="个人简历">Curriculum Vitae</a>
                         -->
-                        <a href="mailto:leyi@nyu.edu" data-en="Email" data-zh="邮件">Email</a>
+                        <a href="mailto:leyi@nyu.edu">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect width="20" height="16" x="2" y="4" rx="2" />
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                            </svg>
+                            <span data-en="Email" data-zh="邮件">Email</span>
+                        </a>
+                        <a href="https://scholar.google.com/citations?user=ZZJP2N4AAAAJ&hl=en" target="_blank"
+                            rel="noopener noreferrer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                <path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5" />
+                            </svg>
+                            <span data-en="Scholar" data-zh="谷歌学术">Scholar</span>
+                        </a>
+                        <a href="https://github.com/zlyfunction" target="_blank" rel="noopener noreferrer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path
+                                    d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+                                <path d="M9 18c-4.51 2-5-2-7-2" />
+                            </svg>
+                            <span>GitHub</span>
+                        </a>
                     </div>
                 </div>
-                <!-- Procedurally generated pigeon, reseeded each day. The
-                     data-en/data-zh pair sits on the label span only: setLang()
-                     rewrites textContent, which would wipe out the SVG. -->
+                <!-- Procedurally generated pigeon, reseeded each day. -->
                 <div class="daily-pigeon-wrap">
-                    <a class="daily-pigeon" href="./pegeongen.html" data-daily-pigeon data-pigeon-size="150"
+                    <a class="daily-pigeon" href="./pegeongen.html" data-daily-pigeon data-pigeon-size="136"
                         aria-label="Pigeon of the day — open the pigeon generator">
                         <span class="daily-pigeon-slot" data-pigeon-slot></span>
-                        <span class="daily-pigeon-label" data-en="pigeon of the day"
-                            data-zh="每日鸽子">pigeon of the day</span>
+                        <span class="daily-pigeon-text">
+                            <span class="daily-pigeon-label" data-en="pigeon of the day ↗"
+                                data-zh="每日鸽子 ↗">pigeon of the day ↗</span>
+                            <span class="daily-pigeon-sub" data-en="tap to generate more"
+                                data-zh="点击打开鸽子生成器">tap to generate more</span>
+                        </span>
                     </a>
                 </div>
             </div>
@@ -1490,67 +1863,66 @@
         <!-- Bio -->
         <section class="bio">
             <p class="lang-en">
-                I write code for <span class="bio-logo-phrase"><a class="logo-link" href="https://about.google/"
-                        aria-label="Google" target="_blank" rel="noopener noreferrer"><img
-                            class="bio-logo bio-logo-google" src="./google_logo.png" alt="Google"></a></span>.
                 I received my Ph.D. from the
                 <a href="http://cims.nyu.edu/">Courant Institute of Mathematical Sciences</a>
-                at New York University
-                <a class="logo-link logo-link-square" href="https://www.nyu.edu/" aria-label="New York University">
-                    <img class="bio-logo bio-logo-nyu" src="./88bebcb7bac3c3971543582e359ca569.png" alt="NYU logo">
-                </a>, where I was advised by
+                at New York University, where I was fortunate to be advised by
                 <a href="https://cims.nyu.edu/gcl/daniele.html">Daniele Panozzo</a> and
                 <a href="https://cims.nyu.edu/gcl/denis.html">Denis Zorin</a>.
-                My doctoral research focused on surface parametrization and remeshing with guarantees, with an emphasis
-                on developing robust geometry processing algorithms with provable correctness.
+                My doctoral research focused on surface parametrization and remeshing with guarantees, developing
+                robust geometry processing algorithms with provable correctness.
                 Prior to NYU, I received my B.S. from the School of the Gifted Young
                 (<span lang="zh-Hans">少年班学院</span>) at the
-                <a href="http://www.ustc.edu.cn/">University of Science and Technology of China</a>
-                <a class="logo-link logo-link-square" href="http://www.ustc.edu.cn/"
-                    aria-label="University of Science and Technology of China">
-                    <img class="bio-logo bio-logo-square" src="./pngegg.png" alt="USTC logo">
-                </a>.
-                I also worked as a research intern at
-                <span class="bio-logo-phrase">
-                    <a class="logo-link" href="https://www.tencent.com/en-us/" aria-label="Pixel Lab, Tencent America">
-                        <img class="bio-logo bio-logo-pixel" src="./PixelLabLogo.png" alt="Pixel Lab logo">
-                    </a>, Tencent America.
-                </span>
+                <a href="http://www.ustc.edu.cn/">University of Science and Technology of China</a>,
+                and worked as a research intern at
+                <a href="https://www.tencent.com/en-us/">Pixel Lab, Tencent America</a>.
             </p>
             <p class="lang-zh" style="display:none">
-                我在<span class="bio-logo-phrase"><a class="logo-link" href="https://about.google/" aria-label="Google"
-                        target="_blank" rel="noopener noreferrer"><img class="bio-logo bio-logo-google"
-                            src="./google_logo.png" alt="Google"></a></span>写代码。
-                我在纽约大学
-                <a class="logo-link logo-link-square" href="https://www.nyu.edu/" aria-label="纽约大学">
-                    <img class="bio-logo bio-logo-nyu" src="./88bebcb7bac3c3971543582e359ca569.png" alt="NYU logo">
-                </a>
-                <a href="http://cims.nyu.edu/">柯朗数学科学研究所</a>
-                获得博士学位，导师为
+                我在纽约大学<a href="http://cims.nyu.edu/">柯朗数学科学研究所</a>（Courant Institute）获得博士学位，导师为
                 <a href="https://cims.nyu.edu/gcl/daniele.html">Daniele Panozzo</a> 教授和
                 <a href="https://cims.nyu.edu/gcl/denis.html">Denis Zorin</a> 教授。
-                我的博士研究专注于有保证的曲面参数化与重网格化，重点是开发具有可证明正确性的鲁棒几何处理算法。
-                在进入纽约大学之前，我在
-                <a href="http://www.ustc.edu.cn/">中国科学技术大学</a>
-                <a class="logo-link logo-link-square" href="http://www.ustc.edu.cn/" aria-label="中国科学技术大学">
-                    <img class="bio-logo bio-logo-square" src="./pngegg.png" alt="USTC logo">
-                </a><span lang="zh-Hans">少年班学院</span>获得学士学位。
-                我曾在腾讯的
-                <span class="bio-logo-phrase">
-                    <a class="logo-link" href="https://www.tencent.com/en-us/" aria-label="Pixel Lab, Tencent America">
-                        <img class="bio-logo bio-logo-pixel" src="./PixelLabLogo.png" alt="Pixel Lab logo">
-                    </a>
-                    担任实习研究员。
-                </span>
+                我的博士研究专注于有理论保证的曲面参数化与重网格化，重点开发具有可证明正确性的鲁棒几何处理算法。
+                在进入纽约大学之前，我在<a href="http://www.ustc.edu.cn/">中国科学技术大学</a>少年班学院获得学士学位，并曾在腾讯北美
+                <a href="https://www.tencent.com/en-us/">Pixel Lab</a> 担任实习研究员。
             </p>
+
+            <!-- Compact Affiliation Badges -->
+            <div class="affiliation-row">
+                <a class="affil-chip" href="https://about.google/" target="_blank" rel="noopener noreferrer">
+                    <img class="affil-logo--google" src="./assets/logo-google.webp" alt="Google" width="48" height="16">
+                    <span class="affil-sep">·</span>
+                    <span data-en="SWE" data-zh="软件工程师">SWE</span>
+                </a>
+                <a class="affil-chip" href="http://cims.nyu.edu/" target="_blank" rel="noopener noreferrer">
+                    <img class="affil-logo--nyu" src="./assets/logo-nyu.webp" alt="NYU" width="12" height="16">
+                    <span class="affil-name">NYU Courant</span>
+                    <span class="affil-sep">·</span>
+                    <span data-en="Ph.D." data-zh="博士">Ph.D.</span>
+                </a>
+                <a class="affil-chip" href="http://www.ustc.edu.cn/" target="_blank" rel="noopener noreferrer">
+                    <img class="affil-logo--ustc" src="./assets/logo-ustc.webp" alt="USTC" width="16" height="16">
+                    <span class="affil-name">USTC</span>
+                    <span class="affil-sep">·</span>
+                    <span data-en="B.S. (SGY)" data-zh="少年班学士">B.S. (SGY)</span>
+                </a>
+                <a class="affil-chip" href="https://www.tencent.com/en-us/" target="_blank" rel="noopener noreferrer">
+                    <img class="affil-logo--pixel" src="./assets/logo-pixellab.webp" alt="Pixel Lab" width="85"
+                        height="15">
+                    <span class="affil-sep">·</span>
+                    <span data-en="Research Intern" data-zh="研究实习">Research Intern</span>
+                </a>
+            </div>
 
             <!-- Thesis Visual -->
             <div class="thesis-visual">
-                <img id="thesis-img" src="./public_html/respic/thesis-gpt-small.jpg"
-                    data-light="./public_html/respic/thesis-gpt-small.jpg"
-                    data-dark="./public_html/respic/thesis-gpt-dark-small.jpg"
-                    alt="ChatGPT's illustration of Surface Parametrization and Remeshing with Guarantees" width="1456"
-                    height="816">
+                <img id="thesis-img" data-light="./assets/thesis-light.webp" data-dark="./assets/thesis-dark.webp"
+                    alt="ChatGPT's illustration of Surface Parametrization and Remeshing with Guarantees" width="1536"
+                    height="1024" decoding="async">
+                <script>
+                    (function () {
+                        var t = document.getElementById('thesis-img');
+                        if (t) t.src = document.documentElement.getAttribute('data-theme') === 'dark' ? t.dataset.dark : t.dataset.light;
+                    })();
+                </script>
                 <p class="thesis-caption lang-en">
                     🤖 ChatGPT's take on my thesis <em>Surface Parametrization and Remeshing with Guarantees</em>,
                     advised by <a href="https://cims.nyu.edu/gcl/daniele.html">Prof. Daniele Panozzo</a> and
@@ -1570,28 +1942,45 @@
 
             <!-- Pub 0 -->
             <div class="pub-item">
-                <img class="pub-thumb" src="./public_html/respic/holonomy-small.jpg"
-                    alt="Which Holonomy Signatures Are Realizable?"
-                    width="160" height="160">
+                <div class="pub-thumb-wrap">
+                    <img class="pub-thumb" src="./assets/pub-holonomy.webp"
+                        alt="Which Holonomy Signatures Are Realizable?" width="160" height="160" loading="lazy"
+                        decoding="async">
+                </div>
                 <div class="pub-details">
-                    <p class="pub-title">Which Holonomy Signatures Are Realizable? A Complete Answer for Closed Surfaces</p>
-                    <p class="pub-venue">Preprint</p>
+                    <p class="pub-title">Which Holonomy Signatures Are Realizable? A Complete Answer for Closed Surfaces
+                    </p>
+                    <div class="pub-venue-row">
+                        <p class="pub-venue" data-en="Preprint, 2026" data-zh="预印本, 2026">Preprint, 2026</p>
+                    </div>
                     <div class="pub-buttons">
-                        <a class="pub-btn" href="./papers/holonomy-signatures.pdf" target="_blank"
-                            data-en="Paper" data-zh="论文">Paper</a>
-                        <a class="pub-btn" href="./gallery/holonomy-signatures/" target="_blank"
-                            data-en="Examples" data-zh="实例">Examples</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstractHolonomy')" data-en="Abstract"
-                            data-zh="摘要">Abstract</button>
+                        <a class="pub-btn" href="./papers/holonomy-signatures.pdf" target="_blank" data-en="Paper"
+                            data-zh="论文">Paper</a>
+                        <a class="pub-btn" href="./gallery/holonomy-signatures/" target="_blank" data-en="Examples"
+                            data-zh="交互实例">Examples</a>
+                        <button class="pub-btn" onclick="toggleAbstract('abstractHolonomy', this)"
+                            aria-expanded="false" data-en="Abstract" data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstractHolonomy" class="abstract">
                         <ul>
-                            <li>A seamless parametrization carries a discrete invariant, its holonomy signature: the cone angles, all multiples of &pi;/2, together with the rotational holonomy of the induced cross field. This is the datum a quadrangulation prescribes, and it decides whether any parametrization exists at all.</li>
-                            <li>A Reduction Lemma shows that the mapping class group acts on signatures with fixed cone angles with orbits classified by the subgroup im&nbsp;&rho; alone, so at most three cases survive per angle multiset instead of 4<sup>2g</sup>.</li>
-                            <li>A dictionary identifies seamless parametrizations with meromorphic 4-differentials, under which im&nbsp;&rho; measures primitivity, and realizability becomes non-emptiness of a stratum of primitive k-differentials.</li>
-                            <li>Exactly five families of signatures fail to be realizable; every other admissible signature is realizable, in every genus. Two of the five appear to be new, and both live in genus two.</li>
-                            <li>Four of the five lie outside the gcd condition of the SIGGRAPH 2022 paper below, and the whole region that condition leaves open is settled here.</li>
-                            <li>The non-emptiness half is also made constructive, via an explicit one-vertex square-tiled surface in every genus together with a local surgery that splits one cone into two of prescribed angles.</li>
+                            <li>A seamless parametrization carries a discrete invariant, its holonomy signature: the
+                                cone angles, all multiples of &pi;/2, together with the rotational holonomy of the
+                                induced cross field. This is the datum a quadrangulation prescribes, and it decides
+                                whether any parametrization exists at all.</li>
+                            <li>A Reduction Lemma shows that the mapping class group acts on signatures with fixed cone
+                                angles with orbits classified by the subgroup im&nbsp;&rho; alone, so at most three
+                                cases survive per angle multiset instead of 4<sup>2g</sup>.</li>
+                            <li>A dictionary identifies seamless parametrizations with meromorphic 4-differentials,
+                                under which im&nbsp;&rho; measures primitivity, and realizability becomes non-emptiness
+                                of a stratum of primitive k-differentials.</li>
+                            <li>Exactly five families of signatures fail to be realizable; every other admissible
+                                signature is realizable, in every genus. Two of the five appear to be new, and both
+                                live in genus two.</li>
+                            <li>Four of the five lie outside the gcd condition of the SIGGRAPH 2022 paper below, and the
+                                whole region that condition leaves open is settled here.</li>
+                            <li>The non-emptiness half is also made constructive, via an explicit one-vertex
+                                square-tiled surface in every genus together with a local surgery that splits one cone
+                                into two of prescribed angles.</li>
                         </ul>
                     </div>
                 </div>
@@ -1599,28 +1988,42 @@
 
             <!-- Pub 1 -->
             <div class="pub-item">
-                <img class="pub-thumb" src="./public_html/respic/bijective-gemini-small.jpg"
-                    alt="BijectiveRemesh: Maintaining Bijective Mappings for Data Transfer Across Remeshed Manifolds"
-                    width="160" height="160">
+                <div class="pub-thumb-wrap">
+                    <img class="pub-thumb" src="./assets/pub-bijective.webp"
+                        alt="BijectiveRemesh: Maintaining Bijective Mappings for Data Transfer Across Remeshed Manifolds"
+                        width="160" height="160" loading="lazy" decoding="async">
+                </div>
                 <div class="pub-details">
-                    <p class="pub-title">BijectiveRemesh: Maintaining Bijective Mappings for Data Transfer Across Remeshed Manifolds</p>
-                    <p class="pub-venue">arXiv preprint, 2026</p>
+                    <p class="pub-title">BijectiveRemesh: Maintaining Bijective Mappings for Data Transfer Across
+                        Remeshed Manifolds</p>
+                    <div class="pub-venue-row">
+                        <p class="pub-venue" data-en="arXiv preprint, 2026" data-zh="arXiv 预印本, 2026">arXiv preprint,
+                            2026</p>
+                    </div>
                     <p class="pub-meta" data-en="Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo"
                         data-zh="导师：Denis Zorin 教授、Daniele Panozzo 教授">Advisors: Prof. Denis Zorin, Prof. Daniele
                         Panozzo</p>
                     <div class="pub-buttons">
-                        <a class="pub-btn" href="https://arxiv.org/pdf/2605.30744" target="_blank"
-                            data-en="Paper" data-zh="论文">Paper</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract0')" data-en="Abstract"
-                            data-zh="摘要">Abstract</button>
+                        <a class="pub-btn" href="https://arxiv.org/pdf/2605.30744" target="_blank" data-en="Paper"
+                            data-zh="论文">Paper</a>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract0', this)" aria-expanded="false"
+                            data-en="Abstract" data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract0" class="abstract">
                         <ul>
-                            <li>We introduce BijectiveRemesh, a robust algorithm for maintaining a continuous, bijective mapping across complex remeshing sequences on both 2D triangle surfaces and 3D tetrahedral meshes.</li>
-                            <li>Unlike traditional data transfer methods that rely on interpolation or projection, our approach constructs a mathematically rigorous composite map by chaining local bijective atlases defined for each primitive operation.</li>
-                            <li>For 2D triangle meshes, we introduce a Shared Scaffold structure that enforces global bijectivity through local orientation preservation, extending successive self-parameterization to edge splits, edge swaps, and vertex smoothing.</li>
-                            <li>For 3D tetrahedral meshes, we generalize the local atlas construction using Steinitz's Theorem and Maxwell-Cremona lifting to ensure valid embeddings.</li>
-                            <li>This enables exact tracking of geometric entities—points, curves, and surfaces—across remeshing, with applications from texture transfer to volumetric simulations.</li>
+                            <li>We introduce BijectiveRemesh, a robust algorithm for maintaining a continuous, bijective
+                                mapping across complex remeshing sequences on both 2D triangle surfaces and 3D
+                                tetrahedral meshes.</li>
+                            <li>Unlike traditional data transfer methods that rely on interpolation or projection, our
+                                approach constructs a mathematically rigorous composite map by chaining local bijective
+                                atlases defined for each primitive operation.</li>
+                            <li>For 2D triangle meshes, we introduce a Shared Scaffold structure that enforces global
+                                bijectivity through local orientation preservation, extending successive
+                                self-parameterization to edge splits, edge swaps, and vertex smoothing.</li>
+                            <li>For 3D tetrahedral meshes, we generalize the local atlas construction using Steinitz's
+                                Theorem and Maxwell-Cremona lifting to ensure valid embeddings.</li>
+                            <li>This enables exact tracking of geometric entities—points, curves, and surfaces—across
+                                remeshing, with applications from texture transfer to volumetric simulations.</li>
                         </ul>
                     </div>
                 </div>
@@ -1628,11 +2031,21 @@
 
             <!-- Pub 2 -->
             <div class="pub-item">
-                <img class="pub-thumb" src="./public_html/respic/whichcross-gemini-small.jpg"
-                    alt="Which Cross Fields Can Be Quadrangulated?" width="160" height="160">
+                <div class="pub-thumb-wrap pub-thumb-wrap--has-fig" onclick="togglePubFig(this)"
+                    title="Hover or tap to preview paper figure">
+                    <img class="pub-thumb" src="./assets/pub-whichcross.webp"
+                        alt="Which Cross Fields Can Be Quadrangulated?" width="160" height="160" loading="lazy"
+                        decoding="async">
+                    <img class="pub-thumb-fig pub-thumb-fig--contain" src="./assets/fig-whichcross.webp"
+                        alt="Paper figure: seamless parametrization cut graph and checkerboard" width="160" height="160"
+                        loading="lazy" decoding="async">
+                    <span class="pub-thumb-badge" data-en="✦ Paper Fig" data-zh="✦ 论文配图">✦ Paper Fig</span>
+                </div>
                 <div class="pub-details">
                     <p class="pub-title">Which Cross Fields Can Be Quadrangulated?</p>
-                    <p class="pub-venue">ACM Transaction on Graphics (SIGGRAPH), 2022</p>
+                    <div class="pub-venue-row">
+                        <p class="pub-venue">ACM Transactions on Graphics (SIGGRAPH), 2022</p>
+                    </div>
                     <p class="pub-meta" data-en="Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo"
                         data-zh="导师：Denis Zorin 教授、Daniele Panozzo 教授">Advisors: Prof. Denis Zorin, Prof. Daniele
                         Panozzo</p>
@@ -1644,8 +2057,8 @@
                             data-en="Code" data-zh="代码">Code</a>
                         <a class="pub-btn" href="./slides/seamless/" target="_blank" data-en="Slides"
                             data-zh="幻灯片">Slides</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract1')" data-en="Abstract"
-                            data-zh="摘要">Abstract</button>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract1', this)" aria-expanded="false"
+                            data-en="Abstract" data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract1" class="abstract">
                         <ul>
@@ -1671,11 +2084,20 @@
 
             <!-- Pub 3 -->
             <div class="pub-item">
-                <img class="pub-thumb" src="./public_html/respic/2021-Conformal-gemini-small.jpg"
-                    alt="Discrete Conformal Equivalence" width="160" height="160">
+                <div class="pub-thumb-wrap pub-thumb-wrap--has-fig" onclick="togglePubFig(this)"
+                    title="Hover or tap to preview paper figure">
+                    <img class="pub-thumb" src="./assets/pub-conformal.webp" alt="Discrete Conformal Equivalence"
+                        width="160" height="160" loading="lazy" decoding="async">
+                    <img class="pub-thumb-fig pub-thumb-fig--contain" src="./assets/fig-conformal.webp"
+                        alt="Paper figure: discrete conformal equivalence on high-genus meshes" width="160" height="160"
+                        loading="lazy" decoding="async">
+                    <span class="pub-thumb-badge" data-en="✦ Paper Fig" data-zh="✦ 论文配图">✦ Paper Fig</span>
+                </div>
                 <div class="pub-details">
                     <p class="pub-title">Efficient and Robust Discrete Conformal Equivalence with Boundary</p>
-                    <p class="pub-venue">ACM Transaction on Graphics (SIGGRAPH Asia), 2021</p>
+                    <div class="pub-venue-row">
+                        <p class="pub-venue">ACM Transactions on Graphics (SIGGRAPH Asia), 2021</p>
+                    </div>
                     <p class="pub-meta" data-en="Advisors: Prof. Denis Zorin, Prof. Daniele Panozzo"
                         data-zh="导师：Denis Zorin 教授、Daniele Panozzo 教授">Advisors: Prof. Denis Zorin, Prof. Daniele
                         Panozzo</p>
@@ -1686,8 +2108,8 @@
                             target="_blank" data-en="Code" data-zh="代码">Code</a>
                         <a class="pub-btn" href="./slides/conformal/" target="_blank" data-en="Slides"
                             data-zh="幻灯片">Slides</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract2')" data-en="Abstract"
-                            data-zh="摘要">Abstract</button>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract2', this)" aria-expanded="false"
+                            data-en="Abstract" data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract2" class="abstract">
                         <ul>
@@ -1712,13 +2134,23 @@
 
             <!-- Pub 4 -->
             <div class="pub-item">
-                <img class="pub-thumb" src="./public_html/respic/8-gemini-small.jpg" alt="Ductile Fracture Simulation"
-                    width="160" height="160">
+                <div class="pub-thumb-wrap pub-thumb-wrap--has-fig" onclick="togglePubFig(this)"
+                    title="Hover or tap to preview paper figure">
+                    <img class="pub-thumb" src="./assets/pub-fracture.webp" alt="Ductile Fracture Simulation"
+                        width="160" height="160" loading="lazy" decoding="async">
+                    <img class="pub-thumb-fig pub-thumb-fig--cover" src="./assets/fig-fracture.webp"
+                        alt="Paper figure: MPM ductile fracture simulation results" width="160" height="160"
+                        loading="lazy" decoding="async">
+                    <span class="pub-thumb-badge" data-en="✦ Paper Fig" data-zh="✦ 论文配图">✦ Paper Fig</span>
+                </div>
                 <div class="pub-details">
                     <p class="pub-title">Simulation and Visualization of Ductile Fracture with the Material Point Method
                     </p>
-                    <p class="pub-venue">ACM SIGGRAPH / Eurographics Symposium on Computer Animation (SCA), 2019</p>
-                    <span class="pub-award" data-en="★ Best Paper Award" data-zh="★ 最佳论文奖">★ Best Paper Award</span>
+                    <div class="pub-venue-row">
+                        <p class="pub-venue">ACM SIGGRAPH / Eurographics Symposium on Computer Animation (SCA), 2019</p>
+                        <span class="pub-award" data-en="★ Best Paper Award" data-zh="★ 最佳论文奖">★ Best Paper
+                            Award</span>
+                    </div>
                     <p class="pub-meta" data-en="Advisor: Prof. Joseph Teran" data-zh="导师：Joseph Teran 教授">Advisor:
                         Prof. Joseph Teran</p>
                     <div class="pub-buttons">
@@ -1726,8 +2158,8 @@
                             data-en="Paper" data-zh="论文">Paper</a>
                         <a class="pub-btn" href="https://www.youtube.com/watch?v=JsHeG0nk7JU" target="_blank"
                             data-en="Video" data-zh="视频">Video</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract3')" data-en="Abstract"
-                            data-zh="摘要">Abstract</button>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract3', this)" aria-expanded="false"
+                            data-en="Abstract" data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract3" class="abstract">
                         <ul>
@@ -1757,18 +2189,27 @@
 
             <!-- Pub 5 -->
             <div class="pub-item">
-                <img class="pub-thumb" src="./public_html/respic/4-gemini-small.jpg" alt="Vehicle Re-Identification"
-                    width="160" height="160">
+                <div class="pub-thumb-wrap pub-thumb-wrap--has-fig" onclick="togglePubFig(this)"
+                    title="Hover or tap to preview paper figure">
+                    <img class="pub-thumb" src="./assets/pub-vehicle.webp" alt="Vehicle Re-Identification" width="160"
+                        height="160" loading="lazy" decoding="async">
+                    <img class="pub-thumb-fig pub-thumb-fig--contain" src="./assets/fig-vehicle.webp"
+                        alt="Paper figure: Dual-CNN feature fusion with Joint Bayesian loss" width="160" height="160"
+                        loading="lazy" decoding="async">
+                    <span class="pub-thumb-badge" data-en="✦ Paper Fig" data-zh="✦ 论文配图">✦ Paper Fig</span>
+                </div>
                 <div class="pub-details">
                     <p class="pub-title">Vehicle Re-Id by Deep Feature Fusion Based on Joint Bayesian Criterion</p>
-                    <p class="pub-venue">International Conference on Pattern Recognition (ICPR), 2018</p>
-                    <p class="pub-meta" data-en="Advisor: Prof. Mingtao Pei" data-zh="导师：裴明涛 教授">Advisor: Prof. Mingtao
-                        Pei</p>
+                    <div class="pub-venue-row">
+                        <p class="pub-venue">International Conference on Pattern Recognition (ICPR), 2018</p>
+                    </div>
+                    <p class="pub-meta" data-en="Advisor: Prof. Mingtao Pei" data-zh="导师：裴明涛 教授">Advisor: Prof.
+                        Mingtao Pei</p>
                     <div class="pub-buttons">
                         <a class="pub-btn" href="https://ieeexplore.ieee.org/document/8545531/" target="_blank"
                             data-en="Paper" data-zh="论文">Paper</a>
-                        <button class="pub-btn" onclick="toggleAbstract('abstract4')" data-en="Abstract"
-                            data-zh="摘要">Abstract</button>
+                        <button class="pub-btn" onclick="toggleAbstract('abstract4', this)" aria-expanded="false"
+                            data-en="Abstract" data-zh="摘要">Abstract</button>
                     </div>
                     <div id="abstract4" class="abstract">
                         <ul>
@@ -1801,40 +2242,6 @@
                         <span class="academic-item-icon" aria-hidden="true">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 7v14" />
-                                <path
-                                    d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
-                            </svg>
-                        </span>
-                        <p class="academic-item-title" data-en="Mathematical Analysis III" data-zh="数学分析B3">Mathematical
-                            Analysis III</p>
-                        <p class="academic-item-meta">
-                            2017 Fall · MATH100802@USTC ·
-                            <a href="https://icourse.club/course/2855/" target="_blank" rel="noopener noreferrer">Course
-                                Link</a>
-                        </p>
-                    </li>
-                    <li class="academic-item">
-                        <span class="academic-item-icon" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 7v14" />
-                                <path
-                                    d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
-                            </svg>
-                        </span>
-                        <p class="academic-item-title" data-en="Mathematical Analysis I" data-zh="数学分析B1">Mathematical
-                            Analysis I</p>
-                        <p class="academic-item-meta">
-                            2018 Fall · MATH100606@USTC ·
-                            <a href="https://icourse.club/course/2842/" target="_blank" rel="noopener noreferrer">Course
-                                Link</a>
-                        </p>
-                    </li>
-                    <li class="academic-item">
-                        <span class="academic-item-icon" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
                                 <rect width="20" height="14" x="2" y="3" rx="2" />
                                 <line x1="8" x2="16" y1="21" y2="21" />
                                 <line x1="12" x2="12" y1="17" y2="21" />
@@ -1843,9 +2250,43 @@
                         <p class="academic-item-title" data-en="Computer Graphics" data-zh="计算机图形学">Computer Graphics
                         </p>
                         <p class="academic-item-meta">
-                            2020 Spring · CSCI-GA 2270-001@NYU ·
-                            <a href="https://github.com/danielepanozzo/cg" target="_blank"
-                                rel="noopener noreferrer">Course Link</a>
+                            2020 Spring · CSCI-GA 2270-001 @ NYU ·
+                            <a href="https://github.com/danielepanozzo/cg" target="_blank" rel="noopener noreferrer"
+                                data-en="Course Link" data-zh="课程链接">Course Link</a>
+                        </p>
+                    </li>
+                    <li class="academic-item">
+                        <span class="academic-item-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 7v14" />
+                                <path
+                                    d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
+                            </svg>
+                        </span>
+                        <p class="academic-item-title" data-en="Mathematical Analysis I" data-zh="数学分析 B1">Mathematical
+                            Analysis I</p>
+                        <p class="academic-item-meta">
+                            2018 Fall · MATH100606 @ USTC ·
+                            <a href="https://icourse.club/course/2842/" target="_blank" rel="noopener noreferrer"
+                                data-en="Course Link" data-zh="课程链接">Course Link</a>
+                        </p>
+                    </li>
+                    <li class="academic-item">
+                        <span class="academic-item-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 7v14" />
+                                <path
+                                    d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
+                            </svg>
+                        </span>
+                        <p class="academic-item-title" data-en="Mathematical Analysis III" data-zh="数学分析 B3">Mathematical
+                            Analysis III</p>
+                        <p class="academic-item-meta">
+                            2017 Fall · MATH100802 @ USTC ·
+                            <a href="https://icourse.club/course/2855/" target="_blank" rel="noopener noreferrer"
+                                data-en="Course Link" data-zh="课程链接">Course Link</a>
                         </p>
                     </li>
                 </ul>
@@ -1853,7 +2294,7 @@
 
             <div class="academic-group">
                 <h3 class="academic-subtitle" data-en="Service" data-zh="学术服务">Service</h3>
-                <ul class="academic-list">
+                <ul class="academic-list academic-list--compact">
                     <li class="academic-item">
                         <span class="academic-item-icon" aria-hidden="true">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
@@ -1863,7 +2304,8 @@
                                 <path d="m9 12 2 2 4-4" />
                             </svg>
                         </span>
-                        <p class="academic-item-title">Reviewer, SIGGRAPH 2026</p>
+                        <p class="academic-item-title">SIGGRAPH 2026</p>
+                        <p class="academic-item-meta" data-en="Reviewer" data-zh="审稿人">Reviewer</p>
                     </li>
                     <li class="academic-item">
                         <span class="academic-item-icon" aria-hidden="true">
@@ -1874,7 +2316,8 @@
                                 <path d="m9 12 2 2 4-4" />
                             </svg>
                         </span>
-                        <p class="academic-item-title">Reviewer, Eurographics 2026</p>
+                        <p class="academic-item-title">Eurographics 2026</p>
+                        <p class="academic-item-meta" data-en="Reviewer" data-zh="审稿人">Reviewer</p>
                     </li>
                     <li class="academic-item">
                         <span class="academic-item-icon" aria-hidden="true">
@@ -1885,7 +2328,8 @@
                                 <path d="m9 12 2 2 4-4" />
                             </svg>
                         </span>
-                        <p class="academic-item-title">Reviewer, IEEE SMC 2026</p>
+                        <p class="academic-item-title">IEEE SMC 2026</p>
+                        <p class="academic-item-meta" data-en="Reviewer" data-zh="审稿人">Reviewer</p>
                     </li>
                 </ul>
             </div>
@@ -1907,10 +2351,10 @@
                             <circle cx="29" cy="29" r="6.2" fill="#ffffff" stroke="#bdc1c6" stroke-width="1.3" />
                         </svg>
                     </span>
-                    <p class="funfact-value">5<span class="funfact-unit" data-en="&nbsp;dan" data-zh="&nbsp;段">&nbsp;dan</span></p>
+                    <p class="funfact-value">5<span class="funfact-unit" data-en="&nbsp;dan"
+                            data-zh="&nbsp;段">&nbsp;dan</span></p>
                     <p class="funfact-label" data-en="Go (围棋)" data-zh="围棋">Go (围棋)</p>
-                    <p class="funfact-desc"
-                        data-en="With a nine-stone handicap against AlphaGo, I like my chances. 🐶"
+                    <p class="funfact-desc" data-en="With a nine-stone handicap against AlphaGo, I like my chances. 🐶"
                         data-zh="AlphaGo 让我九个子，我有信心 🐶">With a nine-stone handicap against AlphaGo, I like my chances.
                         🐶</p>
                 </div>
@@ -1931,8 +2375,8 @@
                     </span>
                     <p class="funfact-value">4</p>
                     <p class="funfact-label" data-en="Erdős Number" data-zh="厄多斯数">Erdős Number</p>
-                    <p class="funfact-desc" data-en="Four hops from Paul Erdős." data-zh="距离保罗·厄多斯 4 步之遥。">Four hops from
-                        Paul Erdős.</p>
+                    <p class="funfact-desc" data-en="Four hops from Paul Erdős." data-zh="距离保罗·厄多斯 4 步之遥。">Four hops
+                        from Paul Erdős.</p>
                 </div>
 
                 <!-- Favorite milk tea -->
@@ -1950,7 +2394,7 @@
                             <circle cx="20" cy="28" r="1.6" fill="#3c2415" />
                         </svg>
                     </span>
-                    <p class="funfact-value" style="font-size:1.25rem" data-en="Shu Shia" data-zh="树夏">Shu Shia</p>
+                    <p class="funfact-value funfact-value--text" data-en="Shu Shia" data-zh="树夏">Shu Shia</p>
                     <p class="funfact-label" data-en="Favorite Boba" data-zh="最爱奶茶">Favorite Boba</p>
                     <p class="funfact-desc" data-en="Avocado smoothie is unbeatable." data-zh="牛油果奶昔无敌">Avocado smoothie
                         is unbeatable.</p>
@@ -1958,143 +2402,220 @@
             </div>
         </section>
 
-        <!-- Miscellaneous -->
+        <!-- Playground & Interactive Demos -->
         <section class="misc-section" id="misc">
-            <h2 class="section-title" data-en="Miscellaneous" data-zh="其他">Miscellaneous</h2>
+            <h2 class="section-title" data-en="Playground & Interactive Demos" data-zh="互动演示与小作品">Playground &
+                Interactive Demos</h2>
             <div class="misc-grid">
-                <a class="misc-card" href="./fish.html">
-                    <picture>
-                        <source media="(prefers-reduced-motion: reduce)" srcset="./preview_fish.webp">
-                        <img class="misc-card-preview" src="./preview_fish.gif"
-                            alt="Fish swimming before one is caught and lifted in a net" width="560" height="333"
-                            loading="lazy" decoding="async">
-                    </picture>
-                    <span class="misc-card-icon misc-card-icon--fish" aria-hidden="true">
-                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 24c5-8 14-12 22-12 4 0 7 1.4 9.5 3.4L44 12l-1.6 8L44 28l-4.5-3.4C37 26.6 34 28 30 28c-8 0-17-4-22-4Z"
-                                fill="#1a73e8" />
-                            <path d="M8 24c2.5-1.6 6-2.6 9-2.6" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" />
-                            <circle cx="16" cy="20" r="1.8" fill="#ffffff" />
-                        </svg>
-                    </span>
-                    <p class="misc-card-title" data-en="Moyu Break Room" data-zh="摸鱼办">Moyu Break Room<svg
-                            class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M7 17 17 7M9 7h8v8" />
-                        </svg></p>
-                    <p class="misc-card-desc" data-en="Poke mischievous fish, build a streak, or scoop one up in a very dramatic net."
-                        data-zh="摸摸不安分的鱼，刷个连摸，或者用一张很有戏的网把它捞走。">Poke mischievous fish, build a streak, or scoop one up in a very dramatic net.</p>
-                </a>
-                <a class="misc-card" href="./xmas.html">
-                    <picture>
-                        <source media="(prefers-reduced-motion: reduce)" srcset="./preview_tree.webp">
-                        <img class="misc-card-preview" src="./preview_tree.gif"
-                            alt="A glowing particle Christmas tree rotating in falling snow" width="560" height="333"
-                            loading="lazy" decoding="async">
-                    </picture>
-                    <span class="misc-card-icon misc-card-icon--tree" aria-hidden="true">
-                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M24 6 33 19H15L24 6Z" fill="#34a853" />
-                            <path d="M24 15 35 30H13L24 15Z" fill="#34a853" />
-                            <path d="M24 24 38 41H10L24 24Z" fill="#34a853" />
-                            <rect x="21.5" y="41" width="5" height="4" rx="1" fill="#8d6e54" />
-                            <path d="M24 4.5 25 7l2.5.4-1.8 1.8.4 2.5L24 10.5 21.9 11.7l.4-2.5L20.5 7.4 23 7 24 4.5Z"
-                                fill="#fbbc04" />
-                            <circle cx="19" cy="28" r="1.6" fill="#ea4335" />
-                            <circle cx="29" cy="34" r="1.6" fill="#1a73e8" />
-                            <circle cx="24" cy="21" r="1.5" fill="#fbbc04" />
-                        </svg>
-                    </span>
-                    <p class="misc-card-title" data-en="Christmas Tree" data-zh="圣诞树">Christmas Tree<svg
-                            class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M7 17 17 7M9 7h8v8" />
-                        </svg></p>
-                    <p class="misc-card-desc"
-                        data-en="A randomly generated, rotating Christmas tree. Inspired by 小红书 @summer."
-                        data-zh="随机生成的旋转圣诞树。灵感来自小红书 @summer。">A randomly generated, rotating Christmas tree. Inspired by
-                        小红书 @summer.</p>
-                </a>
-                <a class="misc-card" href="./cloth.html">
-                    <picture>
-                        <source media="(prefers-reduced-motion: reduce)" srcset="./preview_cloth.webp">
-                        <img class="misc-card-preview" src="./preview_cloth.gif"
-                            alt="A simulated hanging cloth bending and fluttering in the wind" width="560" height="333"
-                            loading="lazy" decoding="async">
-                    </picture>
-                    <span class="misc-card-icon misc-card-icon--cloth" aria-hidden="true">
-                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 11c4 3 7 3 11 0s7-3 11 0 7 3 8 2v22c-1 1-4 1-8-2s-7-3-11 0-7 3-11 0-6-3-9-2V11Z"
-                                fill="#fbbc04" />
-                            <path d="M9 22c4 3 7 3 11 0s7-3 11 0 7 3 8 2" stroke="#ea4335" stroke-width="1.6"
-                                stroke-linecap="round" opacity="0.7" />
-                            <path d="M9 33c4 3 7 3 11 0s7-3 11 0 7 3 8 2" stroke="#ea4335" stroke-width="1.6"
-                                stroke-linecap="round" opacity="0.7" />
-                        </svg>
-                    </span>
-                    <p class="misc-card-title" data-en="Cloth Simulation" data-zh="布料模拟">Cloth Simulation<svg
-                            class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M7 17 17 7M9 7h8v8" />
-                        </svg></p>
-                    <p class="misc-card-desc"
-                        data-en="Poke it, cut it, blow it — a piece of cloth that will not fight back."
-                        data-zh="戳它、割它、对它吹风 —— 一块任你欺负的布。">Poke it, cut it, blow it — a piece of cloth that will not
-                        fight back.</p>
-                </a>
+                <!-- 1. IPC Simulation -->
                 <a class="misc-card" href="./ipc_demo/index.html">
                     <img class="misc-card-preview" src="./ipc_demo/preview_google.webp"
-                        alt="Soft-body GOOGLE letters falling and piling up" width="560" height="333"
-                        loading="lazy" decoding="async">
-                    <span class="misc-card-icon misc-card-icon--ipc" aria-hidden="true">
-                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="10" y="26" width="15" height="15" rx="4" fill="#5b8def" transform="rotate(-6 10 26)" />
-                            <ellipse cx="31" cy="20" rx="9.5" ry="8.5" fill="#34a853" />
-                            <path d="M5 14c6 5 14-6 20-1s12-6 18-1" stroke="#ea4335" stroke-width="2.4"
-                                stroke-linecap="round" fill="none" />
-                        </svg>
-                    </span>
-                    <p class="misc-card-title" data-en="IPC Simulation" data-zh="IPC 物理模拟">IPC Simulation<svg
-                            class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M7 17 17 7M9 7h8v8" />
-                        </svg></p>
+                        alt="Soft-body GOOGLE letters falling and piling up" width="560" height="333" loading="lazy"
+                        decoding="async">
+                    <div class="misc-card-head">
+                        <span class="misc-card-icon misc-card-icon--ipc" aria-hidden="true">
+                            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="10" y="26" width="15" height="15" rx="4" fill="#5b8def"
+                                    transform="rotate(-6 10 26)" />
+                                <ellipse cx="31" cy="20" rx="9.5" ry="8.5" fill="#34a853" />
+                                <path d="M5 14c6 5 14-6 20-1s12-6 18-1" stroke="#ea4335" stroke-width="2.4"
+                                    stroke-linecap="round" fill="none" />
+                            </svg>
+                        </span>
+                        <p class="misc-card-title">
+                            <span data-en="IPC Simulation" data-zh="IPC 物理模拟">IPC Simulation</span>
+                            <svg class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M7 17 17 7M9 7h8v8" />
+                            </svg>
+                        </p>
+                        <span class="misc-card-tag">GPU · libuipc</span>
+                    </div>
                     <p class="misc-card-desc"
-                        data-en="Squishy GOOGLE letters, a jelly play button on a trampoline, draping rods — simulated on GPU with guaranteed zero penetration, replayed in your browser. Built with the excellent open-source libuipc."
-                        data-zh="软软的 GOOGLE 字母、弹床上的果冻播放按钮、垂落的绳索 —— GPU 上模拟、保证零穿透，在浏览器里回放。基于优秀的开源库 libuipc。">Squishy GOOGLE letters, a jelly play
-                        button on a trampoline, draping rods — simulated on GPU with guaranteed zero
-                        penetration, replayed in your browser. Built with the excellent open-source
-                        libuipc.</p>
+                        data-en="Squishy GOOGLE letters, a jelly play button on a trampoline, and draping rods — simulated on GPU with guaranteed zero penetration via libuipc, streamed in 3D."
+                        data-zh="软软的 GOOGLE 字母、弹床上的果冻播放按钮与垂落绳索 —— 基于开源库 libuipc 在 GPU 上模拟、保证零穿透，在浏览器里实时三维交互回放。">
+                        Squishy GOOGLE letters, a jelly play button on a trampoline, and draping rods — simulated on GPU
+                        with guaranteed zero penetration via libuipc, streamed in 3D.</p>
                 </a>
+
+                <!-- 2. MPM Snow Simulation -->
                 <a class="misc-card" href="./mpm_demo/index.html">
                     <picture>
-                        <source media="(prefers-reduced-motion: reduce)" srcset="./mpm_demo/preview_google_snow_still.webp">
+                        <source media="(prefers-reduced-motion: reduce)"
+                            srcset="./mpm_demo/preview_google_snow_still.webp">
                         <img class="misc-card-preview" src="./mpm_demo/preview_google_snow.webp"
                             alt="Snow GOOGLE letters falling and shattering across the floor" width="560" height="333"
                             loading="lazy" decoding="async">
                     </picture>
-                    <span class="misc-card-icon misc-card-icon--mpm" aria-hidden="true">
-                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 37h40" stroke="#9db4d0" stroke-width="2.4" stroke-linecap="round" />
-                            <path d="M9 37l6-9 6 9z" fill="#5b8def" />
-                            <path d="M20 37l7-13 7 13z" fill="#fbbc05" />
-                            <path d="M31 37l5-7 5 7z" fill="#ea4335" />
-                            <circle cx="14" cy="12" r="2.1" fill="#9db4d0" />
-                            <circle cx="27" cy="8" r="1.7" fill="#9db4d0" />
-                            <circle cx="36" cy="15" r="1.5" fill="#9db4d0" />
-                        </svg>
-                    </span>
-                    <p class="misc-card-title" data-en="MPM Snow Simulation" data-zh="MPM 雪模拟">MPM Snow
-                        Simulation<svg class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M7 17 17 7M9 7h8v8" />
-                        </svg></p>
+                    <div class="misc-card-head">
+                        <span class="misc-card-icon misc-card-icon--mpm" aria-hidden="true">
+                            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 37h40" stroke="#9db4d0" stroke-width="2.4" stroke-linecap="round" />
+                                <path d="M9 37l6-9 6 9z" fill="#5b8def" />
+                                <path d="M20 37l7-13 7 13z" fill="#fbbc05" />
+                                <path d="M31 37l5-7 5 7z" fill="#ea4335" />
+                                <circle cx="14" cy="12" r="2.1" fill="#9db4d0" />
+                                <circle cx="27" cy="8" r="1.7" fill="#9db4d0" />
+                                <circle cx="36" cy="15" r="1.5" fill="#9db4d0" />
+                            </svg>
+                        </span>
+                        <p class="misc-card-title">
+                            <span data-en="MPM Snow Simulation" data-zh="MPM 雪模拟">MPM Snow Simulation</span>
+                            <svg class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M7 17 17 7M9 7h8v8" />
+                            </svg>
+                        </p>
+                        <span class="misc-card-tag">Taichi · MPM</span>
+                    </div>
                     <p class="misc-card-desc"
-                        data-en="Snow GOOGLE letters dropped and shattered, following Disney's snow paper — brittle fracture out of the tensile side of the plasticity, surfaced with marching cubes plus a powder spray pass. Simulated offline on GPU with taichi, replayed in your browser."
-                        data-zh="雪做的 GOOGLE 字母落地碎裂，复现迪士尼雪论文 —— 脆性断裂来自塑性模型的拉伸端，表面用 marching cubes 重建并叠加粉雪层。taichi 在 GPU 上离线模拟，浏览器里回放。">Snow GOOGLE letters dropped and
-                        shattered, following Disney's snow paper — brittle fracture out of the tensile side
-                        of the plasticity, surfaced with marching cubes plus a powder spray pass. Simulated
-                        offline on GPU with taichi, replayed in your browser.</p>
+                        data-en="Snow GOOGLE letters dropped and shattered following Disney's snow paper — tensile plasticity fracture, marching-cubes surfacing + powder spray, simulated on GPU with Taichi."
+                        data-zh="雪做的 GOOGLE 字母落地碎裂，复现迪士尼雪论文 —— 拉伸塑性脆性断裂、marching cubes 表面重建叠加粉雪粒子，Taichi GPU 模拟并在浏览器回放。">
+                        Snow GOOGLE letters dropped and shattered following Disney's snow paper — tensile plasticity
+                        fracture, marching-cubes surfacing + powder spray, simulated on GPU with Taichi.</p>
+                </a>
+
+                <!-- 3. Cloth Simulation -->
+                <a class="misc-card" href="./cloth.html">
+                    <picture>
+                        <source media="(prefers-reduced-motion: reduce)" srcset="./preview_cloth.webp">
+                        <img class="misc-card-preview" src="./assets/preview_cloth_anim.webp"
+                            alt="A simulated hanging cloth bending and fluttering in the wind" width="560" height="333"
+                            loading="lazy" decoding="async">
+                    </picture>
+                    <div class="misc-card-head">
+                        <span class="misc-card-icon misc-card-icon--cloth" aria-hidden="true">
+                            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M9 11c4 3 7 3 11 0s7-3 11 0 7 3 8 2v22c-1 1-4 1-8-2s-7-3-11 0-7 3-11 0-6-3-9-2V11Z"
+                                    fill="#fbbc04" />
+                                <path d="M9 22c4 3 7 3 11 0s7-3 11 0 7 3 8 2" stroke="#ea4335" stroke-width="1.6"
+                                    stroke-linecap="round" opacity="0.7" />
+                                <path d="M9 33c4 3 7 3 11 0s7-3 11 0 7 3 8 2" stroke="#ea4335" stroke-width="1.6"
+                                    stroke-linecap="round" opacity="0.7" />
+                            </svg>
+                        </span>
+                        <p class="misc-card-title">
+                            <span data-en="Cloth Simulation" data-zh="布料模拟">Cloth Simulation</span>
+                            <svg class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M7 17 17 7M9 7h8v8" />
+                            </svg>
+                        </p>
+                        <span class="misc-card-tag">Verlet · 2D</span>
+                    </div>
+                    <p class="misc-card-desc"
+                        data-en="Poke it, slice it with a knife, switch fabric presets, or blow gusts of wind — an interactive piece of cloth that will not fight back."
+                        data-zh="抓拽、刀割、切换丝绸/亚麻材质或对它吹风 —— 一块任你折腾的实时交互布料。">Poke it, slice it with a knife, switch fabric
+                        presets, or blow gusts of wind — an interactive piece of cloth that will not fight back.</p>
+                </a>
+
+                <!-- 4. Pigeon Generator -->
+                <a class="misc-card" href="./pegeongen.html">
+                    <div class="misc-pigeon-stage" aria-hidden="true">
+                        <span class="misc-pigeon-bird" data-daily-pigeon data-pigeon-seed="PIGEON-ROSY8"
+                            data-pigeon-size="112" data-pigeon-uid="card-left"></span>
+                        <span class="misc-pigeon-bird" data-daily-pigeon data-pigeon-size="122"
+                            data-pigeon-uid="card-mid"></span>
+                        <span class="misc-pigeon-bird" data-daily-pigeon data-pigeon-seed="PIGEON-DERP2"
+                            data-pigeon-size="110" data-pigeon-uid="card-right"></span>
+                    </div>
+                    <div class="misc-card-head">
+                        <span class="misc-card-icon misc-card-icon--pigeon" aria-hidden="true">
+                            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <ellipse cx="23" cy="28" rx="12" ry="10" fill="#607d8b" />
+                                <circle cx="30" cy="16" r="6.5" fill="#546e7a" />
+                                <path d="M36 16l6 2-6 2.5Z" fill="#fbbc04" />
+                                <circle cx="31.5" cy="15" r="1.6" fill="#fff" />
+                                <path d="M16 27c4-3 9-2 12 2-3 4-9 4-12-2Z" fill="#455a64" />
+                            </svg>
+                        </span>
+                        <p class="misc-card-title">
+                            <span data-en="Pigeon Generator" data-zh="程序化鸽子生成器">Pigeon Generator</span>
+                            <svg class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M7 17 17 7M9 7h8v8" />
+                            </svg>
+                        </p>
+                        <span class="misc-card-tag">SDF · SVG</span>
+                    </div>
+                    <p class="misc-card-desc"
+                        data-en="Every pigeon is a smooth signed-distance-field blob with procedural plumage morphs, iridescent neck sheen, and a dignified name. Export as SVG or PNG."
+                        data-zh="基于平滑有向距离场（SDF）与程序化羽色基因实时合成每一只独一无二的鸽子，支持种子分享与 SVG / PNG 导出。">Every pigeon is a smooth
+                        signed-distance-field blob with procedural plumage morphs, iridescent neck sheen, and a
+                        dignified name. Export as SVG or PNG.</p>
+                </a>
+
+                <!-- 5. Moyu Break Room -->
+                <a class="misc-card" href="./fish.html">
+                    <picture>
+                        <source media="(prefers-reduced-motion: reduce)" srcset="./preview_fish.webp">
+                        <img class="misc-card-preview" src="./assets/preview_fish_anim.webp"
+                            alt="Fish swimming before one is caught and lifted in a net" width="560" height="333"
+                            loading="lazy" decoding="async">
+                    </picture>
+                    <div class="misc-card-head">
+                        <span class="misc-card-icon misc-card-icon--fish" aria-hidden="true">
+                            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M8 24c5-8 14-12 22-12 4 0 7 1.4 9.5 3.4L44 12l-1.6 8L44 28l-4.5-3.4C37 26.6 34 28 30 28c-8 0-17-4-22-4Z"
+                                    fill="#1a73e8" />
+                                <path d="M8 24c2.5-1.6 6-2.6 9-2.6" stroke="#ffffff" stroke-width="1.6"
+                                    stroke-linecap="round" />
+                                <circle cx="16" cy="20" r="1.8" fill="#ffffff" />
+                            </svg>
+                        </span>
+                        <p class="misc-card-title">
+                            <span data-en="Moyu Break Room" data-zh="摸鱼办">Moyu Break Room</span>
+                            <svg class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M7 17 17 7M9 7h8v8" />
+                            </svg>
+                        </p>
+                        <span class="misc-card-tag">Canvas Toy</span>
+                    </div>
+                    <p class="misc-card-desc"
+                        data-en="Poke mischievous procedural fish, build a combo streak, toss snacks, or scoop one up in a very dramatic net."
+                        data-zh="摸摸不安分的程序化小鱼，刷个连摸记录、投喂鱼食，或者用一张很有戏的网把它捞走。">Poke mischievous procedural fish, build a
+                        combo streak, toss snacks, or scoop one up in a very dramatic net.</p>
+                </a>
+
+                <!-- 6. Christmas Tree -->
+                <a class="misc-card" href="./xmas.html">
+                    <picture>
+                        <source media="(prefers-reduced-motion: reduce)" srcset="./preview_tree.webp">
+                        <img class="misc-card-preview" src="./assets/preview_tree_anim.webp"
+                            alt="A glowing particle Christmas tree rotating in falling snow" width="560" height="333"
+                            loading="lazy" decoding="async">
+                    </picture>
+                    <div class="misc-card-head">
+                        <span class="misc-card-icon misc-card-icon--tree" aria-hidden="true">
+                            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M24 6 33 19H15L24 6Z" fill="#34a853" />
+                                <path d="M24 15 35 30H13L24 15Z" fill="#34a853" />
+                                <path d="M24 24 38 41H10L24 24Z" fill="#34a853" />
+                                <rect x="21.5" y="41" width="5" height="4" rx="1" fill="#8d6e54" />
+                                <path
+                                    d="M24 4.5 25 7l2.5.4-1.8 1.8.4 2.5L24 10.5 21.9 11.7l.4-2.5L20.5 7.4 23 7 24 4.5Z"
+                                    fill="#fbbc04" />
+                                <circle cx="19" cy="28" r="1.6" fill="#ea4335" />
+                                <circle cx="29" cy="34" r="1.6" fill="#1a73e8" />
+                                <circle cx="24" cy="21" r="1.5" fill="#fbbc04" />
+                            </svg>
+                        </span>
+                        <p class="misc-card-title">
+                            <span data-en="Christmas Tree" data-zh="圣诞树">Christmas Tree</span>
+                            <svg class="misc-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M7 17 17 7M9 7h8v8" />
+                            </svg>
+                        </p>
+                        <span class="misc-card-tag">3D Particles</span>
+                    </div>
+                    <p class="misc-card-desc"
+                        data-en="A randomly generated, rotating 3D particle Christmas tree with customizable presets. Inspired by 小红书 @summer."
+                        data-zh="随机生成的三维粒子旋转圣诞树，内置多种配色预设。灵感来自小红书 @summer。">A randomly generated, rotating 3D particle
+                        Christmas tree with customizable presets. Inspired by 小红书 @summer.</p>
                 </a>
             </div>
         </section>

@@ -1,20 +1,24 @@
 /**
  * Particle network background animation
  * Tuned to match the site's color scheme and aesthetic.
- * Light theme: a subtle dark-blue particle network.
+ * Light theme: a subtle, airy blue-slate particle network.
  * Dark theme:  soft, twinkling star field with faint constellation lines.
  */
 (function () {
+    const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (reducedMotion && reducedMotion.matches) return;
+
+    const isMobile = (window.innerWidth || 800) < 640;
     const CONFIG = {
-        count: 60,           // number of particles
-        speed: 0.45,         // max speed per axis
-        colorLight: '42,95,158',    // --color-accent-light (#2a5f9e)
-        colorDark: '200,220,255',   // soft starlight (blue-white)
-        opacityLight: 0.38,  // canvas layer opacity in light mode
-        opacityDark: 0.9,    // brighter so stars read on the dark background
-        linkDist: 5500,      // max squared distance to draw a line between particles
-        mouseDist: 18000,    // squared distance for mouse interaction
-        mouseRepel: 0.025,   // strength of mouse repulsion
+        count: isMobile ? 32 : 52, // fewer particles on small screens
+        speed: 0.38,               // gentle drift speed per axis
+        colorLight: '42,95,158',   // subtle slate-blue
+        colorDark: '200,220,255',  // soft starlight (blue-white)
+        opacityLight: 0.22,        // airy & crisp in light mode
+        opacityDark: 0.85,         // readable stars on dark background
+        linkDist: 5200,            // max squared distance to draw a line between particles
+        mouseDist: 16000,          // squared distance for mouse interaction
+        mouseRepel: 0.022,         // strength of mouse repulsion
         zIndex: -1,
     };
 
@@ -25,12 +29,13 @@
     // Canvas setup
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
+    canvas.setAttribute('aria-hidden', 'true');
     canvas.style.cssText = [
         'position:fixed',
         'top:0',
         'left:0',
         `z-index:${CONFIG.zIndex}`,
-        `opacity:${CONFIG.opacityLight}`,
+        `opacity:${isDark() ? CONFIG.opacityDark : CONFIG.opacityLight}`,
         'pointer-events:none',
         'transition:opacity 0.3s ease',
     ].join(';');
@@ -42,7 +47,7 @@
         H = canvas.height = window.innerHeight || document.documentElement.clientHeight;
     }
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', resize, { passive: true });
 
     // Keep the canvas opacity in sync with the active theme
     let lastDark = null;
@@ -58,11 +63,11 @@
     window.addEventListener('mousemove', e => {
         mouse.x = e.clientX;
         mouse.y = e.clientY;
-    });
+    }, { passive: true });
     window.addEventListener('mouseout', () => {
         mouse.x = null;
         mouse.y = null;
-    });
+    }, { passive: true });
 
     // Particles
     function randSpeed() {
@@ -76,17 +81,28 @@
         vx: randSpeed(),
         vy: randSpeed(),
         max: CONFIG.linkDist,
-        r: 0.8 + Math.random() * 1.7,           // star radius (dark mode)
+        r: 0.85 + Math.random() * 1.5,           // star radius (dark mode)
         tw: Math.random() * Math.PI * 2,         // twinkle phase
-        twSpeed: 0.015 + Math.random() * 0.04,   // twinkle speed
+        twSpeed: 0.014 + Math.random() * 0.035,  // twinkle speed
     }));
 
     const all = particles.concat([mouse]);
+    let rafId = null;
 
     function draw() {
+        if (document.hidden) {
+            rafId = null;
+            return;
+        }
+        if (reducedMotion && reducedMotion.matches) {
+            ctx.clearRect(0, 0, W, H);
+            rafId = null;
+            return;
+        }
+
         const dark = isDark();
         const color = dark ? CONFIG.colorDark : CONFIG.colorLight;
-        const linkBoost = dark ? 0.5 : 1;
+        const linkBoost = dark ? 0.45 : 0.85;
         syncOpacity(dark);
 
         ctx.clearRect(0, 0, W, H);
@@ -100,21 +116,23 @@
             if (p.x > W || p.x < 0) p.vx *= -1;
             if (p.y > H || p.y < 0) p.vy *= -1;
 
-            // Draw dot — twinkling, glowing stars in dark mode
+            // Draw dot — soft halo circle in dark mode avoids expensive ctx.shadowBlur
             if (dark) {
                 p.tw += p.twSpeed;
-                const flicker = 0.5 + 0.5 * Math.sin(p.tw); // 0 .. 1
-                ctx.fillStyle = `rgba(${color},${0.25 + 0.75 * flicker})`;
-                ctx.shadowColor = `rgba(${color},0.9)`;
-                ctx.shadowBlur = 4 + 4 * flicker;
+                const flicker = 0.5 + 0.5 * Math.sin(p.tw);
+                ctx.fillStyle = `rgba(${color},${(0.14 * flicker).toFixed(3)})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r * 2.6, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = `rgba(${color},${(0.3 + 0.7 * flicker).toFixed(3)})`;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.shadowBlur = 0;
             } else {
-                ctx.fillStyle = `rgba(${color},0.8)`;
+                ctx.fillStyle = `rgba(${color},0.72)`;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, 1.35, 0, Math.PI * 2);
                 ctx.fill();
             }
 
@@ -135,18 +153,26 @@
                     p.y -= CONFIG.mouseRepel * dy;
                 }
 
-                const alpha = (1 - dist2 / q.max) * 0.6 * linkBoost;
+                const alpha = (1 - dist2 / q.max) * 0.55 * linkBoost;
                 ctx.beginPath();
-                ctx.lineWidth = alpha * 1.2;
-                ctx.strokeStyle = `rgba(${color},${alpha})`;
+                ctx.lineWidth = alpha * 1.15;
+                ctx.strokeStyle = `rgba(${color},${alpha.toFixed(3)})`;
                 ctx.moveTo(p.x, p.y);
                 ctx.lineTo(q.x, q.y);
                 ctx.stroke();
             }
         }
 
-        requestAnimationFrame(draw);
+        rafId = requestAnimationFrame(draw);
     }
 
-    setTimeout(draw, 100);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && rafId === null) {
+            rafId = requestAnimationFrame(draw);
+        }
+    });
+
+    setTimeout(() => {
+        rafId = requestAnimationFrame(draw);
+    }, 100);
 })();
